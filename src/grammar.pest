@@ -1,0 +1,37 @@
+vowels = { "A" | "E" | "I" | "O" | "U"| "Y" }
+vs = _{ " " }
+any_not_vowels = _{ " " }
+
+slavo_germanic = { SOI ~ any_not_sg* ~ sg ~ ANY* ~ EOI }
+sg = _{ "W" | "K" | "CZ" | "WITZ" }
+any_not_sg = _{ !sg ~ ANY }
+
+germanic = { SOI ~ g ~ ANY* ~ EOI }
+g = _{ "VAN" | "VON" | "SCH" }
+
+initial_exceptions = { SOI ~ ie ~ ANY* ~ EOI }
+ie = _{ "GN" | "KN" | "PN" | "WR" | "PS" }
+
+initial_greek_ch = { !"CH" ~ ("IA" | "EM" | ("OR"~ !"E") | "YM" | "ARAC" | "ARIS") }
+
+greek_ch = { "ORCHES" | "ARCHIT" | "ORCHID" }
+
+ch_for_kh = { "B" | "F" | "H" | "L" | "M" | "N" | "R" | "V" | "W" }
+
+g_for_f = { "C" | "G" | "L" | "R" | "T" }
+
+initial_g_or_for_k_or_j = { "Y" ~ (whitespace | ("E" ~ ("B" | "I" | "L" | "P" | "R" | "S" | "Y")) | ("I" ~ ("B" | "E" | "L" | "N"))) }
+
+initial_anger_exception = { !("D" | "M" | "R") ~ "ANGER" }
+
+g_for_k_or_j = { ("E" | "G" | "I" | "R") }
+
+j_for_j_jxception = { ("L" | "T" | "K" | "S" | "N" | "M" | "B" | "Z")}
+
+alle = { "AS" | "OS" }
+
+h_for_s = { "EIM" | "OEK" | "OLM" | "OLZ" }
+
+dutch_sch = { ("E" ~ ("D" | "M" | "N" | "R")) | "UY" | "OO" }
+
+whitespace = _{ " " | "\t" }
