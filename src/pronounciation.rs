@@ -50,110 +50,102 @@ mod tests {
         assert!(Word::parse(Rule::initial_exceptions, word.as_str()).is_ok());
     }
 
-    // { "GN" | "KN" | "PN" | "WR" | "PS" }
+    #[test]
+    fn vowels() {
+        let mut letter = "X";
+        assert!(Word::parse(Rule::vowels, letter).is_err());
+        letter = "À";
+        assert!(Word::parse(Rule::vowels, letter).is_err());
+        letter = "A";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+        letter = "E";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+        letter = "I";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+        letter = "O";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+        letter = "U";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+        letter = "Y";
+        assert!(Word::parse(Rule::vowels, letter).is_ok());
+    }
 }
 
-pub fn double_metaphone(s: &str) -> Vec<String> {
+pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
     let word: String = s.to_uppercase();
     let mut primary = String::new();
     let mut secondary = String::new();
 
-    let mut slavo_germanic: bool = Word::parse(Rule::slavo_germanic, word.as_str()).is_ok();
-    let mut germanic = Word::parse(Rule::germanic, word.as_str()).is_ok();
-    let mut sub_value = false;
-    let mut next = String::new();
-    let mut previous = String::new();
-    let mut next_next = String::new();
+    let slavo_germanic: bool = Word::parse(Rule::slavo_germanic, word.as_str()).is_ok();
+    let germanic = Word::parse(Rule::germanic, word.as_str()).is_ok();
     let mut characters = word.chars().collect::<Vec<char>>();
     let mut pos: usize = 0;
 
     if let Ok(_) = Word::parse(Rule::initial_exceptions, word.as_str()) {
         pos += 1;
+    } else if let Some('X') = characters.first() {
+        pos += 1
     }
-    vec![]
+
+    while let Some(c) = characters.get(pos) {
+        let previous: usize = pos.wrapping_sub(1);
+
+        let next: usize = pos + 1;
+        let after_next: usize = pos + 2;
+
+        match characters.get(pos) {
+            Some('A') | Some('E') | Some('I') | Some('O') | Some('U') | Some('Y') | Some('À')
+            | Some('Ê') | Some('É') => {
+                if pos == 0 {
+                    primary += "A";
+                    secondary += "A";
+                }
+
+                pos += 1;
+            }
+
+            Some('B') => {
+                primary += "P";
+                secondary += "P";
+
+                if let Some('B') = characters.get(next) {
+                    pos += 1;
+                }
+
+                pos += 1;
+            }
+
+            Some('Ç') => {
+                primary += "S";
+                secondary += "S";
+                pos += 1;
+            }
+
+            Some('C') => {
+                if characters.get(previous) == Some(&'A')
+                    && characters.get(next) == Some(&'H')
+                    && characters.get(after_next) != Some(&'I')
+                {
+                    if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
+                        let sub_value: String = s.into_iter().collect();
+                        if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
+                            primary += "K";
+                            secondary += "K";
+                            pos += 2;
+                        }
+                    }
+                }
+
+                if word == "CAESAR".to_string() {
+                    primary += "S";
+                    secondary += "S";
+                    pos += 2;
+                }
+            }
+        }
+    }
+    Ok(vec![])
 }
-
-//   // Skip this at beginning of word.
-//   if (initialExceptions.test(value)) {
-//     index++
-//   }
-
-//   // Initial X is pronounced Z, which maps to S. Such as `Xavier`.
-//   if (characters[0] === 'X') {
-//     primary += 'S'
-//     secondary += 'S'
-//     index++
-//   }
-
-//   while (index < length) {
-//     prev = characters[index - 1]
-//     next = characters[index + 1]
-//     nextnext = characters[index + 2]
-
-//     switch (characters[index]) {
-//       case 'A':
-//       case 'E':
-//       case 'I':
-//       case 'O':
-//       case 'U':
-//       case 'Y':
-//       case 'À':
-//       case 'Ê':
-//       case 'É':
-//         if (index === 0) {
-//           // All initial vowels now map to `A`.
-//           primary += 'A'
-//           secondary += 'A'
-//         }
-
-//         index++
-
-//         break
-//       case 'B':
-//         primary += 'P'
-//         secondary += 'P'
-
-//         if (next === 'B') {
-//           index++
-//         }
-
-//         index++
-
-//         break
-//       case 'Ç':
-//         primary += 'S'
-//         secondary += 'S'
-//         index++
-
-//         break
-//       case 'C':
-//         // Various Germanic:
-//         if (
-//           prev === 'A' &&
-//           next === 'H' &&
-//           nextnext !== 'I' &&
-//           !vowels.test(characters[index - 2]) &&
-//           (nextnext !== 'E' ||
-//             (subvalue =
-//               value.slice(index - 2, index + 4) &&
-//               (subvalue === 'BACHER' || subvalue === 'MACHER')))
-//         ) {
-//           primary += 'K'
-//           secondary += 'K'
-//           index += 2
-
-//           break
-//         }
-
-//         // Special case for `Caesar`.
-//         if (index === 0 && value.slice(index + 1, index + 6) === 'AESAR') {
-//           primary += 'S'
-//           secondary += 'S'
-//           index += 2
-
-//           break
-//         }
-
 //         // Italian `Chianti`.
 //         if (value.slice(index + 1, index + 4) === 'HIA') {
 //           primary += 'K'

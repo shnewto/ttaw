@@ -1,6 +1,6 @@
-vowels = { "A" | "E" | "I" | "O" | "U"| "Y" }
-vs = _{ " " }
-any_not_vowels = _{ " " }
+vowels = { SOI ~ v ~ EOI }
+v = _{ "A" | "E" | "I" | "O" | "U"| "Y" }
+any_not_vowels = _{ !v ~ ANY }
 
 slavo_germanic = { SOI ~ any_not_sg* ~ sg ~ ANY* ~ EOI }
 sg = _{ "W" | "K" | "CZ" | "WITZ" }
