@@ -12,7 +12,8 @@ g = _{ "VAN" | "VON" | "SCH" }
 initial_exceptions = { SOI ~ ie ~ ANY* ~ EOI }
 ie = _{ "GN" | "KN" | "PN" | "WR" | "PS" }
 
-initial_greek_ch = { !"CH" ~ ("IA" | "EM" | ("OR"~ !"E") | "YM" | "ARAC" | "ARIS") }
+initial_greek_ch = { SOI ~ igc ~ ANY* ~ EOI }
+igc = _{ "CH" ~ ("IA" | "EM" | ("OR"~ !"E") | "YM" | "ARAC" | "ARIS") }
 
 greek_ch = { "ORCHES" | "ARCHIT" | "ORCHID" }
 

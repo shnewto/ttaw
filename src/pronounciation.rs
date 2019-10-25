@@ -24,6 +24,7 @@ mod tests {
         assert!(Word::parse(Rule::slavo_germanic, word.as_str()).is_ok());
     }
 
+    #[test]
     fn germanic() {
         let mut word = "tomato".to_uppercase();
         assert!(Word::parse(Rule::germanic, word.as_str()).is_err());
@@ -35,6 +36,7 @@ mod tests {
         assert!(Word::parse(Rule::germanic, word.as_str()).is_ok());
     }
 
+    #[test]
     fn initial_exceptions() {
         let mut word = "spruce".to_uppercase();
         assert!(Word::parse(Rule::initial_exceptions, word.as_str()).is_err());
@@ -48,6 +50,46 @@ mod tests {
         assert!(Word::parse(Rule::initial_exceptions, word.as_str()).is_ok());
         word = "pseudo".to_uppercase();
         assert!(Word::parse(Rule::initial_exceptions, word.as_str()).is_ok());
+    }
+
+    #[test]
+    fn initial_greek_ch() {
+        let mut word = "tulip".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+
+        word = "pliant".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "chiaroscuro".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
+
+        word = "seem".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "chemistry".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
+
+        word = "organ".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "oregon".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "chores".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "chorus".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
+
+        word = "ymca".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "chymera".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
+
+        word = "arachnid".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "character".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
+
+        word = "aristotle".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_err());
+        word = "charisma".to_uppercase();
+        assert!(Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok());
     }
 
     #[test]
@@ -71,31 +113,29 @@ mod tests {
     }
 }
 
-pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
-    let word: String = s.to_uppercase();
+pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
+    let word: String = input.to_uppercase();
     let mut primary = String::new();
     let mut secondary = String::new();
 
     let slavo_germanic: bool = Word::parse(Rule::slavo_germanic, word.as_str()).is_ok();
     let germanic = Word::parse(Rule::germanic, word.as_str()).is_ok();
-    let mut characters = word.chars().collect::<Vec<char>>();
+    let characters = word.chars().collect::<Vec<char>>();
     let mut pos: usize = 0;
 
-    if let Ok(_) = Word::parse(Rule::initial_exceptions, word.as_str()) {
+    if Word::parse(Rule::initial_exceptions, word.as_str()).is_ok() {
         pos += 1;
     } else if let Some('X') = characters.first() {
         pos += 1
     }
 
-    while let Some(c) = characters.get(pos) {
+    'a: while let Some(c) = characters.get(pos) {
         let previous: usize = pos.wrapping_sub(1);
 
         let next: usize = pos + 1;
-        let after_next: usize = pos + 2;
 
-        match characters.get(pos) {
-            Some('A') | Some('E') | Some('I') | Some('O') | Some('U') | Some('Y') | Some('À')
-            | Some('Ê') | Some('É') => {
+        match c {
+            'A' | 'E' | 'I' | 'O' | 'U' | 'Y' | 'À' | 'Ê' | 'É' => {
                 if pos == 0 {
                     primary += "A";
                     secondary += "A";
@@ -104,7 +144,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
                 pos += 1;
             }
 
-            Some('B') => {
+            'B' => {
                 primary += "P";
                 secondary += "P";
 
@@ -115,65 +155,77 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
                 pos += 1;
             }
 
-            Some('Ç') => {
+            'Ç' => {
                 primary += "S";
                 secondary += "S";
                 pos += 1;
             }
 
-            Some('C') => {
+            'C' => {
                 if characters.get(previous) == Some(&'A')
                     && characters.get(next) == Some(&'H')
-                    && characters.get(after_next) != Some(&'I')
+                    && characters.get(next + 1) != Some(&'I')
                 {
                     if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
-                        let sub_value: String = s.into_iter().collect();
+                        let sub_value: String = s.iter().collect();
                         if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
                             primary += "K";
                             secondary += "K";
                             pos += 2;
+
+                            continue 'a;
                         }
                     }
                 }
 
-                if word == "CAESAR".to_string() {
-                    primary += "S";
-                    secondary += "S";
-                    pos += 2;
+                if let Some(s) = characters.get(1..6) {
+                    if "AESAR" == s.iter().collect::<String>() {
+                        primary += "S";
+                        secondary += "S";
+                        pos += 2;
+
+                        continue 'a;
+                    }
+                }
+
+                if let Some(s) = characters.get(pos + 1..pos + 4) {
+                    if "HIA" == s.iter().collect::<String>() {
+                        primary += "K";
+                        secondary += "K";
+                        pos += 2;
+
+                        continue 'a;
+                    }
+
+                    if "HAE" == s.iter().collect::<String>() {
+                        primary += "K";
+                        secondary += "X";
+                        pos += 2;
+
+                        continue 'a;
+                    }
+
+                    if Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok() {
+                        primary += "K";
+                        secondary += "K";
+                        pos += 2;
+
+                        continue 'a;
+                    }
+
+                    if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
+                        if Word::parse(Rule::greek_ch, s.iter().collect::<String>().as_str())
+                            .is_ok()
+                        {}
+                    }
                 }
             }
+
+            _ => {}
         }
     }
     Ok(vec![])
 }
-//         // Italian `Chianti`.
-//         if (value.slice(index + 1, index + 4) === 'HIA') {
-//           primary += 'K'
-//           secondary += 'K'
-//           index += 2
-
-//           break
-//         }
-
-//         if (next === 'H') {
-//           // Find `Michael`.
-//           if (index > 0 && nextnext === 'A' && characters[index + 3] === 'E') {
-//             primary += 'K'
-//             secondary += 'X'
-//             index += 2
-
-//             break
-//           }
-
-//           // Greek roots such as `chemistry`, `chorus`.
-//           if (index === 0 && initialGreekCh.test(value)) {
-//             primary += 'K'
-//             secondary += 'K'
-//             index += 2
-
-//             break
-//           }
-
 //           // Germanic, Greek, or otherwise `CH` for `KH` sound.
 //           if (
 //             isGermanic ||
@@ -316,7 +368,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'D':
+//       'D' =>
 //         if (next === 'G') {
 //           // Such as `edge`.
 //           if (nextnext === 'E' || nextnext === 'I' || nextnext === 'Y') {
@@ -346,7 +398,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'F':
+//       'F' =>
 //         if (next === 'F') {
 //           index++
 //         }
@@ -356,7 +408,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'F'
 
 //         break
-//       case 'G':
+//       'G' =>
 //         if (next === 'H') {
 //           if (index > 0 && !vowels.test(prev)) {
 //             primary += 'K'
@@ -504,7 +556,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'K'
 
 //         break
-//       case 'H':
+//       'H' =>
 //         // Only keep if first & before vowel or btw. 2 vowels.
 //         if (vowels.test(next) && (index === 0 || vowels.test(prev))) {
 //           primary += 'H'
@@ -516,7 +568,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'J':
+//       'J' =>
 //         // Obvious Spanish, `jose`, `San Jacinto`.
 //         if (
 //           value.slice(index, index + 4) === 'JOSE' ||
@@ -573,7 +625,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'K':
+//       'K' =>
 //         if (next === 'K') {
 //           index++
 //         }
@@ -583,7 +635,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'L':
+//       'L' =>
 //         if (next === 'L') {
 //           // Spanish such as `cabrillo`, `gallegos`.
 //           if (
@@ -610,7 +662,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'M':
+//       'M' =>
 //         if (
 //           next === 'M' ||
 //           // Such as `dumb`, `thumb`.
@@ -626,7 +678,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'M'
 
 //         break
-//       case 'N':
+//       'N' =>
 //         if (next === 'N') {
 //           index++
 //         }
@@ -642,7 +694,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'N'
 
 //         break
-//       case 'P':
+//       'P' =>
 //         if (next === 'H') {
 //           primary += 'F'
 //           secondary += 'F'
@@ -664,7 +716,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'P'
 
 //         break
-//       case 'Q':
+//       'Q' =>
 //         if (next === 'Q') {
 //           index++
 //         }
@@ -674,7 +726,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'K'
 
 //         break
-//       case 'R':
+//       'R' =>
 //         // French such as `Rogier`, but exclude `Hochmeier`.
 //         if (
 //           index === last &&
@@ -697,7 +749,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'S':
+//       'S' =>
 //         // Special cases `island`, `isle`, `carlisle`, `carlysle`.
 //         if (next === 'L' && (prev === 'I' || prev === 'Y')) {
 //           index++
@@ -840,7 +892,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'T':
+//       'T' =>
 //         if (next === 'I' && nextnext === 'O' && characters[index + 3] === 'N') {
 //           primary += 'X'
 //           secondary += 'X'
@@ -890,7 +942,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         secondary += 'T'
 
 //         break
-//       case 'V':
+//       'V' =>
 //         if (next === 'V') {
 //           index++
 //         }
@@ -900,7 +952,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'W':
+//       'W' =>
 //         // Can also be in middle of word (as already taken care of for initial).
 //         if (next === 'R') {
 //           primary += 'R'
@@ -954,7 +1006,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'X':
+//       'X' =>
 //         // French such as `breaux`.
 //         if (
 //           !(
@@ -976,7 +1028,7 @@ pub fn double_metaphone(s: &str) -> Result<Vec<String>, ()> {
 //         index++
 
 //         break
-//       case 'Z':
+//       'Z' =>
 //         // Chinese pinyin such as `Zhao`.
 //         if (next === 'H') {
 //           primary += 'J'
