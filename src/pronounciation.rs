@@ -172,207 +172,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
             }
 
             'C' => {
-                if characters.get(pos.wrapping_sub(1)) == Some(&'A')
-                    && characters.get(pos + 1) == Some(&'H')
-                    && characters.get(pos + 2) != Some(&'I')
-                {
-                    if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
-                        let sub_value: String = s.iter().collect();
-                        if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
-                            primary += "K";
-                            secondary += "K";
-                            pos += 2;
-
-                            continue 'a;
-                        }
-                    }
-                }
-
-                if let Some(s) = characters.get(1..6) {
-                    if "AESAR" == s.iter().collect::<String>() {
-                        primary += "S";
-                        secondary += "S";
-                        pos += 2;
-
-                        continue 'a;
-                    }
-                }
-
-                if "HIA"
-                    == characters
-                        .get(pos + 1..pos + 4)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                {
-                    primary += "K";
-                    secondary += "K";
-                    pos += 2;
-
-                    continue 'a;
-                }
-
-                if let Some('H') = characters.get(pos + 1) {
-                    if let Some(s) = characters.get(pos + 2..pos + 4) {
-                        if "AE" == s.iter().collect::<String>() {
-                            primary += "K";
-                            secondary += "X";
-                            pos += 2;
-
-                            continue 'a;
-                        }
-
-                        if Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok() {
-                            primary += "K";
-                            secondary += "K";
-                            pos += 2;
-
-                            continue 'a;
-                        }
-
-                        let mut pos_plus_2 = String::new();
-
-                        if let Some(pp2) = characters.get(pos + 2) {
-                            pos_plus_2 = pp2.to_string();
-                        }
-
-                        if germanic
-                            || pos_plus_2 == "T"
-                            || pos_plus_2 == "S"
-                            || ((pos == 0
-                                || characters.get(pos.wrapping_sub(1)) == Some(&'A')
-                                || characters.get(pos.wrapping_sub(1)) == Some(&'E')
-                                || characters.get(pos.wrapping_sub(1)) == Some(&'I')
-                                || characters.get(pos.wrapping_sub(1)) == Some(&'O')
-                                || characters.get(pos.wrapping_sub(1)) == Some(&'U'))
-                                && Word::parse(Rule::ch_for_k, pos_plus_2.as_str()).is_ok())
-                            || characters.get(..2) == Some(&['M', 'C'])
-                        {
-                            primary += "K";
-                            secondary += "K";
-                        } else if pos == 0 {
-                            primary += "X";
-                            secondary += "X";
-                        } else {
-                            primary += "X";
-                            secondary += "K"
-                        }
-                    }
-
-                    pos += 2;
-                    continue 'a;
-                }
-
-                if characters.get(pos + 1) == Some(&'Z')
-                    && characters.get(pos.wrapping_sub(2)..pos) == Some(&['W', 'I'])
-                {
-                    primary += "S";
-                    secondary += "X";
-                    pos += 2;
-
-                    continue 'a;
-                }
-
-                if characters.get(pos + 1..pos + 4) == Some(&['C', 'I', 'A']) {
-                    primary += "X";
-                    secondary += "X";
-                    pos += 3;
-
-                    continue 'a;
-                }
-
-                if characters.get(pos + 1) == Some(&'C')
-                    && !(pos == 1 && characters.get(0) == Some(&'M'))
-                {
-                    if (characters.get(pos + 2) == Some(&'I')
-                        || characters.get(pos + 2) == Some(&'E')
-                        || characters.get(pos + 2) == Some(&'H'))
-                        && characters.get(pos + 2..pos + 4) != Some(&['H', 'U'])
-                    {
-                        let val = characters
-                            .get(pos.wrapping_sub(1)..pos + 4)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>();
-
-                        if (pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
-                            || val == "UCCEE"
-                            || val == "UCCES"
-                        {
-                            primary += "KS";
-                            secondary += "KS";
-                        } else {
-                            primary += "X";
-                            secondary += "X";
-                        }
-                    } else {
-                        primary += "K";
-                        secondary += "K";
-                        pos += 2;
-                        continue 'a;
-                    }
-
-                    pos += 3;
-                    continue 'a;
-                }
-
-                if Some(&'G') == characters.get(pos + 1)
-                    || Some(&'K') == characters.get(pos + 1)
-                    || Some(&'Q') == characters.get(pos + 1)
-                {
-                    primary += "K";
-                    secondary += "K";
-
-                    pos += 2;
-                    continue 'a;
-                }
-
-                if Some(&'I') == characters.get(pos + 1)
-                    && (Some(&'E') == characters.get(pos + 2)
-                        || Some(&'O') == characters.get(pos + 2))
-                {
-                    primary += "S";
-                    secondary += "X";
-                    pos += 2;
-                    continue 'a;
-                }
-
-                if Some(&'I') == characters.get(pos + 1)
-                    || Some(&'E') == characters.get(pos + 1)
-                    || Some(&'Y') == characters.get(pos + 1)
-                {
-                    primary += "S";
-                    secondary += "S";
-                    pos += 2;
-                    continue 'a;
-                }
-
-                primary += "K";
-                secondary += "K";
-
-                if Some(&' ') == characters.get(pos + 1)
-                    && (Some(&'C') == characters.get(pos + 2)
-                        || Some(&'G') == characters.get(pos + 2)
-                        || Some(&'Q') == characters.get(pos + 2))
-                {
-                    pos += 3;
-                    continue 'a;
-                }
-
-                if characters.get(pos + 1) == Some(&'K')
-                    || characters.get(pos + 1) == Some(&'Q')
-                    || (characters.get(pos + 1) == Some(&'C')
-                        && characters.get(pos + 2) != Some(&'E')
-                        && characters.get(pos + 2) != Some(&'I'))
-                {
-                    pos += 1;
-                }
-
-                pos += 1;
-
-                continue 'a;
+                c_case(&mut pos, &characters, &mut primary, &mut secondary);
             }
             'D' => {
                 if characters.get(pos + 1) == Some(&'G') {
@@ -1281,10 +1081,215 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
             _ => pos += 1,
         }
     }
-    Ok(vec![])
+    Ok(vec![primary, secondary])
 }
 
-//   }
+fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
+    if characters.get(pos.wrapping_sub(1)) == Some(&'A')
+        && characters.get(*pos + 1) == Some(&'H')
+        && characters.get(*pos + 2) != Some(&'I')
+    {
+        if let Some(s) = characters.get(pos.wrapping_sub(2)..*pos + 4) {
+            let sub_value: String = s.iter().collect();
+            if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
+                *primary += "K";
+                *secondary += "K";
+                *pos += 2;
 
-//   return [primary, secondary]
-// }
+                return;
+            }
+        }
+    }
+
+    if let Some(s) = characters.get(1..6) {
+        if "AESAR" == s.iter().collect::<String>() {
+            *primary += "S";
+            *secondary += "S";
+            *pos += 2;
+
+            return;
+        }
+    }
+
+    if "HIA"
+        == characters
+            .get(*pos + 1..*pos + 4)
+            .ok_or(String::new())
+            .unwrap()
+            .iter()
+            .collect::<String>()
+    {
+        *primary += "K";
+        *secondary += "K";
+        *pos += 2;
+
+        return;
+    }
+
+    if let Some('H') = characters.get(*pos + 1) {
+        if let Some(s) = characters.get(*pos + 2..*pos + 4) {
+            if "AE" == s.iter().collect::<String>() {
+                *primary += "K";
+                *secondary += "X";
+                *pos += 2;
+
+                return;
+            }
+
+            if Word::parse(
+                Rule::initial_greek_ch,
+                characters.iter().collect::<String>().as_str(),
+            )
+            .is_ok()
+            {
+                *primary += "K";
+                *secondary += "K";
+                *pos += 2;
+
+                return;
+            }
+
+            let mut pos_plus_2 = String::new();
+
+            if let Some(pp2) = characters.get(*pos + 2) {
+                pos_plus_2 = pp2.to_string();
+            }
+
+            if Word::parse(
+                Rule::germanic,
+                characters.iter().collect::<String>().as_str(),
+            )
+            .is_ok()
+                || pos_plus_2 == "T"
+                || pos_plus_2 == "S"
+                || ((*pos == 0
+                    || characters.get(pos.wrapping_sub(1)) == Some(&'A')
+                    || characters.get(pos.wrapping_sub(1)) == Some(&'E')
+                    || characters.get(pos.wrapping_sub(1)) == Some(&'I')
+                    || characters.get(pos.wrapping_sub(1)) == Some(&'O')
+                    || characters.get(pos.wrapping_sub(1)) == Some(&'U'))
+                    && Word::parse(Rule::ch_for_k, pos_plus_2.as_str()).is_ok())
+                || characters.get(..2) == Some(&['M', 'C'])
+            {
+                *primary += "K";
+                *secondary += "K";
+            } else if *pos == 0 {
+                *primary += "X";
+                *secondary += "X";
+            } else {
+                *primary += "X";
+                *secondary += "K"
+            }
+        }
+
+        *pos += 2;
+        return;
+    }
+
+    if characters.get(*pos + 1) == Some(&'Z')
+        && characters.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
+    {
+        *primary += "S";
+        *secondary += "X";
+        *pos += 2;
+
+        return;
+    }
+
+    if characters.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
+        *primary += "X";
+        *secondary += "X";
+        *pos += 3;
+
+        return;
+    }
+
+    if characters.get(*pos + 1) == Some(&'C') && !(*pos == 1 && characters.get(0) == Some(&'M')) {
+        if (characters.get(*pos + 2) == Some(&'I')
+            || characters.get(*pos + 2) == Some(&'E')
+            || characters.get(*pos + 2) == Some(&'H'))
+            && characters.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
+        {
+            let val = characters
+                .get(pos.wrapping_sub(1)..*pos + 4)
+                .ok_or(String::new())
+                .unwrap()
+                .iter()
+                .collect::<String>();
+
+            if (*pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
+                || val == "UCCEE"
+                || val == "UCCES"
+            {
+                *primary += "KS";
+                *secondary += "KS";
+            } else {
+                *primary += "X";
+                *secondary += "X";
+            }
+        } else {
+            *primary += "K";
+            *secondary += "K";
+            *pos += 2;
+            return;
+        }
+
+        *pos += 3;
+        return;
+    }
+
+    if Some(&'G') == characters.get(*pos + 1)
+        || Some(&'K') == characters.get(*pos + 1)
+        || Some(&'Q') == characters.get(*pos + 1)
+    {
+        *primary += "K";
+        *secondary += "K";
+
+        *pos += 2;
+        return;
+    }
+
+    if Some(&'I') == characters.get(*pos + 1)
+        && (Some(&'E') == characters.get(*pos + 2) || Some(&'O') == characters.get(*pos + 2))
+    {
+        *primary += "S";
+        *secondary += "X";
+        *pos += 2;
+        return;
+    }
+
+    if Some(&'I') == characters.get(*pos + 1)
+        || Some(&'E') == characters.get(*pos + 1)
+        || Some(&'Y') == characters.get(*pos + 1)
+    {
+        *primary += "S";
+        *secondary += "S";
+        *pos += 2;
+        return;
+    }
+
+    *primary += "K";
+    *secondary += "K";
+
+    if Some(&' ') == characters.get(*pos + 1)
+        && (Some(&'C') == characters.get(*pos + 2)
+            || Some(&'G') == characters.get(*pos + 2)
+            || Some(&'Q') == characters.get(*pos + 2))
+    {
+        *pos += 3;
+        return;
+    }
+
+    if characters.get(*pos + 1) == Some(&'K')
+        || characters.get(*pos + 1) == Some(&'Q')
+        || (characters.get(*pos + 1) == Some(&'C')
+            && characters.get(*pos + 2) != Some(&'E')
+            && characters.get(*pos + 2) != Some(&'I'))
+    {
+        *pos += 1;
+    }
+
+    *pos += 1;
+
+    return;
+}
