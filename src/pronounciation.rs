@@ -175,36 +175,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 c_case(&mut pos, &characters, &mut primary, &mut secondary);
             }
             'D' => {
-                if characters.get(pos + 1) == Some(&'G') {
-                    if characters.get(pos + 2) == Some(&'E')
-                        || characters.get(pos + 2) == Some(&'I')
-                        || characters.get(pos + 2) == Some(&'Y')
-                    {
-                        primary += "J";
-                        secondary += "J";
-                        pos += 3;
-                    } else {
-                        primary += "TK";
-                        secondary += "TK";
-                        pos += 2;
-                    }
-
-                    continue 'a;
-                }
-
-                if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D') {
-                    primary += "T";
-                    secondary += "T";
-                    pos += 2;
-
-                    continue 'a;
-                }
-
-                primary += "T";
-                secondary += "T";
-                pos += 1;
-
-                continue 'a;
+                d_case(&mut pos, &characters, &mut primary, &mut secondary);
             }
             'F' => {
                 if characters.get(pos + 1) == Some(&'F') {
@@ -295,13 +266,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                         primary += "KN";
                         secondary += "N";
                     // Not like `Cagney`.
-                    } else if characters
-                        .get(pos + 2..pos + 4)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                        != "EY"
+                    } else if get_substring(&characters, pos + 2, pos + 4) != "EY"
                         && characters.get(pos + 1) != Some(&'Y')
                         && !slavo_germanic
                     {
@@ -318,15 +283,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 }
 
                 // Such as `Tagliaro`.
-                if characters
-                    .get(pos + 1..pos + 3)
-                    .ok_or(String::new())
-                    .unwrap()
-                    .iter()
-                    .collect::<String>()
-                    == "LI"
-                    && !slavo_germanic
-                {
+                if get_substring(&characters, pos + 1, pos + 3) == "LI" && !slavo_germanic {
                     primary += "KL";
                     secondary += "L";
                     pos += 2;
@@ -338,13 +295,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 if pos == 0
                     && Word::parse(
                         Rule::initial_g_or_for_k_or_j,
-                        characters
-                            .get(1..3)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>()
-                            .as_str(),
+                        get_substring(&characters, 1, 3).as_str(),
                     )
                     .is_ok()
                 {
@@ -356,35 +307,17 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 }
 
                 // -ger-, -gy-.
-                if characters
-                    .get(pos + 1..pos + 3)
-                    .ok_or(String::new())
-                    .unwrap()
-                    .iter()
-                    .collect::<String>()
-                    == "ER"
+                if get_substring(&characters, pos + 1, pos + 3) == "ER"
                     && characters.get(pos.wrapping_sub(1)) != Some(&'I')
                     && characters.get(pos.wrapping_sub(1)) != Some(&'E')
                     && Word::parse(
                         Rule::initial_anger_exception,
-                        characters
-                            .get(pos + 1..pos + 3)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>()
-                            .as_str(),
+                        get_substring(&characters, pos + 1, pos + 3).as_str(),
                     )
                     .is_ok()
                     && Word::parse(
                         Rule::initial_anger_exception,
-                        characters
-                            .get(0..6)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>()
-                            .as_str(),
+                        get_substring(&characters, 0, 6).as_str(),
                     )
                     .is_ok()
                     || (characters.get(pos + 1) == Some(&'Y')
@@ -416,29 +349,14 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                         && characters.get(pos + 2) == Some(&'I'))
                 {
                     // Obvious Germanic.
-                    if characters
-                        .get(pos + 1..pos + 3)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                        == "ET"
-                        || germanic
-                    {
+                    if get_substring(&characters, pos + 1, pos + 3) == "ET" || germanic {
                         primary += "K";
                         secondary += "K";
                     } else {
                         primary += "J";
 
                         // Always soft if French ending.
-                        if characters
-                            .get(pos + 1..pos + 5)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>()
-                            == "IER "
-                        {
+                        if get_substring(&characters, pos + 1, pos + 5) == "IER " {
                             secondary += "J";
                         } else {
                             secondary += "K";
@@ -496,28 +414,10 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 continue 'a;
             }
             'J' => {
-                if characters
-                    .get(pos..pos + 4)
-                    .ok_or(String::new())
-                    .unwrap()
-                    .iter()
-                    .collect::<String>()
-                    == "JOSE"
-                    || characters
-                        .get(0..4)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                        == "SAN "
+                if get_substring(&characters, pos, pos + 4) == "JOSE"
+                    || get_substring(&characters, 0, 4) == "SAN "
                 {
-                    if characters
-                        .get(pos..pos + 4)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                        == "SAN "
+                    if get_substring(&characters, pos, pos + 4) == "SAN "
                         || (pos == 0 && characters.get(pos + 4) == Some(&' '))
                     {
                         primary += "H";
@@ -541,12 +441,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                         || characters.get(pos + 1) == Some(&'O'))
                     && Word::parse(
                         Rule::vowels,
-                        characters
-                            .get(pos.wrapping_sub(1))
-                            .ok_or(String::new())
-                            .unwrap()
-                            .to_string()
-                            .as_str(),
+                        get_char_as_string(&characters, pos.wrapping_sub(1)).as_str(),
                     )
                     .is_ok()
                 {
@@ -605,13 +500,12 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                                 || characters.get(characters.len()) == Some(&'O')
                                 || Word::parse(
                                     Rule::alle,
-                                    characters
-                                        .get(characters.len().wrapping_sub(1)..characters.len())
-                                        .ok_or(String::new())
-                                        .unwrap()
-                                        .iter()
-                                        .collect::<String>()
-                                        .as_str(),
+                                    get_substring(
+                                        &characters,
+                                        characters.len().wrapping_sub(1),
+                                        characters.len(),
+                                    )
+                                    .as_str(),
                                 )
                                 .is_ok()))
                     {
@@ -630,12 +524,13 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
                 continue 'a;
             }
+
             'M' => {
                 if characters.get(pos + 1) == Some(&'M') ||
           // Such as `dumb`, `thumb`.
           (characters.get(pos.wrapping_sub(1))  ==Some(&'U') &&
             characters.get(pos + 1) == Some(&'B') &&
-            (pos + 1 == characters.len() || characters.get(pos+2..pos+4).ok_or(String::new()).unwrap().iter().collect::<String>() == "ER"))
+            (pos + 1 == characters.len() ||  get_substring(&characters, pos + 2, pos + 4) == "ER"))
                 {
                     pos += 1;
                 }
@@ -727,15 +622,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 }
 
                 // Special case `sugar-`.
-                if pos == 0
-                    && characters
-                        .get(1..5)
-                        .ok_or(String::new())
-                        .unwrap()
-                        .iter()
-                        .collect::<String>()
-                        == "UGAR"
-                {
+                if pos == 0 && get_substring(&characters, 1, 5) == "UGAR" {
                     primary += "X";
                     secondary += "S";
                     pos += 1;
@@ -747,13 +634,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                     // Germanic.
                     if Word::parse(
                         Rule::h_for_s,
-                        characters
-                            .get(pos + 1..pos + 5)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>()
-                            .as_str(),
+                        get_substring(&characters, pos + 1, pos + 5).as_str(),
                     )
                     .is_ok()
                     {
@@ -810,12 +691,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 if characters.get(pos + 1) == Some(&'C') {
                     // Schlesinger's rule.
                     if characters.get(pos + 2) == Some(&'H') {
-                        let subvalue = characters
-                            .get(pos + 3..pos + 5)
-                            .ok_or(String::new())
-                            .unwrap()
-                            .iter()
-                            .collect::<String>();
+                        let subvalue = get_substring(&characters, pos + 3, pos + 5);
                         if Word::parse(Rule::dutch_sch, subvalue.as_str()).is_ok() {
                             // Such as `schermerhorn`, `schenker`.
                             if subvalue == "ER" || subvalue == "EN" {
@@ -873,12 +749,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                     continue 'a;
                 }
 
-                let subvalue = characters
-                    .get(pos - 2..pos)
-                    .ok_or(String::new())
-                    .unwrap()
-                    .iter()
-                    .collect::<String>();
+                let subvalue = get_substring(&characters, pos.wrapping_sub(2), pos);
 
                 // French such as `resnais`, `artois`.
                 if pos == characters.len() && (subvalue == "AI" || subvalue == "OI") {
@@ -998,13 +869,13 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 }
 
                 // `Arnow` should match `Arnoff`.
-                if ((characters.get(pos.wrapping_sub(1))  ==Some(&'E') || characters.get(pos.wrapping_sub(1))  ==Some(&'O')) &&
+                if ((characters.get(pos.wrapping_sub(1))  ==Some(&'E') || characters.get(pos.wrapping_sub(1))  == Some(&'O')) &&
             characters.get(pos + 1) == Some(&'S') &&
             characters.get(pos + 2) == Some(&'K') &&
             (characters.get(pos + 3) == Some(&'I') || characters.get(pos + 3) == Some(&'Y'))) ||
           // Maybe a bug? Shouldn't this be general Germanic?
-          characters.get(0..3).ok_or(String::new()).unwrap().iter().collect::<String>() == "SCH" ||
-          (pos == characters.len() && Word::parse(Rule::vowels, characters.get(pos.wrapping_sub(1)).ok_or(String::new()).unwrap().to_string().as_str()).is_ok())
+          get_substring(&characters, 0, 3) == "SCH" ||
+          (pos == characters.len() && Word::parse(Rule::vowels, get_char_as_string(&characters, pos.wrapping_sub(1)).as_str()).is_ok())
                 {
                     secondary += "F";
                     pos += 1;
@@ -1084,51 +955,52 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
     Ok(vec![primary, secondary])
 }
 
+fn get_char_as_string(characters: &[char], pos: usize) -> String {
+    match characters.get(pos) {
+        Some(c) => c.to_string(),
+        None => String::new(),
+    }
+}
+
+fn get_substring(characters: &[char], start: usize, end: usize) -> String {
+    match characters.get(start..end) {
+        Some(s) => s.iter().collect::<String>(),
+        None => String::new(),
+    }
+}
+
 fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
     if characters.get(pos.wrapping_sub(1)) == Some(&'A')
         && characters.get(*pos + 1) == Some(&'H')
         && characters.get(*pos + 2) != Some(&'I')
     {
-        if let Some(s) = characters.get(pos.wrapping_sub(2)..*pos + 4) {
-            let sub_value: String = s.iter().collect();
-            if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
-                *primary += "K";
-                *secondary += "K";
-                *pos += 2;
+        let sub_value: String = get_substring(&characters, pos.wrapping_sub(2), *pos + 4);
+        if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
+            *primary += "K";
+            *secondary += "K";
+            *pos += 2;
 
-                return;
-            }
+            return;
         }
-    }
 
-    if let Some(s) = characters.get(1..6) {
-        if "AESAR" == s.iter().collect::<String>() {
+        if "AESAR" == get_substring(&characters, 1, 6) {
             *primary += "S";
             *secondary += "S";
             *pos += 2;
 
             return;
         }
-    }
 
-    if "HIA"
-        == characters
-            .get(*pos + 1..*pos + 4)
-            .ok_or(String::new())
-            .unwrap()
-            .iter()
-            .collect::<String>()
-    {
-        *primary += "K";
-        *secondary += "K";
-        *pos += 2;
+        if "HIA" == get_substring(&characters, *pos + 1, *pos + 4) {
+            *primary += "K";
+            *secondary += "K";
+            *pos += 2;
 
-        return;
-    }
+            return;
+        }
 
-    if let Some('H') = characters.get(*pos + 1) {
-        if let Some(s) = characters.get(*pos + 2..*pos + 4) {
-            if "AE" == s.iter().collect::<String>() {
+        if let Some('H') = characters.get(*pos + 1) {
+            if "AE" == get_substring(&characters, *pos + 2, *pos + 4) {
                 *primary += "K";
                 *secondary += "X";
                 *pos += 2;
@@ -1180,116 +1052,140 @@ fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
                 *primary += "X";
                 *secondary += "K"
             }
-        }
 
-        *pos += 2;
-        return;
-    }
-
-    if characters.get(*pos + 1) == Some(&'Z')
-        && characters.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
-    {
-        *primary += "S";
-        *secondary += "X";
-        *pos += 2;
-
-        return;
-    }
-
-    if characters.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
-        *primary += "X";
-        *secondary += "X";
-        *pos += 3;
-
-        return;
-    }
-
-    if characters.get(*pos + 1) == Some(&'C') && !(*pos == 1 && characters.get(0) == Some(&'M')) {
-        if (characters.get(*pos + 2) == Some(&'I')
-            || characters.get(*pos + 2) == Some(&'E')
-            || characters.get(*pos + 2) == Some(&'H'))
-            && characters.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
-        {
-            let val = characters
-                .get(pos.wrapping_sub(1)..*pos + 4)
-                .ok_or(String::new())
-                .unwrap()
-                .iter()
-                .collect::<String>();
-
-            if (*pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
-                || val == "UCCEE"
-                || val == "UCCES"
-            {
-                *primary += "KS";
-                *secondary += "KS";
-            } else {
-                *primary += "X";
-                *secondary += "X";
-            }
-        } else {
-            *primary += "K";
-            *secondary += "K";
             *pos += 2;
             return;
         }
 
-        *pos += 3;
-        return;
-    }
+        if characters.get(*pos + 1) == Some(&'Z')
+            && characters.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
+        {
+            *primary += "S";
+            *secondary += "X";
+            *pos += 2;
 
-    if Some(&'G') == characters.get(*pos + 1)
-        || Some(&'K') == characters.get(*pos + 1)
-        || Some(&'Q') == characters.get(*pos + 1)
-    {
+            return;
+        }
+
+        if characters.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
+            *primary += "X";
+            *secondary += "X";
+            *pos += 3;
+
+            return;
+        }
+
+        if characters.get(*pos + 1) == Some(&'C') && !(*pos == 1 && characters.get(0) == Some(&'M'))
+        {
+            if (characters.get(*pos + 2) == Some(&'I')
+                || characters.get(*pos + 2) == Some(&'E')
+                || characters.get(*pos + 2) == Some(&'H'))
+                && characters.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
+            {
+                let val = get_substring(&characters, pos.wrapping_sub(1), *pos + 4);
+
+                if (*pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
+                    || val == "UCCEE"
+                    || val == "UCCES"
+                {
+                    *primary += "KS";
+                    *secondary += "KS";
+                } else {
+                    *primary += "X";
+                    *secondary += "X";
+                }
+            } else {
+                *primary += "K";
+                *secondary += "K";
+                *pos += 2;
+                return;
+            }
+
+            *pos += 3;
+            return;
+        }
+
+        if Some(&'G') == characters.get(*pos + 1)
+            || Some(&'K') == characters.get(*pos + 1)
+            || Some(&'Q') == characters.get(*pos + 1)
+        {
+            *primary += "K";
+            *secondary += "K";
+
+            *pos += 2;
+            return;
+        }
+
+        if Some(&'I') == characters.get(*pos + 1)
+            && (Some(&'E') == characters.get(*pos + 2) || Some(&'O') == characters.get(*pos + 2))
+        {
+            *primary += "S";
+            *secondary += "X";
+            *pos += 2;
+            return;
+        }
+
+        if Some(&'I') == characters.get(*pos + 1)
+            || Some(&'E') == characters.get(*pos + 1)
+            || Some(&'Y') == characters.get(*pos + 1)
+        {
+            *primary += "S";
+            *secondary += "S";
+            *pos += 2;
+            return;
+        }
         *primary += "K";
         *secondary += "K";
 
-        *pos += 2;
-        return;
-    }
+        if Some(&' ') == characters.get(*pos + 1)
+            && (Some(&'C') == characters.get(*pos + 2)
+                || Some(&'G') == characters.get(*pos + 2)
+                || Some(&'Q') == characters.get(*pos + 2))
+        {
+            *pos += 3;
+            return;
+        }
 
-    if Some(&'I') == characters.get(*pos + 1)
-        && (Some(&'E') == characters.get(*pos + 2) || Some(&'O') == characters.get(*pos + 2))
-    {
-        *primary += "S";
-        *secondary += "X";
-        *pos += 2;
-        return;
-    }
+        if characters.get(*pos + 1) == Some(&'K')
+            || characters.get(*pos + 1) == Some(&'Q')
+            || (characters.get(*pos + 1) == Some(&'C')
+                && characters.get(*pos + 2) != Some(&'E')
+                && characters.get(*pos + 2) != Some(&'I'))
+        {
+            *pos += 1;
+        }
 
-    if Some(&'I') == characters.get(*pos + 1)
-        || Some(&'E') == characters.get(*pos + 1)
-        || Some(&'Y') == characters.get(*pos + 1)
-    {
-        *primary += "S";
-        *secondary += "S";
-        *pos += 2;
-        return;
-    }
-
-    *primary += "K";
-    *secondary += "K";
-
-    if Some(&' ') == characters.get(*pos + 1)
-        && (Some(&'C') == characters.get(*pos + 2)
-            || Some(&'G') == characters.get(*pos + 2)
-            || Some(&'Q') == characters.get(*pos + 2))
-    {
-        *pos += 3;
-        return;
-    }
-
-    if characters.get(*pos + 1) == Some(&'K')
-        || characters.get(*pos + 1) == Some(&'Q')
-        || (characters.get(*pos + 1) == Some(&'C')
-            && characters.get(*pos + 2) != Some(&'E')
-            && characters.get(*pos + 2) != Some(&'I'))
-    {
         *pos += 1;
     }
+}
 
+fn d_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
+    if characters.get(*pos + 1) == Some(&'G') {
+        if characters.get(*pos + 2) == Some(&'E')
+            || characters.get(*pos + 2) == Some(&'I')
+            || characters.get(*pos + 2) == Some(&'Y')
+        {
+            *primary += "J";
+            *secondary += "J";
+            *pos += 3;
+        } else {
+            *primary += "TK";
+            *secondary += "TK";
+            *pos += 2;
+        }
+
+        return;
+    }
+
+    if characters.get(*pos + 1) == Some(&'T') || characters.get(*pos + 1) == Some(&'D') {
+        *primary += "T";
+        *secondary += "T";
+        *pos += 2;
+
+        return;
+    }
+
+    *primary += "T";
+    *secondary += "T";
     *pos += 1;
-
-    return;
 }
