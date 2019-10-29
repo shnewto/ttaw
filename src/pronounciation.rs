@@ -377,8 +377,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 continue 'a;
             }
       'D' => {
-        if (characters.get(pos + 1) == Some(&'G')) {
-          if (nextcharacters.get(pos + 1) == Some(&'E') || nextcharacters.get(pos + 1) == Some(&'I') || nextcharacters.get(pos + 1) == Some(&'Y')) {
+        if characters.get(pos + 1) == Some(&'G') {
+          if characters.get(pos + 2) == Some(&'E') || characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'Y') {
             primary += "J";
             secondary += "J";
             pos += 3;
@@ -391,7 +391,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D')) {
+        if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D'){
           primary += "T";
           secondary += "T";
           pos += 2;
@@ -406,7 +406,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a;
       }
       'F' => {
-        if (characters.get(pos + 1) == Some(&'F')) {
+        if characters.get(pos + 1) == Some(&'F') {
           pos += 1;
         }
 
@@ -416,18 +416,20 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'G' => {
-        if (characters.get(pos + 1) == Some(&'H')) {
-          if (pos > 0 && !vowels.test(prev)) {
-            primary += "K";
-            secondary += "K";
-            pos += 2;
+        if characters.get(pos + 1) == Some(&'H') {
+            let prev = characters.get(pos.wrapping_sub(1)).ok_or(String::new()).unwrap().as_str();
 
-            continue 'a;
-          }
+            if pos > 0 && Word::parse(Rule::vowels, prev.as_str()).is_err() {
+                primary += "K";
+                secondary += "K";
+                pos += 2;
+
+                continue 'a;
+            }
 
           // Such as `Ghislane`, `Ghiradelli`.
-          if (pos == 0) {
-            if (nextcharacters.get(pos + 1) == Some(&'I')) {
+          if pos == 0 {
+            if characters.get(pos + 2) == Some(&'I') {
               primary += "J";
               secondary += "J";
             } else {
@@ -443,13 +445,13 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           // Parker's rule (with some further refinements).
           if (
             // Such as `Hugh`.  The comma is not a bug.
-            ((subvalue = characters[pos - 2]),
+            ((subvalue = characters.get(pos - 2)),
             subvalue == Some(&'B') || subvalue == Some(&'H') || subvalue == Some(&'D')) ||
             // Such as `bough`.  The comma is not a bug.
-            ((subvalue = characters[pos - 3]),
+            ((subvalue = characters.get(pos - 3)),
             subvalue == Some(&'B') || subvalue == Some(&'H') || subvalue == Some(&'D')) ||
             // Such as `Broughton`.  The comma is not a bug.
-            ((subvalue = characters[pos - 4]),
+            ((subvalue = characters.get(pos - 4)),
             subvalue == Some(&'B') || subvalue == Some(&'H'))
           ) {
             pos += 2;
@@ -458,10 +460,10 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           }
 
           // Such as `laugh`, `McLaughlin`, `cough`, `gough`, `rough`, `tough`.
-          if (pos > 2 && prev == Some(&'U') && gForF.test(characters[pos - 3])) {
+          if pos > 2 && prev == Some(&'U') && gForF.test(characters.get(pos - 3)) {
             primary += "F";
             secondary += "F";
-          } else if (pos > 0 && prev != Some(&'I')) {
+          } else if pos > 0 && prev != Some(&'I') {
             primary += "K";
             secondary += "K";
           }
@@ -471,8 +473,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'N')) {
-          if (pos == 1 && vowels.test(characters[0]) && !isSlavoGermanic) {
+        if characters.get(pos + 1) == Some(&'N') {
+          if pos == 1 && vowels.test(characters.get(0)) && !isSlavoGermanic {
             primary += "KN";
             secondary += "N";
             // Not like `Cagney`.
@@ -494,7 +496,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         }
 
         // Such as `Tagliaro`.
-        if (characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "LI" && !isSlavoGermanic) {
+        if characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "LI" && !isSlavoGermanic {
           primary += "KL";
           secondary += "L";
           pos += 2;
@@ -503,7 +505,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         }
 
         // -ges-, -gep-, -gel- at beginning.
-        if (pos == 0 && initialGForKj.test(value.slice(1, 3))) {
+        if pos == 0 && initialGForKj.test(value.slice(1, 3)) {
           primary += "K";
           secondary += "J";
           pos += 2;
@@ -531,17 +533,17 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           characters.get(pos + 1) == Some(&'E') ||
           characters.get(pos + 1) == Some(&'I') ||
           characters.get(pos + 1) == Some(&'Y') ||
-          ((prev == Some(&'A') || prev == Some(&'O')) && characters.get(pos + 1) == Some(&'G') && nextcharacters.get(pos + 1) == Some(&'I'))
+          ((prev == Some(&'A') || prev == Some(&'O')) && characters.get(pos + 1) == Some(&'G') && characters.get(pos + 2) == Some(&'I'))
         ) {
           // Obvious Germanic.
-          if (characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "ET" || isGermanic) {
+          if characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "ET" || isGermanic {
             primary += "K";
             secondary += "K";
           } else {
             primary += "J";
 
             // Always soft if French ending.
-            if (characters.get(pos+1..pos+5).ok_or(String::new()).unwrap().collect::<String>()== "IER ") {
+            if characters.get(pos+1..pos+5).ok_or(String::new()).unwrap().collect::<String>()== "IER " {
               secondary += "J";
             } else {
               secondary += "K";
@@ -553,7 +555,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'G')) {
+        if characters.get(pos + 1) == Some(&'G') {
           pos += 1;
         }
 
@@ -565,7 +567,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a;}
       'H' => {
         // Only keep if first & before vowel or btw. 2 vowels.
-        if (vowels.test(next) && (pos == 0 || vowels.test(prev))) {
+        if vowels.test(next) && (pos == 0 || vowels.test(prev)) {
           primary += "H";
           secondary += "H";
 
@@ -583,7 +585,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         ) {
           if (
             value.slice(0, 4) == "SAN " ||
-            (pos == 0 && characters[pos + 4] == ' ')
+            (pos == 0 && characters.get(pos + 4) == ' ')
           ) {
             primary += "H";
             secondary += "H";
@@ -614,7 +616,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         ) {
           primary += "J";
           secondary += "H";
-        } else if (pos == last) {
+        } else if pos == last {
           primary += "J";
         } else if (
           prev != Some(&'S') &&
@@ -625,7 +627,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           primary += "J";
           secondary += "J";
           // It could happen.
-        } else if (characters.get(pos + 1) == Some(&'J')) {
+        } else if characters.get(pos + 1) == Some(&'J') {
           pos += 1;
         }
 
@@ -633,7 +635,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'K' =>{
-        if (characters.get(pos + 1) == Some(&'K')) {
+        if characters.get(pos + 1) == Some(&'K') {
           pos += 1;
         }
 
@@ -643,16 +645,16 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'L' => {
-        if (characters.get(pos + 1) == Some(&'L')) {
+        if characters.get(pos + 1) == Some(&'L') {
           // Spanish such as `cabrillo`, `gallegos`.
           if (
             (pos == length - 3 &&
-              ((prev == Some(&'A') && nextcharacters.get(pos + 1) == Some(&'E')) ||
-                (prev == Some(&'I') && (nextcharacters.get(pos + 1) == Some(&'O') || nextcharacters.get(pos + 1) == Some(&'A'))))) ||
+              ((prev == Some(&'A') && characters.get(pos + 2) == Some(&'E')) ||
+                (prev == Some(&'I') && (characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A'))))) ||
             (prev == Some(&'A') &&
-              nextcharacters.get(pos + 1) == Some(&'E') &&
-              (characters[last] == Some(&'A') ||
-                characters[last] == Some(&'O') ||
+              characters.get(pos + 2) == Some(&'E') &&
+              (characters.get(last) == Some(&'A') ||
+                characters.get(last) == Some(&'O') ||
                 alle.test(value.slice(last - 1, length))))
           ) {
             primary += "L";
@@ -686,7 +688,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'N' => {
-        if (characters.get(pos + 1) == Some(&'N')) {
+        if characters.get(pos + 1) == Some(&'N') {
           pos += 1;
         }
 
@@ -696,7 +698,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a; }
       'P' => {
-        if (characters.get(pos + 1) == Some(&'H')) {
+        if characters.get(pos + 1) == Some(&'H') {
           primary += "F";
           secondary += "F";
           pos += 2;
@@ -707,7 +709,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         // Also account for `campbell` and `raspberry`.
         subvalue = next
 
-        if (subvalue == Some(&'P') || subvalue == Some(&'B')) {
+        if subvalue == Some(&'P') || subvalue == Some(&'B') {
           pos += 1;
         }
 
@@ -718,7 +720,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'Q' => {
-        if (characters.get(pos + 1) == Some(&'Q')) {
+        if characters.get(pos + 1) == Some(&'Q') {
           pos += 1;
         }
 
@@ -729,21 +731,21 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a; }
       'R' => {
         // French such as `Rogier`, but exclude `Hochmeier`.
-        if (
+        if
           pos == last &&
           !isSlavoGermanic &&
           prev == Some(&'E') &&
-          characters[pos - 2] == Some(&'I') &&
-          characters[pos - 4] != Some(&'M') &&
-          (characters[pos - 3] != Some(&'E') && characters[pos - 3] != Some(&'A'))
-        ) {
+          characters.get(pos - 2) == Some(&'I') &&
+          characters.get(pos - 4) != Some(&'M') &&
+          (characters.get(pos - 3) != Some(&'E') && characters.get(pos - 3) != Some(&'A'))
+         {
           secondary += "R";
         } else {
           primary += "R";
           secondary += "R";
         }
 
-        if (characters.get(pos + 1) == Some(&'R')) {
+        if characters.get(pos + 1) == Some(&'R') {
           pos += 1;
         }
 
@@ -752,14 +754,14 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a;}
       'S' => {
         // Special cases `island`, `isle`, `carlisle`, `carlysle`.
-        if (characters.get(pos + 1) == Some(&'L') && (prev == Some(&'I') || prev == Some(&'Y'))) {
+        if characters.get(pos + 1) == Some(&'L') && (prev == Some(&'I') || prev == Some(&'Y')) {
           pos += 1;
 
           continue 'a;
         }
 
         // Special case `sugar-`.
-        if (pos == 0 && value.slice(1, 5) == "UGAR") {
+        if pos == 0 && value.slice(1, 5) == "UGAR" {
           primary += "X";
           secondary += "S";
           pos += 1;
@@ -767,9 +769,9 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'H')) {
+        if characters.get(pos + 1) == Some(&'H') {
           // Germanic.
-          if (hForS.test(value.slice(pos + 1, pos + 5))) {
+          if hForS.test(value.slice(pos + 1, pos + 5)) {
             primary += "S";
             secondary += "S";
           } else {
@@ -783,11 +785,11 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         if (
           characters.get(pos + 1) == Some(&'I') &&
-          (nextcharacters.get(pos + 1) == Some(&'O') || nextcharacters.get(pos + 1) == Some(&'A'))
+          (characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A'))
           // Bug: Already covered by previous branch
           // || value.slice(pos, pos + 4) == "SIAN"
         ) {
-          if (isSlavoGermanic) {
+          if isSlavoGermanic {
             primary += "S";
             secondary += "S";
           } else {
@@ -811,7 +813,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           primary += "S";
           secondary += "X";
 
-          if (characters.get(pos + 1) == Some(&'Z')) {
+          if characters.get(pos + 1) == Some(&'Z') {
             pos += 1;
           }
 
@@ -820,15 +822,15 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'C')) {
+        if characters.get(pos + 1) == Some(&'C') {
           // Schlesinger's rule.
-          if (nextcharacters.get(pos + 1) == Some(&'H')) {
+          if characters.get(pos + 2) == Some(&'H') {
             subvalue = value.slice(pos + 3, pos + 5)
 
             // Dutch origin, such as `school`, `schooner`.
-            if (dutchSch.test(subvalue)) {
+            if dutchSch.test(subvalue) {
               // Such as `schermerhorn`, `schenker`.
-              if (subvalue == "ER" || subvalue == "EN") {
+              if subvalue == "ER" || subvalue == "EN" {
                 primary += "X";
                 secondary += "SK"
               } else {
@@ -843,8 +845,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
             if (
               pos == 0 &&
-              !vowels.test(characters[3]) &&
-              characters[3] != Some(&'W')
+              !vowels.test(characters.get(3)) &&
+              characters.get(3) != Some(&'W')
             ) {
               primary += "X";
               secondary += "S";
@@ -858,7 +860,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
             continue 'a;
           }
 
-          if (nextcharacters.get(pos + 1) == Some(&'I') || nextcharacters.get(pos + 1) == Some(&'E') || nextcharacters.get(pos + 1) == Some(&'Y')) {
+          if characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'E') || characters.get(pos + 2) == Some(&'Y') {
             primary += "S";
             secondary += "S";
             pos += 3;
@@ -875,7 +877,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         subvalue = value.slice(pos - 2, pos)
 
         // French such as `resnais`, `artois`.
-        if (pos == last && (subvalue == "AI" || subvalue == "OI")) {
+        if pos == last && (subvalue == "AI" || subvalue == "OI") {
           secondary += "S";
         } else {
           primary += "S";
@@ -894,7 +896,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a; }
       'T' => {
-        if (characters.get(pos + 1) == Some(&'I') && nextcharacters.get(pos + 1) == Some(&'O') && characters[pos + 3] == Some(&'N')) {
+        if characters.get(pos + 1) == Some(&'I') && characters.get(pos + 2) == Some(&'O') && characters.get(pos + 3) == Some(&'N') {
           primary += "X";
           secondary += "X";
           pos += 3;
@@ -905,8 +907,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         subvalue = value.slice(pos + 1, pos + 3)
 
         if (
-          (characters.get(pos + 1) == Some(&'I') && nextcharacters.get(pos + 1) == Some(&'A')) ||
-          (characters.get(pos + 1) == Some(&'C') && nextcharacters.get(pos + 1) == Some(&'H'))
+          (characters.get(pos + 1) == Some(&'I') && characters.get(pos + 2) == Some(&'A')) ||
+          (characters.get(pos + 1) == Some(&'C') && characters.get(pos + 2) == Some(&'H'))
         ) {
           primary += "X";
           secondary += "X";
@@ -915,12 +917,12 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'H') || (characters.get(pos + 1) == Some(&'T') && nextcharacters.get(pos + 1) == Some(&'H'))) {
+        if characters.get(pos + 1) == Some(&'H') || (characters.get(pos + 1) == Some(&'T') && characters.get(pos + 2) == Some(&'H')) {
           // Special case `Thomas`, `Thames` or Germanic.
           if (
             isGermanic ||
-            ((nextcharacters.get(pos + 1) == Some(&'O') || nextcharacters.get(pos + 1) == Some(&'A')) &&
-              characters[pos + 3] == Some(&'M'))
+            ((characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A')) &&
+              characters.get(pos + 3) == Some(&'M'))
           ) {
             primary += "T";
             secondary += "T";
@@ -934,7 +936,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D')) {
+        if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D') {
           pos += 1;
         }
 
@@ -944,7 +946,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
         continue 'a;}
       'V' => {
-        if (characters.get(pos + 1) == Some(&'V')) {
+        if characters.get(pos + 1) == Some(&'V') {
           pos += 1;
         }
 
@@ -955,7 +957,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a;}
       'W' => {
         // Can also be in middle of word (as already taken care of for initial).
-        if (characters.get(pos + 1) == Some(&'R')) {
+        if characters.get(pos + 1) == Some(&'R') {
           primary += "R";
           secondary += "R";
           pos += 2;
@@ -963,12 +965,12 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           continue 'a;
         }
 
-        if (pos == 0) {
+        if pos == 0 {
           // `Wasserman` should match `Vasserman`.
-          if (vowels.test(next)) {
+          if vowels.test(next) {
             primary += "A";
             secondary += "F";
-          } else if (characters.get(pos + 1) == Some(&'H')) {
+          } else if characters.get(pos + 1) == Some(&'H') {
             // Need `Uomo` to match `Womo`.
             primary += "A";
             secondary += "A";
@@ -976,15 +978,15 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         }
 
         // `Arnow` should match `Arnoff`.
-        if (
+        if
           ((prev == Some(&'E') || prev == Some(&'O')) &&
             characters.get(pos + 1) == Some(&'S') &&
-            nextcharacters.get(pos + 1) == Some(&'K') &&
-            (characters[pos + 3] == Some(&'I') || characters[pos + 3] == Some(&'Y'))) ||
+            characters.get(pos + 2) == Some(&'K') &&
+            (characters.get(pos + 3) == Some(&'I') || characters(pos + 3) == Some(&'Y'))) ||
           // Maybe a bug? Shouldn't this be general Germanic?
           value.slice(0, 3) == "SCH" ||
           (pos == last && vowels.test(prev))
-        ) {
+         {
           secondary += "F";
           pos += 1;
 
@@ -994,8 +996,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         // Polish such as `Filipowicz`.
         if (
           characters.get(pos + 1) == Some(&'I') &&
-          (nextcharacters.get(pos + 1) == Some(&'C') || nextcharacters.get(pos + 1) == Some(&'T')) &&
-          characters[pos + 3] == Some(&'Z')
+          (characters.get(pos + 2) == Some(&'C') || characters.get(pos + 2) == Some(&'T')) &&
+          characters.get(pos + 3) == Some(&'Z')
         ) {
           primary += "TS";
           secondary += "FX"
@@ -1015,14 +1017,14 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
             // Bug: IAU and EAU also match by AU
             // (/IAU|EAU/.test(value.slice(pos - 3, pos))) ||
             (prev == Some(&'U') &&
-              (characters[pos - 2] == Some(&'A') || characters[pos - 2] == Some(&'O')))
+              (characters.get(pos - 2] == Some(&'A') || characters(pos - 2) == Some(&'O')))
           )
         ) {
           primary += "KS";
           secondary += "KS"
         }
 
-        if (characters.get(pos + 1) == Some(&'C') || characters.get(pos + 1) == Some(&'X')) {
+        if characters.get(pos + 1) == Some(&'C') || characters.get(pos + 1) == Some(&'X') {
           pos += 1;
         }
 
@@ -1031,17 +1033,17 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
         continue 'a;}
       'Z' => {
         // Chinese pinyin such as `Zhao`.
-        if (characters.get(pos + 1) == Some(&'H')) {
+        if characters.get(pos + 1) == Some(&'H') {
           primary += "J";
           secondary += "J";
           pos += 2;
 
           continue 'a;
-        } else if (
+        } else if
           (characters.get(pos + 1) == Some(&'Z') &&
-            (nextcharacters.get(pos + 1) == Some(&'A') || nextcharacters.get(pos + 1) == Some(&'I') || nextcharacters.get(pos + 1) == Some(&'O'))) ||
+            (characters.get(pos + 2) == Some(&'A') || characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'O'))) ||
           (isSlavoGermanic && pos > 0 && prev != Some(&'T'))
-        ) {
+        {
           primary += "S";
           secondary += "TS"
         } else {
@@ -1049,7 +1051,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
           secondary += "S";
         }
 
-        if (characters.get(pos + 1) == Some(&'Z')) {
+        if characters.get(pos + 1) == Some(&'Z') {
           pos += 1;
         }
 
