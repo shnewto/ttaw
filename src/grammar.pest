@@ -15,9 +15,12 @@ ie = _{ "GN" | "KN" | "PN" | "WR" | "PS" }
 initial_greek_ch = { SOI ~ igc ~ ANY* ~ EOI }
 igc = _{ "CH" ~ ("IA" | "EM" | ("OR"~ !"E") | "YM" | "ARAC" | "ARIS") }
 
-greek_ch = { "ORCHES" | "ARCHIT" | "ORCHID" }
+greek_ch = { SOI ~ any_not_gc* ~ gc ~ ANY* ~ EOI }
+gc = _{ "ORCHES" | "ARCHIT" | "ORCHID" }
+any_not_gc = _{ !gc ~ ANY }
 
-ch_for_kh = { "B" | "F" | "H" | "L" | "M" | "N" | "R" | "V" | "W" }
+ch_for_k = { SOI ~ cfk ~ EOI }
+cfk = _{ "B" | "F" | "H" | "L" | "M" | "N" | "R" | "V" | "W" }
 
 g_for_f = { "C" | "G" | "L" | "R" | "T" }
 

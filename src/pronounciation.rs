@@ -111,6 +111,20 @@ mod tests {
         letter = "Y";
         assert!(Word::parse(Rule::vowels, letter).is_ok());
     }
+
+    #[test]
+    fn greek_ch() {
+        let mut word = "cucumber".to_uppercase();
+        assert!(Word::parse(Rule::greek_ch, word.as_str()).is_err());
+        word = "arch".to_uppercase();
+        assert!(Word::parse(Rule::greek_ch, word.as_str()).is_err());
+        word = "architect".to_uppercase();
+        assert!(Word::parse(Rule::greek_ch, word.as_str()).is_ok());
+        word = "orchestra".to_uppercase();
+        assert!(Word::parse(Rule::greek_ch, word.as_str()).is_ok());
+        word = "orchid".to_uppercase();
+        assert!(Word::parse(Rule::greek_ch, word.as_str()).is_ok());
+    }
 }
 
 pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
@@ -132,8 +146,6 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
     'a: while let Some(c) = characters.get(pos) {
         let previous: usize = pos.wrapping_sub(1);
 
-        let next: usize = pos + 1;
-
         match c {
             'A' | 'E' | 'I' | 'O' | 'U' | 'Y' | 'À' | 'Ê' | 'É' => {
                 if pos == 0 {
@@ -148,7 +160,7 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 primary += "P";
                 secondary += "P";
 
-                if let Some('B') = characters.get(next) {
+                if let Some('B') = characters.get(pos + 1) {
                     pos += 1;
                 }
 
@@ -163,8 +175,8 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
             'C' => {
                 if characters.get(previous) == Some(&'A')
-                    && characters.get(next) == Some(&'H')
-                    && characters.get(next + 1) != Some(&'I')
+                    && characters.get(pos + 1) == Some(&'H')
+                    && characters.get(pos + 2) != Some(&'I')
                 {
                     if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
                         let sub_value: String = s.iter().collect();
@@ -187,36 +199,109 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                         continue 'a;
                     }
                 }
+                if "HIA" == s.iter().collect::<String>() {
+                    primary += "K";
+                    secondary += "K";
+                    pos += 2;
 
-                if let Some(s) = characters.get(pos + 1..pos + 4) {
-                    if "HIA" == s.iter().collect::<String>() {
+                    continue 'a;
+                }
+                if let Some('H') = characters.get(pos + 1) {
+                    if let Some(s) = characters.get(pos + 2..pos + 4) {
+                        if "AE" == s.iter().collect::<String>() {
+                            primary += "K";
+                            secondary += "X";
+                            pos += 2;
+
+                            continue 'a;
+                        }
+
+                        if Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok() {
+                            primary += "K";
+                            secondary += "K";
+                            pos += 2;
+
+                            continue 'a;
+                        }
+
+                        let mut pos_plus_2 = String::new();
+
+                        if let Some(pp2) = characters.get(pos + 2) {
+                            pos_plus_2 = pp2.to_string();
+                        }
+
+                        if germanic
+                            || pos_plus_2 == "T"
+                            || pos_plus_2 == "S"
+                            || ((pos == 0
+                                || characters.get(pos.wrapping_sub(1)) == Some(&'A')
+                                || characters.get(pos.wrapping_sub(1)) == Some(&'E')
+                                || characters.get(pos.wrapping_sub(1)) == Some(&'I')
+                                || characters.get(pos.wrapping_sub(1)) == Some(&'O')
+                                || characters.get(pos.wrapping_sub(1)) == Some(&'U'))
+                                && Word::parse(Rule::ch_for_k, pos_plus_2.as_str()).is_ok())
+                            || characters.get(..2) == Some(&['M', 'C'])
+                        {
+                            primary += "K";
+                            secondary += "K";
+                        } else if pos == 0 {
+                            primary += "X";
+                            secondary += "X";
+                        } else {
+                            primary += "X";
+                            secondary += "K"
+                        }
+                    }
+
+                    pos += 2;
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1) == Some(&'Z')
+                    && characters.get(pos.wrapping_sub(2)..pos) == Some(&['W', 'I'])
+                {
+                    primary += "S";
+                    secondary += "X";
+                    pos += 2;
+
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1..pos + 4) == Some(&['C', 'I', 'A']) {
+                    primary += "X";
+                    secondary += "X";
+                    pos += 3;
+
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1) == Some(&'C')
+                    && !(pos == 1 && characters.get(0) == Some(&'M'))
+                {
+                    if (characters.get(pos + 2) == Some(&'I')
+                        || characters.get(pos + 2) == Some(&'E')
+                        || characters.get(pos + 2) == Some(&'H'))
+                        && characters.get(pos + 2..pos + 4) != Some(&['H', 'U'])
+                    {
+                        let val = characters
+                            .get(pos.wrapping_sub(1)..pos + 4)
+                            .ok_or(vec![])
+                            .unwrap()
+                            .iter()
+                            .collect::<String>();
+
+                        if (pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
+                            || val == "UCCEE"
+                            || val == "UCCES"
+                        {
+                            primary += "KS";
+                            secondary += "KS";
+                        }
+                    } else {
                         primary += "K";
                         secondary += "K";
                         pos += 2;
-
                         continue 'a;
-                    }
-
-                    if "HAE" == s.iter().collect::<String>() {
-                        primary += "K";
-                        secondary += "X";
-                        pos += 2;
-
-                        continue 'a;
-                    }
-
-                    if Word::parse(Rule::initial_greek_ch, word.as_str()).is_ok() {
-                        primary += "K";
-                        secondary += "K";
-                        pos += 2;
-
-                        continue 'a;
-                    }
-
-                    if let Some(s) = characters.get(pos.wrapping_sub(2)..pos + 4) {
-                        if Word::parse(Rule::greek_ch, s.iter().collect::<String>().as_str())
-                            .is_ok()
-                        {}
                     }
                 }
             }
@@ -226,57 +311,6 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
     }
     Ok(vec![])
 }
-//           // Germanic, Greek, or otherwise `CH` for `KH` sound.
-//           if (
-//             isGermanic ||
-//             // Such as 'architect' but not 'arch', orchestra', 'orchid'.
-//             greekCh.test(value.slice(index - 2, index + 4)) ||
-//             (nextnext === 'T' || nextnext === 'S') ||
-//             ((index === 0 ||
-//               prev === 'A' ||
-//               prev === 'E' ||
-//               prev === 'O' ||
-//               prev === 'U') &&
-//               // Such as `wachtler`, `weschsler`, but not `tichner`.
-//               chForKh.test(nextnext))
-//           ) {
-//             primary += 'K'
-//             secondary += 'K'
-//           } else if (index === 0) {
-//             primary += 'X'
-//             secondary += 'X'
-//             // Such as 'McHugh'.
-//           } else if (value.slice(0, 2) === 'MC') {
-//             // Bug? Why matching absolute? what about McHiccup?
-//             primary += 'K'
-//             secondary += 'K'
-//           } else {
-//             primary += 'X'
-//             secondary += 'K'
-//           }
-
-//           index += 2
-
-//           break
-//         }
-
-//         // Such as `Czerny`.
-//         if (next === 'Z' && value.slice(index - 2, index) !== 'WI') {
-//           primary += 'S'
-//           secondary += 'X'
-//           index += 2
-
-//           break
-//         }
-
-//         // Such as `Focaccia`.
-//         if (value.slice(index + 1, index + 4) === 'CIA') {
-//           primary += 'X'
-//           secondary += 'X'
-//           index += 3
-
-//           break
-//         }
 
 //         // Double `C`, but not `McClellan`.
 //         if (next === 'C' && !(index === 1 && characters[0] === 'M')) {
