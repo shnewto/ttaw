@@ -376,689 +376,863 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
                 continue 'a;
             }
-      'D' => {
-        if characters.get(pos + 1) == Some(&'G') {
-          if characters.get(pos + 2) == Some(&'E') || characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'Y') {
-            primary += "J";
-            secondary += "J";
-            pos += 3;
-          } else {
-            primary += "TK";
-            secondary += "TK";
-            pos += 2;
-          }
+            'D' => {
+                if characters.get(pos + 1) == Some(&'G') {
+                    if characters.get(pos + 2) == Some(&'E')
+                        || characters.get(pos + 2) == Some(&'I')
+                        || characters.get(pos + 2) == Some(&'Y')
+                    {
+                        primary += "J";
+                        secondary += "J";
+                        pos += 3;
+                    } else {
+                        primary += "TK";
+                        secondary += "TK";
+                        pos += 2;
+                    }
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D'){
-          primary += "T";
-          secondary += "T";
-          pos += 2;
+                if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D') {
+                    primary += "T";
+                    secondary += "T";
+                    pos += 2;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        primary += "T";
-        secondary += "T";
-        pos += 1;
-
-        continue 'a;
-      }
-      'F' => {
-        if characters.get(pos + 1) == Some(&'F') {
-          pos += 1;
-        }
-
-        pos += 1;
-        primary += "F";
-        secondary += "F";
-
-        continue 'a;}
-      'G' => {
-        if characters.get(pos + 1) == Some(&'H') {
-            let prev = characters.get(pos.wrapping_sub(1)).ok_or(String::new()).unwrap().as_str();
-
-            if pos > 0 && Word::parse(Rule::vowels, prev.as_str()).is_err() {
-                primary += "K";
-                secondary += "K";
-                pos += 2;
+                primary += "T";
+                secondary += "T";
+                pos += 1;
 
                 continue 'a;
             }
+            'F' => {
+                if characters.get(pos + 1) == Some(&'F') {
+                    pos += 1;
+                }
 
-          // Such as `Ghislane`, `Ghiradelli`.
-          if pos == 0 {
-            if characters.get(pos + 2) == Some(&'I') {
-              primary += "J";
-              secondary += "J";
-            } else {
-              primary += "K";
-              secondary += "K";
+                pos += 1;
+                primary += "F";
+                secondary += "F";
+
+                continue 'a;
             }
+            'G' => {
+                if characters.get(pos + 1) == Some(&'H') {
+                    let prev = characters
+                        .get(pos.wrapping_sub(1))
+                        .ok_or(String::new())
+                        .unwrap()
+                        .to_string();
 
-            pos += 2;
+                    if pos > 0 && Word::parse(Rule::vowels, prev.as_str()).is_err() {
+                        primary += "K";
+                        secondary += "K";
+                        pos += 2;
 
-            continue 'a;
-          }
+                        continue 'a;
+                    }
 
-          // Parker's rule (with some further refinements).
-          if (
-            // Such as `Hugh`.  The comma is not a bug.
-            ((subvalue = characters.get(pos - 2)),
-            subvalue == Some(&'B') || subvalue == Some(&'H') || subvalue == Some(&'D')) ||
-            // Such as `bough`.  The comma is not a bug.
-            ((subvalue = characters.get(pos - 3)),
-            subvalue == Some(&'B') || subvalue == Some(&'H') || subvalue == Some(&'D')) ||
-            // Such as `Broughton`.  The comma is not a bug.
-            ((subvalue = characters.get(pos - 4)),
-            subvalue == Some(&'B') || subvalue == Some(&'H'))
-          ) {
-            pos += 2;
+                    // Such as `Ghislane`, `Ghiradelli`.
+                    if pos == 0 {
+                        if characters.get(pos + 2) == Some(&'I') {
+                            primary += "J";
+                            secondary += "J";
+                        } else {
+                            primary += "K";
+                            secondary += "K";
+                        }
 
-            continue 'a;
-          }
+                        pos += 2;
 
-          // Such as `laugh`, `McLaughlin`, `cough`, `gough`, `rough`, `tough`.
-          if pos > 2 && prev == Some(&'U') && gForF.test(characters.get(pos - 3)) {
-            primary += "F";
-            secondary += "F";
-          } else if pos > 0 && prev != Some(&'I') {
-            primary += "K";
-            secondary += "K";
-          }
+                        continue 'a;
+                    }
+                    let subvalueA = characters.get(pos.wrapping_sub(2));
+                    let subvalueB = characters.get(pos.wrapping_sub(3));
+                    let subvalueC = characters.get(pos.wrapping_sub(4));
 
-          pos += 2;
+                    if subvalueA == Some(&'B')
+                        || subvalueA == Some(&'H')
+                        || subvalueA == Some(&'D')
+                        || (subvalueB == Some(&'B')
+                            || subvalueB == Some(&'H')
+                            || subvalueB == Some(&'D'))
+                        || (subvalueC == Some(&'B') || subvalueC == Some(&'H'))
+                    {
+                        pos += 2;
 
-          continue 'a;
-        }
+                        continue 'a;
+                    }
+                    let x = subvalueB.ok_or(String::new()).unwrap().to_string();
+                    if pos > 2
+                        && characters.get(pos.wrapping_sub(1)) == Some(&'U')
+                        && Word::parse(Rule::g_for_f, x.as_str()).is_ok()
+                    {
+                        primary += "F";
+                        secondary += "F";
+                    } else if pos > 0 && characters.get(pos.wrapping_sub(1)) != Some(&'I') {
+                        primary += "K";
+                        secondary += "K";
+                    }
 
-        if characters.get(pos + 1) == Some(&'N') {
-          if pos == 1 && vowels.test(characters.get(0)) && !isSlavoGermanic {
-            primary += "KN";
-            secondary += "N";
-            // Not like `Cagney`.
-          } else if (
-            characters.get(pos+2..pos+4).ok_or(String::new()).unwrap().collect::<String>()!= "EY" &&
-            value.slice(pos + 1) != Some(&'Y') &&
-            !isSlavoGermanic
-          ) {
-            primary += "N";
-            secondary += "KN"
-          } else {
-            primary += "KN";
-            secondary += "KN"
-          }
+                    pos += 2;
 
-          pos += 2;
+                    continue 'a;
+                }
 
-          continue 'a;
-        }
+                if characters.get(pos + 1) == Some(&'N') {
+                    if pos == 1
+                        && Word::parse(
+                            Rule::vowels,
+                            characters
+                                .get(0)
+                                .ok_or(String::new())
+                                .unwrap()
+                                .to_string()
+                                .as_str(),
+                        )
+                        .is_ok()
+                        && !slavo_germanic
+                    {
+                        primary += "KN";
+                        secondary += "N";
+                    // Not like `Cagney`.
+                    } else if characters
+                        .get(pos + 2..pos + 4)
+                        .ok_or(String::new())
+                        .unwrap()
+                        .iter()
+                        .collect::<String>()
+                        != "EY"
+                        && characters.get(pos + 1) != Some(&'Y')
+                        && !slavo_germanic
+                    {
+                        primary += "N";
+                        secondary += "KN"
+                    } else {
+                        primary += "KN";
+                        secondary += "KN"
+                    }
 
-        // Such as `Tagliaro`.
-        if characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "LI" && !isSlavoGermanic {
-          primary += "KL";
-          secondary += "L";
-          pos += 2;
+                    pos += 2;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        // -ges-, -gep-, -gel- at beginning.
-        if pos == 0 && initialGForKj.test(value.slice(1, 3)) {
-          primary += "K";
-          secondary += "J";
-          pos += 2;
+                // Such as `Tagliaro`.
+                if characters
+                    .get(pos + 1..pos + 3)
+                    .ok_or(String::new())
+                    .unwrap()
+                    .iter()
+                    .collect::<String>()
+                    == "LI"
+                    && !slavo_germanic
+                {
+                    primary += "KL";
+                    secondary += "L";
+                    pos += 2;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        // -ger-, -gy-.
-        if (
-          (characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "ER" &&
-            prev != Some(&'I') &&
-            prev != Some(&'E') &&
-            !initialAngerException.test(value.slice(0, 6))) ||
-          (characters.get(pos + 1) == Some(&'Y') && !gForKj.test(prev))
-        ) {
-          primary += "K";
-          secondary += "J";
-          pos += 2;
+                // -ges-, -gep-, -gel- at beginning.
+                if pos == 0
+                    && Word::parse(
+                        Rule::initial_g_or_for_k_or_j,
+                        characters
+                            .get(1..3)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>()
+                            .as_str(),
+                    )
+                    .is_ok()
+                {
+                    primary += "K";
+                    secondary += "J";
+                    pos += 2;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        // Italian such as `biaggi`.
-        if (
-          characters.get(pos + 1) == Some(&'E') ||
-          characters.get(pos + 1) == Some(&'I') ||
-          characters.get(pos + 1) == Some(&'Y') ||
-          ((prev == Some(&'A') || prev == Some(&'O')) && characters.get(pos + 1) == Some(&'G') && characters.get(pos + 2) == Some(&'I'))
-        ) {
-          // Obvious Germanic.
-          if characters.get(pos+1..pos+3).ok_or(String::new()).unwrap().collect::<String>()== "ET" || isGermanic {
-            primary += "K";
-            secondary += "K";
-          } else {
-            primary += "J";
+                // -ger-, -gy-.
+                if characters
+                    .get(pos + 1..pos + 3)
+                    .ok_or(String::new())
+                    .unwrap()
+                    .iter()
+                    .collect::<String>()
+                    == "ER"
+                    && characters.get(pos.wrapping_sub(1)) != Some(&'I')
+                    && characters.get(pos.wrapping_sub(1)) != Some(&'E')
+                    && Word::parse(
+                        Rule::initial_anger_exception,
+                        characters
+                            .get(pos + 1..pos + 3)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>()
+                            .as_str(),
+                    )
+                    .is_ok()
+                    && Word::parse(
+                        Rule::initial_anger_exception,
+                        characters
+                            .get(0..6)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>()
+                            .as_str(),
+                    )
+                    .is_ok()
+                    || (characters.get(pos + 1) == Some(&'Y')
+                        && Word::parse(
+                            Rule::initial_g_or_for_k_or_j,
+                            characters
+                                .get(pos.wrapping_sub(1))
+                                .ok_or(String::new())
+                                .unwrap()
+                                .to_string()
+                                .as_str(),
+                        )
+                        .is_err())
+                {
+                    primary += "K";
+                    secondary += "J";
+                    pos += 2;
 
-            // Always soft if French ending.
-            if characters.get(pos+1..pos+5).ok_or(String::new()).unwrap().collect::<String>()== "IER " {
-              secondary += "J";
-            } else {
-              secondary += "K";
+                    continue 'a;
+                }
+
+                // Italian such as `biaggi`.
+                if characters.get(pos + 1) == Some(&'E')
+                    || characters.get(pos + 1) == Some(&'I')
+                    || characters.get(pos + 1) == Some(&'Y')
+                    || ((characters.get(pos.wrapping_sub(1)) == Some(&'A')
+                        || characters.get(pos.wrapping_sub(1)) == Some(&'O'))
+                        && characters.get(pos + 1) == Some(&'G')
+                        && characters.get(pos + 2) == Some(&'I'))
+                {
+                    // Obvious Germanic.
+                    if characters
+                        .get(pos + 1..pos + 3)
+                        .ok_or(String::new())
+                        .unwrap()
+                        .iter()
+                        .collect::<String>()
+                        == "ET"
+                        || germanic
+                    {
+                        primary += "K";
+                        secondary += "K";
+                    } else {
+                        primary += "J";
+
+                        // Always soft if French ending.
+                        if characters
+                            .get(pos + 1..pos + 5)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>()
+                            == "IER "
+                        {
+                            secondary += "J";
+                        } else {
+                            secondary += "K";
+                        }
+                    }
+
+                    pos += 2;
+
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1) == Some(&'G') {
+                    pos += 1;
+                }
+
+                pos += 1;
+
+                primary += "K";
+                secondary += "K";
+
+                continue 'a;
             }
-          }
+            'H' => {
+                // Only keep if first & before vowel or btw. 2 vowels.
+                if vowels.test(next) && (pos == 0 || vowels.test(prev)) {
+                    primary += "H";
+                    secondary += "H";
 
-          pos += 2;
+                    pos += 1;
+                }
 
-          continue 'a;
-        }
+                pos += 1;
 
-        if characters.get(pos + 1) == Some(&'G') {
-          pos += 1;
-        }
+                continue 'a;
+            }
+            'J' => {
+                if characters
+                    .get(pos..pos + 4)
+                    .ok_or(String::new())
+                    .unwrap()
+                    .iter()
+                    .collect()
+                    == "JOSE"
+                    || characters
+                        .get(0..4)
+                        .ok_or(String::new())
+                        .unwrap()
+                        .iter()
+                        .collect()
+                        == "SAN "
+                {
+                    if characters
+                        .get(pos..pos + 4)
+                        .ok_or(String::new())
+                        .unwrap()
+                        .iter()
+                        .collect()
+                        == "SAN "
+                        || (pos == 0 && characters.get(pos + 4) == Some(&' '))
+                    {
+                        primary += "H";
+                        secondary += "H";
+                    } else {
+                        primary += "J";
+                        secondary += "H";
+                    }
 
-        pos += 1;
+                    pos += 1;
 
-        primary += "K";
-        secondary += "K";
+                    continue 'a;
+                }
 
-        continue 'a;}
-      'H' => {
-        // Only keep if first & before vowel or btw. 2 vowels.
-        if vowels.test(next) && (pos == 0 || vowels.test(prev)) {
-          primary += "H";
-          secondary += "H";
+                if pos == 0 {
+                    primary += "J";
 
-          pos += 1;
-        }
+                    secondary += "A";
+                } else if !isSlavoGermanic
+                    && (characters.get(pos + 1) == Some(&'A')
+                        || characters.get(pos + 1) == Some(&'O'))
+                    && vowels.test(prev)
+                {
+                    primary += "J";
+                    secondary += "H";
+                } else if pos == last {
+                    primary += "J";
+                } else if prev != Some(&'S')
+                    && prev != Some(&'K')
+                    && prev != Some(&'L')
+                    && Word::parse(
+                        Rule::j_for_j_exception,
+                        characters
+                            .get(pos + 1)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .to_string()
+                            .as_str(),
+                    )
+                    .is_err()
+                {
+                    primary += "J";
+                    secondary += "J";
+                // It could happen.
+                } else if characters.get(pos + 1) == Some(&'J') {
+                    pos += 1;
+                }
 
-        pos += 1;
+                pos += 1;
 
-        continue 'a;}
-      'J' =>{
-        // Obvious Spanish, `jose`, `San Jacinto`.
-        if (
-          value.slice(pos, pos + 4) == "JOSE" ||
-          value.slice(0, 4) == "SAN "
-        ) {
-          if (
-            value.slice(0, 4) == "SAN " ||
-            (pos == 0 && characters.get(pos + 4) == ' ')
-          ) {
-            primary += "H";
-            secondary += "H";
-          } else {
-            primary += "J";
-            secondary += "H";
-          }
+                continue 'a;
+            }
+            'K' => {
+                if characters.get(pos + 1) == Some(&'K') {
+                    pos += 1;
+                }
 
-          pos += 1;
+                primary += "K";
+                secondary += "K";
+                pos += 1;
 
-          continue 'a;
-        }
+                continue 'a;
+            }
+            'L' => {
+                if characters.get(pos + 1) == Some(&'L') {
+                    // Spanish such as `cabrillo`, `gallegos`.
+                    if (pos == length - 3
+                        && ((characters.get(pos.wrapping_sub(1)) == Some(&'A')
+                            && characters.get(pos + 2) == Some(&'E'))
+                            || (characters.get(pos.wrapping_sub(1)) == Some(&'I')
+                                && (characters.get(pos + 2) == Some(&'O')
+                                    || characters.get(pos + 2) == Some(&'A')))))
+                        || (characters.get(pos.wrapping_sub(1)) == Some(&'A')
+                            && characters.get(pos + 2) == Some(&'E')
+                            && (characters.get(last) == Some(&'A')
+                                || characters.get(last) == Some(&'O')
+                                || alle.test(characters.get(last - 1..length))))
+                    {
+                        primary += "L";
+                        pos += 2;
 
-        if (
-          pos == 0
-          // Bug: unreachable (see previous statement).
-          // && value.slice(pos, pos + 4) != "JOSE".
-        ) {
-          primary += "J";
+                        continue 'a;
+                    }
 
-          // Such as `Yankelovich` or `Jankelowicz`.
-          secondary += "A";
-          // Spanish pron. of such as `bajador`.
-        } else if (
-          !isSlavoGermanic &&
-          (characters.get(pos + 1) == Some(&'A') || characters.get(pos + 1) == Some(&'O')) &&
-          vowels.test(prev)
-        ) {
-          primary += "J";
-          secondary += "H";
-        } else if pos == last {
-          primary += "J";
-        } else if (
-          prev != Some(&'S') &&
-          prev != Some(&'K') &&
-          prev != Some(&'L') &&
-          !jForJException.test(next)
-        ) {
-          primary += "J";
-          secondary += "J";
-          // It could happen.
-        } else if characters.get(pos + 1) == Some(&'J') {
-          pos += 1;
-        }
+                    pos += 1;
+                }
 
-        pos += 1;
+                primary += "L";
+                secondary += "L";
+                pos += 1;
 
-        continue 'a;}
-      'K' =>{
-        if characters.get(pos + 1) == Some(&'K') {
-          pos += 1;
-        }
-
-        primary += "K";
-        secondary += "K";
-        pos += 1;
-
-        continue 'a;}
-      'L' => {
-        if characters.get(pos + 1) == Some(&'L') {
-          // Spanish such as `cabrillo`, `gallegos`.
-          if (
-            (pos == length - 3 &&
-              ((prev == Some(&'A') && characters.get(pos + 2) == Some(&'E')) ||
-                (prev == Some(&'I') && (characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A'))))) ||
-            (prev == Some(&'A') &&
-              characters.get(pos + 2) == Some(&'E') &&
-              (characters.get(last) == Some(&'A') ||
-                characters.get(last) == Some(&'O') ||
-                alle.test(value.slice(last - 1, length))))
-          ) {
-            primary += "L";
-            pos += 2;
-
-            continue 'a;
-          }
-
-          pos += 1;
-        }
-
-        primary += "L";
-        secondary += "L";
-        pos += 1;
-
-        continue 'a;}
-      'M' => {
-        if (
-          characters.get(pos + 1) == Some(&'M') ||
+                continue 'a;
+            }
+            'M' => {
+                if characters.get(pos + 1) == Some(&'M') ||
           // Such as `dumb`, `thumb`.
-          (prev == Some(&'U') &&
+          (characters.get(pos.wrapping_sub(1))  ==Some(&'U') &&
             characters.get(pos + 1) == Some(&'B') &&
-            (pos + 1 == last || characters.get(pos+2..pos+4).ok_or(String::new()).unwrap().collect::<String>()== "ER"))
-        ) {
-          pos += 1;
-        }
+            (pos + 1 == characters.len() || characters.get(pos+2..pos+4).ok_or(String::new()).unwrap().iter().collect::<String>() == "ER"))
+                {
+                    pos += 1;
+                }
 
-        pos += 1;
-        primary += "M";
-        secondary += "M";
+                pos += 1;
+                primary += "M";
+                secondary += "M";
 
-        continue 'a;}
-      'N' => {
-        if characters.get(pos + 1) == Some(&'N') {
-          pos += 1;
-        }
-
-        pos += 1;
-        primary += "N";
-        secondary += "N";
-
-        continue 'a; }
-      'P' => {
-        if characters.get(pos + 1) == Some(&'H') {
-          primary += "F";
-          secondary += "F";
-          pos += 2;
-
-          continue 'a;
-        }
-
-        // Also account for `campbell` and `raspberry`.
-        subvalue = next
-
-        if subvalue == Some(&'P') || subvalue == Some(&'B') {
-          pos += 1;
-        }
-
-        pos += 1;
-
-        primary += "P";
-        secondary += "P";
-
-        continue 'a;}
-      'Q' => {
-        if characters.get(pos + 1) == Some(&'Q') {
-          pos += 1;
-        }
-
-        pos += 1;
-        primary += "K";
-        secondary += "K";
-
-        continue 'a; }
-      'R' => {
-        // French such as `Rogier`, but exclude `Hochmeier`.
-        if
-          pos == last &&
-          !isSlavoGermanic &&
-          prev == Some(&'E') &&
-          characters.get(pos - 2) == Some(&'I') &&
-          characters.get(pos - 4) != Some(&'M') &&
-          (characters.get(pos - 3) != Some(&'E') && characters.get(pos - 3) != Some(&'A'))
-         {
-          secondary += "R";
-        } else {
-          primary += "R";
-          secondary += "R";
-        }
-
-        if characters.get(pos + 1) == Some(&'R') {
-          pos += 1;
-        }
-
-        pos += 1;
-
-        continue 'a;}
-      'S' => {
-        // Special cases `island`, `isle`, `carlisle`, `carlysle`.
-        if characters.get(pos + 1) == Some(&'L') && (prev == Some(&'I') || prev == Some(&'Y')) {
-          pos += 1;
-
-          continue 'a;
-        }
-
-        // Special case `sugar-`.
-        if pos == 0 && value.slice(1, 5) == "UGAR" {
-          primary += "X";
-          secondary += "S";
-          pos += 1;
-
-          continue 'a;
-        }
-
-        if characters.get(pos + 1) == Some(&'H') {
-          // Germanic.
-          if hForS.test(value.slice(pos + 1, pos + 5)) {
-            primary += "S";
-            secondary += "S";
-          } else {
-            primary += "X";
-            secondary += "X";
-          }
-
-          pos += 2;
-          continue 'a;
-        }
-
-        if (
-          characters.get(pos + 1) == Some(&'I') &&
-          (characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A'))
-          // Bug: Already covered by previous branch
-          // || value.slice(pos, pos + 4) == "SIAN"
-        ) {
-          if isSlavoGermanic {
-            primary += "S";
-            secondary += "S";
-          } else {
-            primary += "S";
-            secondary += "X";
-          }
-
-          pos += 3;
-
-          continue 'a;
-        }
-
-        // German & Anglicization's, such as `Smith` match `Schmidt`, `snider`
-        // match `Schneider`. Also, -sz- in slavic language although in
-        // hungarian it is pronounced `s`.
-        if (
-          characters.get(pos + 1) == Some(&'Z') ||
-          (pos == 0 &&
-            (characters.get(pos + 1) == Some(&'L') || characters.get(pos + 1) == Some(&'M') || characters.get(pos + 1) == Some(&'N') || characters.get(pos + 1) == Some(&'W')))
-        ) {
-          primary += "S";
-          secondary += "X";
-
-          if characters.get(pos + 1) == Some(&'Z') {
-            pos += 1;
-          }
-
-          pos += 1;
-
-          continue 'a;
-        }
-
-        if characters.get(pos + 1) == Some(&'C') {
-          // Schlesinger's rule.
-          if characters.get(pos + 2) == Some(&'H') {
-            subvalue = value.slice(pos + 3, pos + 5)
-
-            // Dutch origin, such as `school`, `schooner`.
-            if dutchSch.test(subvalue) {
-              // Such as `schermerhorn`, `schenker`.
-              if subvalue == "ER" || subvalue == "EN" {
-                primary += "X";
-                secondary += "SK"
-              } else {
-                primary += "SK";
-                secondary += "SK"
-              }
-
-              pos += 3;
-
-              continue 'a;
+                continue 'a;
             }
+            'N' => {
+                if characters.get(pos + 1) == Some(&'N') {
+                    pos += 1;
+                }
 
-            if (
-              pos == 0 &&
-              !vowels.test(characters.get(3)) &&
-              characters.get(3) != Some(&'W')
-            ) {
-              primary += "X";
-              secondary += "S";
-            } else {
-              primary += "X";
-              secondary += "X";
+                pos += 1;
+                primary += "N";
+                secondary += "N";
+
+                continue 'a;
             }
+            'P' => {
+                if characters.get(pos + 1) == Some(&'H') {
+                    primary += "F";
+                    secondary += "F";
+                    pos += 2;
 
-            pos += 3;
+                    continue 'a;
+                }
 
-            continue 'a;
-          }
+                // Also account for `campbell` and `raspberry`.
+                subvalue = characters.get(pos + 1);
 
-          if characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'E') || characters.get(pos + 2) == Some(&'Y') {
-            primary += "S";
-            secondary += "S";
-            pos += 3;
-            continue 'a;
-          }
+                if subvalue == Some(&'P') || subvalue == Some(&'B') {
+                    pos += 1;
+                }
 
-          primary += "SK";
-          secondary += "SK"
-          pos += 3;
+                pos += 1;
 
-          continue 'a;
-        }
+                primary += "P";
+                secondary += "P";
 
-        subvalue = value.slice(pos - 2, pos)
+                continue 'a;
+            }
+            'Q' => {
+                if characters.get(pos + 1) == Some(&'Q') {
+                    pos += 1;
+                }
 
-        // French such as `resnais`, `artois`.
-        if pos == last && (subvalue == "AI" || subvalue == "OI") {
-          secondary += "S";
-        } else {
-          primary += "S";
-          secondary += "S";
-        }
+                pos += 1;
+                primary += "K";
+                secondary += "K";
 
-        if (
-          characters.get(pos + 1) == Some(&'S')
-          // Bug: already taken care of by `German & Anglicization's` above:
-          // || characters.get(pos + 1) == Some(&'Z')
-        ) {
-          pos += 1;
-        }
+                continue 'a;
+            }
+            'R' => {
+                // French such as `Rogier`, but exclude `Hochmeier`.
+                if pos == characters.len()
+                    && !slavo_germanic
+                    && characters.get(pos.wrapping_sub(1)) == Some(&'E')
+                    && characters.get(pos - 2) == Some(&'I')
+                    && characters.get(pos - 4) != Some(&'M')
+                    && (characters.get(pos - 3) != Some(&'E')
+                        && characters.get(pos - 3) != Some(&'A'))
+                {
+                    secondary += "R";
+                } else {
+                    primary += "R";
+                    secondary += "R";
+                }
 
-        pos += 1;
+                if characters.get(pos + 1) == Some(&'R') {
+                    pos += 1;
+                }
 
-        continue 'a; }
-      'T' => {
-        if characters.get(pos + 1) == Some(&'I') && characters.get(pos + 2) == Some(&'O') && characters.get(pos + 3) == Some(&'N') {
-          primary += "X";
-          secondary += "X";
-          pos += 3;
+                pos += 1;
 
-          continue 'a;
-        }
+                continue 'a;
+            }
+            'S' => {
+                // Special cases `island`, `isle`, `carlisle`, `carlysle`.
+                if characters.get(pos + 1) == Some(&'L')
+                    && (characters.get(pos.wrapping_sub(1)) == Some(&'I')
+                        || characters.get(pos.wrapping_sub(1)) == Some(&'Y'))
+                {
+                    pos += 1;
 
-        subvalue = value.slice(pos + 1, pos + 3)
+                    continue 'a;
+                }
 
-        if (
-          (characters.get(pos + 1) == Some(&'I') && characters.get(pos + 2) == Some(&'A')) ||
-          (characters.get(pos + 1) == Some(&'C') && characters.get(pos + 2) == Some(&'H'))
-        ) {
-          primary += "X";
-          secondary += "X";
-          pos += 3;
+                // Special case `sugar-`.
+                if pos == 0
+                    && characters
+                        .get(1..5)
+                        .ok_or(String::new())
+                        .unwrap()
+                        .iter()
+                        .collect::<String>()
+                        == "UGAR"
+                {
+                    primary += "X";
+                    secondary += "S";
+                    pos += 1;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        if characters.get(pos + 1) == Some(&'H') || (characters.get(pos + 1) == Some(&'T') && characters.get(pos + 2) == Some(&'H')) {
-          // Special case `Thomas`, `Thames` or Germanic.
-          if (
-            isGermanic ||
-            ((characters.get(pos + 2) == Some(&'O') || characters.get(pos + 2) == Some(&'A')) &&
-              characters.get(pos + 3) == Some(&'M'))
-          ) {
-            primary += "T";
-            secondary += "T";
-          } else {
-            primary += "0";
-            secondary += "T";
-          }
+                if characters.get(pos + 1) == Some(&'H') {
+                    // Germanic.
+                    if Word::parse(
+                        Rule::h_for_s,
+                        characters
+                            .get(pos + 1..pos + 5)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>()
+                            .as_str(),
+                    )
+                    .is_ok()
+                    {
+                        primary += "S";
+                        secondary += "S";
+                    } else {
+                        primary += "X";
+                        secondary += "X";
+                    }
 
-          pos += 2;
+                    pos += 2;
+                    continue 'a;
+                }
 
-          continue 'a;
-        }
+                if characters.get(pos + 1) == Some(&'I')
+                    && (characters.get(pos + 2) == Some(&'O')
+                        || characters.get(pos + 2) == Some(&'A'))
+                // Bug: Already covered by previous branch
+                // || characters.get(pos.. pos + 4) == "SIAN"
+                {
+                    if slavo_germanic {
+                        primary += "S";
+                        secondary += "S";
+                    } else {
+                        primary += "S";
+                        secondary += "X";
+                    }
 
-        if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D') {
-          pos += 1;
-        }
+                    pos += 3;
 
-        pos += 1;
-        primary += "T";
-        secondary += "T";
+                    continue 'a;
+                }
 
-        continue 'a;}
-      'V' => {
-        if characters.get(pos + 1) == Some(&'V') {
-          pos += 1;
-        }
+                // German & Anglicization's, such as `Smith` match `Schmidt`, `snider`
+                // match `Schneider`. Also, -sz- in slavic language although in
+                // hungarian it is pronounced `s`.
+                if characters.get(pos + 1) == Some(&'Z')
+                    || (pos == 0
+                        && (characters.get(pos + 1) == Some(&'L')
+                            || characters.get(pos + 1) == Some(&'M')
+                            || characters.get(pos + 1) == Some(&'N')
+                            || characters.get(pos + 1) == Some(&'W')))
+                {
+                    primary += "S";
+                    secondary += "X";
 
-        primary += "F";
-        secondary += "F";
-        pos += 1;
+                    if characters.get(pos + 1) == Some(&'Z') {
+                        pos += 1;
+                    }
 
-        continue 'a;}
-      'W' => {
-        // Can also be in middle of word (as already taken care of for initial).
-        if characters.get(pos + 1) == Some(&'R') {
-          primary += "R";
-          secondary += "R";
-          pos += 2;
+                    pos += 1;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        if pos == 0 {
-          // `Wasserman` should match `Vasserman`.
-          if vowels.test(next) {
-            primary += "A";
-            secondary += "F";
-          } else if characters.get(pos + 1) == Some(&'H') {
-            // Need `Uomo` to match `Womo`.
-            primary += "A";
-            secondary += "A";
-          }
-        }
+                if characters.get(pos + 1) == Some(&'C') {
+                    // Schlesinger's rule.
+                    if characters.get(pos + 2) == Some(&'H') {
+                        let subvalue = characters
+                            .get(pos + 3..pos + 5)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .iter()
+                            .collect::<String>();
+                        if Word::parse(Rule::dutch_sch, subvalue.as_str()).is_ok() {
+                            // Such as `schermerhorn`, `schenker`.
+                            if subvalue == "ER" || subvalue == "EN" {
+                                primary += "X";
+                                secondary += "SK"
+                            } else {
+                                primary += "SK";
+                                secondary += "SK"
+                            }
 
-        // `Arnow` should match `Arnoff`.
-        if
-          ((prev == Some(&'E') || prev == Some(&'O')) &&
+                            pos += 3;
+
+                            continue 'a;
+                        }
+
+                        if pos == 0
+                            && !vowels.test(characters.get(3))
+                            && characters.get(3) != Some(&'W')
+                        {
+                            primary += "X";
+                            secondary += "S";
+                        } else {
+                            primary += "X";
+                            secondary += "X";
+                        }
+
+                        pos += 3;
+
+                        continue 'a;
+                    }
+
+                    if characters.get(pos + 2) == Some(&'I')
+                        || characters.get(pos + 2) == Some(&'E')
+                        || characters.get(pos + 2) == Some(&'Y')
+                    {
+                        primary += "S";
+                        secondary += "S";
+                        pos += 3;
+                        continue 'a;
+                    }
+
+                    primary += "SK";
+                    secondary += "SK";
+                    pos += 3;
+
+                    continue 'a;
+                }
+
+                subvalue = characters.get(pos - 2..pos);
+
+                // French such as `resnais`, `artois`.
+                if pos == last && (subvalue == "AI" || subvalue == "OI") {
+                    secondary += "S";
+                } else {
+                    primary += "S";
+                    secondary += "S";
+                }
+
+                if characters.get(pos + 1) == Some(&'S')
+                // Bug: already taken care of by `German & Anglicization's` above:
+                // || characters.get(pos + 1) == Some(&'Z')
+                {
+                    pos += 1;
+                }
+
+                pos += 1;
+
+                continue 'a;
+            }
+            'T' => {
+                if characters.get(pos + 1) == Some(&'I')
+                    && characters.get(pos + 2) == Some(&'O')
+                    && characters.get(pos + 3) == Some(&'N')
+                {
+                    primary += "X";
+                    secondary += "X";
+                    pos += 3;
+
+                    continue 'a;
+                }
+
+                let subvalue = characters.get(pos + 1..pos + 3);
+
+                if (characters.get(pos + 1) == Some(&'I') && characters.get(pos + 2) == Some(&'A'))
+                    || (characters.get(pos + 1) == Some(&'C')
+                        && characters.get(pos + 2) == Some(&'H'))
+                {
+                    primary += "X";
+                    secondary += "X";
+                    pos += 3;
+
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1) == Some(&'H')
+                    || (characters.get(pos + 1) == Some(&'T')
+                        && characters.get(pos + 2) == Some(&'H'))
+                {
+                    // Special case `Thomas`, `Thames` or Germanic.
+                    if germanic
+                        || ((characters.get(pos + 2) == Some(&'O')
+                            || characters.get(pos + 2) == Some(&'A'))
+                            && characters.get(pos + 3) == Some(&'M'))
+                    {
+                        primary += "T";
+                        secondary += "T";
+                    } else {
+                        primary += "0";
+                        secondary += "T";
+                    }
+
+                    pos += 2;
+
+                    continue 'a;
+                }
+
+                if characters.get(pos + 1) == Some(&'T') || characters.get(pos + 1) == Some(&'D') {
+                    pos += 1;
+                }
+
+                pos += 1;
+                primary += "T";
+                secondary += "T";
+
+                continue 'a;
+            }
+            'V' => {
+                if characters.get(pos + 1) == Some(&'V') {
+                    pos += 1;
+                }
+
+                primary += "F";
+                secondary += "F";
+                pos += 1;
+
+                continue 'a;
+            }
+            'W' => {
+                // Can also be in middle of word (as already taken care of for initial).
+                if characters.get(pos + 1) == Some(&'R') {
+                    primary += "R";
+                    secondary += "R";
+                    pos += 2;
+
+                    continue 'a;
+                }
+
+                if pos == 0 {
+                    // `Wasserman` should match `Vasserman`.
+                    if Word::parse(
+                        Rule::vowels,
+                        characters
+                            .get(pos + 1)
+                            .ok_or(String::new())
+                            .unwrap()
+                            .to_string()
+                            .as_str(),
+                    )
+                    .is_ok()
+                    {
+                        primary += "A";
+                        secondary += "F";
+                    } else if characters.get(pos + 1) == Some(&'H') {
+                        // Need `Uomo` to match `Womo`.
+                        primary += "A";
+                        secondary += "A";
+                    }
+                }
+
+                // `Arnow` should match `Arnoff`.
+                if ((characters.get(pos.wrapping_sub(1))  ==Some(&'E') || characters.get(pos.wrapping_sub(1))  ==Some(&'O')) &&
             characters.get(pos + 1) == Some(&'S') &&
             characters.get(pos + 2) == Some(&'K') &&
-            (characters.get(pos + 3) == Some(&'I') || characters(pos + 3) == Some(&'Y'))) ||
+            (characters.get(pos + 3) == Some(&'I') || characters.get(pos + 3) == Some(&'Y'))) ||
           // Maybe a bug? Shouldn't this be general Germanic?
-          value.slice(0, 3) == "SCH" ||
-          (pos == last && vowels.test(prev))
-         {
-          secondary += "F";
-          pos += 1;
+          characters.get(0..3).ok_or(String::new()).unwrap().iter().collect() == "SCH" ||
+          (pos == word.len() && Word::parse(Rule::vowels, characters.get(pos.wrapping_sub(1)).ok_or(String::new()).unwrap().to_string().as_str()).is_ok())
+                {
+                    secondary += "F";
+                    pos += 1;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        // Polish such as `Filipowicz`.
-        if (
-          characters.get(pos + 1) == Some(&'I') &&
-          (characters.get(pos + 2) == Some(&'C') || characters.get(pos + 2) == Some(&'T')) &&
-          characters.get(pos + 3) == Some(&'Z')
-        ) {
-          primary += "TS";
-          secondary += "FX"
-          pos += 4;
+                // Polish such as `Filipowicz`.
+                if characters.get(pos + 1) == Some(&'I')
+                    && (characters.get(pos + 2) == Some(&'C')
+                        || characters.get(pos + 2) == Some(&'T'))
+                    && characters.get(pos + 3) == Some(&'Z')
+                {
+                    primary += "TS";
+                    secondary += "FX";
+                    pos += 4;
 
-          continue 'a;
-        }
+                    continue 'a;
+                }
 
-        pos += 1;
+                pos += 1;
 
-        continue 'a;}
-      'X' => {
-        // French such as `breaux`.
-        if (
-          !(
-            pos == last &&
-            // Bug: IAU and EAU also match by AU
-            // (/IAU|EAU/.test(value.slice(pos - 3, pos))) ||
-            (prev == Some(&'U') &&
-              (characters.get(pos - 2] == Some(&'A') || characters(pos - 2) == Some(&'O')))
-          )
-        ) {
-          primary += "KS";
-          secondary += "KS"
-        }
+                continue 'a;
+            }
+            'X' => {
+                if !(pos == characters.len()s
+                    && (characters.get(pos.wrapping_sub(1)) == Some(&'U')
+                        && (characters.get(pos - 2) == Some(&'A')
+                            || characters.get(pos - 2) == Some(&'O'))))
+                {
+                    primary += "KS";
+                    secondary += "KS"
+                }
 
-        if characters.get(pos + 1) == Some(&'C') || characters.get(pos + 1) == Some(&'X') {
-          pos += 1;
-        }
+                if characters.get(pos + 1) == Some(&'C') || characters.get(pos + 1) == Some(&'X') {
+                    pos += 1;
+                }
 
-        pos += 1;
+                pos += 1;
 
-        continue 'a;}
-      'Z' => {
-        // Chinese pinyin such as `Zhao`.
-        if characters.get(pos + 1) == Some(&'H') {
-          primary += "J";
-          secondary += "J";
-          pos += 2;
+                continue 'a;
+            }
+            'Z' => {
+                // Chinese pinyin such as `Zhao`.
+                if characters.get(pos + 1) == Some(&'H') {
+                    primary += "J";
+                    secondary += "J";
+                    pos += 2;
 
-          continue 'a;
-        } else if
-          (characters.get(pos + 1) == Some(&'Z') &&
-            (characters.get(pos + 2) == Some(&'A') || characters.get(pos + 2) == Some(&'I') || characters.get(pos + 2) == Some(&'O'))) ||
-          (isSlavoGermanic && pos > 0 && prev != Some(&'T'))
-        {
-          primary += "S";
-          secondary += "TS"
-        } else {
-          primary += "S";
-          secondary += "S";
-        }
+                    continue 'a;
+                } else if (characters.get(pos + 1) == Some(&'Z')
+                    && (characters.get(pos + 2) == Some(&'A')
+                        || characters.get(pos + 2) == Some(&'I')
+                        || characters.get(pos + 2) == Some(&'O')))
+                    || (slavo_germanic
+                        && pos > 0
+                        && characters.get(pos.wrapping_sub(1)) != Some(&'T'))
+                {
+                    primary += "S";
+                    secondary += "TS"
+                } else {
+                    primary += "S";
+                    secondary += "S";
+                }
 
-        if characters.get(pos + 1) == Some(&'Z') {
-          pos += 1;
-        }
+                if characters.get(pos + 1) == Some(&'Z') {
+                    pos += 1;
+                }
 
-        pos += 1;
+                pos += 1;
 
-        continue 'a;}
-            _ => { pos += 1}
+                continue 'a;
+            }
+            _ => pos += 1,
         }
     }
     Ok(vec![])

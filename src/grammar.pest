@@ -22,20 +22,25 @@ any_not_gc = _{ !gc ~ ANY }
 ch_for_k = { SOI ~ cfk ~ EOI }
 cfk = _{ "B" | "F" | "H" | "L" | "M" | "N" | "R" | "V" | "W" }
 
-g_for_f = { "C" | "G" | "L" | "R" | "T" }
+g_for_f = { SOI ~ gff ~ EOI }
+gff = _{  "C" | "G" | "L" | "R" | "T" }
 
-initial_g_or_for_k_or_j = { "Y" ~ (whitespace | ("E" ~ ("B" | "I" | "L" | "P" | "R" | "S" | "Y")) | ("I" ~ ("B" | "E" | "L" | "N"))) }
+initial_g_or_for_k_or_j = { SOI ~ igofkj ~ EOI }
+igofkj = _{ "Y" ~ (whitespace | ("E" ~ ("B" | "I" | "L" | "P" | "R" | "S" | "Y")) | ("I" ~ ("B" | "E" | "L" | "N"))) }
 
-initial_anger_exception = { !("D" | "M" | "R") ~ "ANGER" }
+initial_anger_exception = { SOI ~ iae ~ EOI }
+iae = _{ !("D" | "M" | "R") ~ "ANGER" }
 
 g_for_k_or_j = { ("E" | "G" | "I" | "R") }
 
-j_for_j_jxception = { ("L" | "T" | "K" | "S" | "N" | "M" | "B" | "Z")}
+j_for_j_exception = { ("L" | "T" | "K" | "S" | "N" | "M" | "B" | "Z")}
 
 alle = { "AS" | "OS" }
 
 h_for_s = { "EIM" | "OEK" | "OLM" | "OLZ" }
 
-dutch_sch = { ("E" ~ ("D" | "M" | "N" | "R")) | "UY" | "OO" }
+dutch_sch = { SOI ~ any_not_ds* ~ ds ~ ANY* ~ EOI }
+any_not_ds = _{ !ds ~ ANY }
+ds = _{("E" ~ ("D" | "M" | "N" | "R")) | "UY" | "OO"}
 
 whitespace = _{ " " | "\t" }
