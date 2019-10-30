@@ -154,7 +154,11 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
 
     if Word::parse(Rule::initial_exceptions, word.as_str()).is_ok() {
         metaphone.pos += 1;
-    } else if let Some('X') = metaphone.chars.first() {
+    }
+
+    if let Some('X') = metaphone.chars.first() {
+        metaphone.p += "S";
+        metaphone.s += "S";
         metaphone.pos += 1
     }
 
@@ -312,185 +316,183 @@ fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     if chars.get(pos.wrapping_sub(1)) == Some(&'A')
         && chars.get(*pos + 1) == Some(&'H')
         && chars.get(*pos + 2) != Some(&'I')
+        && Word::parse(
+            Rule::vowels,
+            get_char_as_string(chars, pos.wrapping_sub(3)).as_str(),
+        )
+        .is_err()
+        && (chars.get(*pos + 2) != Some(&'E')
+            || get_substring(&chars, pos.wrapping_sub(2), *pos + 4) == "BACHER"
+            || get_substring(&chars, pos.wrapping_sub(2), *pos + 4) == "MACHER")
     {
-        let sub_value: String = get_substring(&chars, pos.wrapping_sub(2), *pos + 4);
-        if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
+        *p += "K";
+        *s += "K";
+        *pos += 2;
+
+        return;
+    }
+
+    if *pos == 0 && get_substring(&chars, 1, 6) == "AESAR" {
+        *p += "S";
+        *s += "S";
+        *pos += 2;
+
+        return;
+    }
+
+    if get_substring(&chars, *pos + 1, *pos + 4) == "HIA" {
+        *p += "K";
+        *s += "K";
+        *pos += 2;
+
+        return;
+    }
+
+    if let Some('H') = chars.get(*pos + 1) {
+        if *pos > 0 && "AE" == get_substring(&chars, *pos + 2, *pos + 3) {
             *p += "K";
-            *s += "K";
+            *s += "X";
             *pos += 2;
 
             return;
         }
 
-        if "AESAR" == get_substring(&chars, 1, 6) {
-            *p += "S";
-            *s += "S";
-            *pos += 2;
-
-            return;
-        }
-
-        if "HIA" == get_substring(&chars, *pos + 1, *pos + 4) {
-            *p += "K";
-            *s += "K";
-            *pos += 2;
-
-            return;
-        }
-
-        if let Some('H') = chars.get(*pos + 1) {
-            if "AE" == get_substring(&chars, *pos + 2, *pos + 4) {
-                *p += "K";
-                *s += "X";
-                *pos += 2;
-
-                return;
-            }
-
-            if Word::parse(
+        if *pos == 0
+            && Word::parse(
                 Rule::initial_greek_ch,
                 chars.iter().collect::<String>().as_str(),
             )
             .is_ok()
-            {
-                *p += "K";
-                *s += "K";
-                *pos += 2;
-
-                return;
-            }
-
-            let mut pos_plus_2 = String::new();
-
-            if let Some(pp2) = chars.get(*pos + 2) {
-                pos_plus_2 = pp2.to_string();
-            }
-
-            if germanic(&chars)
-                || pos_plus_2 == "T"
-                || pos_plus_2 == "S"
-                || ((*pos == 0
-                    || chars.get(pos.wrapping_sub(1)) == Some(&'A')
-                    || chars.get(pos.wrapping_sub(1)) == Some(&'E')
-                    || chars.get(pos.wrapping_sub(1)) == Some(&'I')
-                    || chars.get(pos.wrapping_sub(1)) == Some(&'O')
-                    || chars.get(pos.wrapping_sub(1)) == Some(&'U'))
-                    && Word::parse(Rule::ch_for_k, pos_plus_2.as_str()).is_ok())
-                || chars.get(..2) == Some(&['M', 'C'])
-            {
-                *p += "K";
-                *s += "K";
-            } else if *pos == 0 {
-                *p += "X";
-                *s += "X";
-            } else {
-                *p += "X";
-                *s += "K"
-            }
-
-            *pos += 2;
-            return;
-        }
-
-        if chars.get(*pos + 1) == Some(&'Z')
-            && chars.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
-        {
-            *p += "S";
-            *s += "X";
-            *pos += 2;
-
-            return;
-        }
-
-        if chars.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
-            *p += "X";
-            *s += "X";
-            *pos += 3;
-
-            return;
-        }
-
-        if chars.get(*pos + 1) == Some(&'C') && !(*pos == 1 && chars.get(0) == Some(&'M')) {
-            if (chars.get(*pos + 2) == Some(&'I')
-                || chars.get(*pos + 2) == Some(&'E')
-                || chars.get(*pos + 2) == Some(&'H'))
-                && chars.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
-            {
-                let val = get_substring(&chars, pos.wrapping_sub(1), *pos + 4);
-
-                if (*pos == 1 && chars.get(pos.wrapping_sub(1)) == Some(&'M'))
-                    || val == "UCCEE"
-                    || val == "UCCES"
-                {
-                    *p += "KS";
-                    *s += "KS";
-                } else {
-                    *p += "X";
-                    *s += "X";
-                }
-            } else {
-                *p += "K";
-                *s += "K";
-                *pos += 2;
-                return;
-            }
-
-            *pos += 3;
-            return;
-        }
-
-        if Some(&'G') == chars.get(*pos + 1)
-            || Some(&'K') == chars.get(*pos + 1)
-            || Some(&'Q') == chars.get(*pos + 1)
         {
             *p += "K";
             *s += "K";
-
             *pos += 2;
+
             return;
         }
 
-        if Some(&'I') == chars.get(*pos + 1)
-            && (Some(&'E') == chars.get(*pos + 2) || Some(&'O') == chars.get(*pos + 2))
+        if germanic(&chars)
+            || Word::parse(
+                Rule::greek_ch,
+                get_substring(chars, pos.wrapping_sub(2), *pos + 4).as_str(),
+            )
+            .is_ok()
+            || (get_char_as_string(chars, *pos + 2) == "T"
+                || get_char_as_string(chars, *pos + 2) == "S")
+            || ((*pos == 0
+                || chars.get(pos.wrapping_sub(1)) == Some(&'A')
+                || chars.get(pos.wrapping_sub(1)) == Some(&'E')
+                || chars.get(pos.wrapping_sub(1)) == Some(&'O')
+                || chars.get(pos.wrapping_sub(1)) == Some(&'U'))
+                && Word::parse(Rule::ch_for_k, get_char_as_string(chars, *pos + 2).as_str())
+                    .is_ok())
         {
-            *p += "S";
+            *p += "K";
+            *s += "K";
+        } else if *pos == 0 {
+            *p += "X";
             *s += "X";
+        } else if get_substring(chars, 0, 2) == "MC" {
+            *p += "K";
+            *s += "K";
+        } else {
+            *p += "X";
+            *s += "K"
+        }
+
+        *pos += 2;
+        return;
+    }
+
+    if chars.get(*pos + 1) == Some(&'Z') && get_substring(chars, pos.wrapping_sub(2), *pos) == "WI"
+    {
+        *p += "S";
+        *s += "X";
+        *pos += 2;
+
+        return;
+    }
+
+    if get_substring(chars, *pos + 1, *pos + 4) == "CIA" {
+        *p += "X";
+        *s += "X";
+        *pos += 3;
+
+        return;
+    }
+
+    if chars.get(*pos + 1) == Some(&'C') && !(*pos == 1 && chars.get(0) == Some(&'M')) {
+        if (chars.get(*pos + 2) == Some(&'I')
+            || chars.get(*pos + 2) == Some(&'E')
+            || chars.get(*pos + 2) == Some(&'H'))
+            && get_substring(chars, *pos + 2, *pos + 4) != "HU"
+        {
+            if (*pos == 1 && chars.get(pos.wrapping_sub(1)) == Some(&'A'))
+                || get_substring(&chars, pos.wrapping_sub(1), *pos + 4) == "UCCEE"
+                || get_substring(&chars, pos.wrapping_sub(1), *pos + 4) == "UCCES"
+            {
+                *p += "KS";
+                *s += "KS";
+            } else {
+                *p += "X";
+                *s += "X";
+            }
+
+            *pos += 3;
+        } else {
+            *p += "K";
+            *s += "K";
             *pos += 2;
+
             return;
         }
 
-        if Some(&'I') == chars.get(*pos + 1)
-            || Some(&'E') == chars.get(*pos + 1)
-            || Some(&'Y') == chars.get(*pos + 1)
-        {
-            *p += "S";
-            *s += "S";
-            *pos += 2;
-            return;
-        }
+        return;
+    }
+
+    if Some(&'G') == chars.get(*pos + 1)
+        || Some(&'K') == chars.get(*pos + 1)
+        || Some(&'Q') == chars.get(*pos + 1)
+    {
         *p += "K";
         *s += "K";
 
-        if Some(&' ') == chars.get(*pos + 1)
-            && (Some(&'C') == chars.get(*pos + 2)
-                || Some(&'G') == chars.get(*pos + 2)
-                || Some(&'Q') == chars.get(*pos + 2))
-        {
-            *pos += 3;
-            return;
-        }
-
-        if chars.get(*pos + 1) == Some(&'K')
-            || chars.get(*pos + 1) == Some(&'Q')
-            || (chars.get(*pos + 1) == Some(&'C')
-                && chars.get(*pos + 2) != Some(&'E')
-                && chars.get(*pos + 2) != Some(&'I'))
-        {
-            *pos += 1;
-        }
-
-        *pos += 1;
+        *pos += 2;
+        return;
     }
+
+    if Some(&'I') == chars.get(*pos + 1)
+        && (Some(&'E') == chars.get(*pos + 2) || Some(&'O') == chars.get(*pos + 2))
+    {
+        *p += "S";
+        *s += "X";
+        *pos += 2;
+        return;
+    }
+
+    if Some(&'I') == chars.get(*pos + 1)
+        || Some(&'E') == chars.get(*pos + 1)
+        || Some(&'Y') == chars.get(*pos + 1)
+    {
+        *p += "S";
+        *s += "S";
+        *pos += 2;
+        return;
+    }
+
+    *p += "K";
+    *s += "K";
+
+    if Some(&' ') == chars.get(*pos + 1)
+        && (Some(&'C') == chars.get(*pos + 2)
+            || Some(&'G') == chars.get(*pos + 2)
+            || Some(&'Q') == chars.get(*pos + 2))
+    {
+        *pos += 3;
+        return;
+    }
+
+    *pos += 1;
 }
 
 fn d_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
