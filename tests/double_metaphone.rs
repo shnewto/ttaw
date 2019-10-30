@@ -56,195 +56,424 @@ fn hiccups() {
     assert_eq!(double_metaphone("HiCcUpS"), double_metaphone("hiccups"));
 }
 
-//   t.equal(
-//     m('gnarl')[0].charAt(0),
-//     'N',
-//     'should drop the initial G when followed by N'
-//   )
-//   t.equal(
-//     m('knack')[0].charAt(0),
-//     'N',
-//     'should drop the initial K when followed by N'
-//   )
-//   t.equal(
-//     m('pneumatic')[0].charAt(0),
-//     'N',
-//     'should drop the initial P when followed by N'
-//   )
-//   t.equal(
-//     m('wrack')[0].charAt(0),
-//     'R',
-//     'should drop the initial W when followed by R'
-//   )
-//   t.equal(
-//     m('psycho')[0].charAt(0),
-//     'S',
-//     'should drop the initial P when followed by S'
-//   )
-//   t.equal(m('Xavier')[0].charAt(0), 'S', 'should transform the initial X to S')
+#[test]
+fn gnarl() {
+    assert_eq!(
+        double_metaphone("gnarl").unwrap().first().unwrap().get(..1),
+        Some("N")
+    );
+}
 
-//   t.doesNotThrow(function() {
-//     'aeiouy'.split('').forEach(function(vowel) {
-//       assert.strictEqual(m(vowel)[0], 'A')
-//     })
-//   }, 'should transform all initial vowels to A')
+#[test]
+fn knack() {
+    assert_eq!(
+        double_metaphone("knack").unwrap().first().unwrap().get(..1),
+        Some("N")
+    );
+}
 
-//   t.doesNotThrow(function() {
-//     'aeiouy'.split('').forEach(function(vowel) {
-//       assert.strictEqual(m('b' + vowel)[0].length, 1)
-//     })
-//   }, 'should drop all non-initial vowels')
+#[test]
+fn pneumatic() {
+    assert_eq!(
+        double_metaphone("pneumatic")
+            .unwrap()
+            .first()
+            .unwrap()
+            .get(..1),
+        Some("N")
+    );
+}
 
-//   t.equal(m('b')[0].charAt(0), 'P', 'should transform B to P (1)')
-//   t.equal(m('bb')[0].charAt(0), 'P', 'should transform B to P (2)')
+#[test]
+fn wrack() {
+    assert_eq!(
+        double_metaphone("wrack").unwrap().first().unwrap().get(..1),
+        Some("R")
+    );
+}
 
-//   t.equal(m('Ç')[0].charAt(0), 'S', 'should transform Ç to S')
+#[test]
+fn psycho() {
+    assert_eq!(
+        double_metaphone("psycho")
+            .unwrap()
+            .first()
+            .unwrap()
+            .get(..1),
+        Some("S")
+    );
+}
 
-//   t.test(
-//     'should transform C to K, when preceded by A (not preceded by a vowel), followed by H (in turn not followed by I and E, unless the E is in a sequence of BACHER or MACHER)',
-//     function(st) {
-//       st.equal(m('ACH')[0].charAt(1), 'K')
-//       st.notEqual(m('AACH')[0].charAt(2), 'K')
-//       st.notEqual(m('ACHI')[0].charAt(1), 'K')
-//       st.equal(m('ACHB')[0].charAt(1), 'K')
-//       st.equal(m('MACHER')[1].charAt(1), 'K')
-//       st.equal(m('BACHER')[1].charAt(1), 'K')
-//       st.end()
-//     }
-//   )
+#[test]
+fn xavier() {
+    assert_eq!(
+        double_metaphone("Xavier")
+            .unwrap()
+            .first()
+            .unwrap()
+            .get(..1),
+        Some("S")
+    );
+}
 
-//   t.equal(
-//     m('CAESAR')[0].charAt(0),
-//     'S',
-//     'should transform the C to S, when in an initial CAESAR'
-//   )
-//   t.equal(
-//     m('chianti')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in CHIA'
-//   )
-//   t.equal(
-//     m('michael')[0].charAt(1),
-//     'K',
-//     'should transform the C to K and X, when in CHAE (1)'
-//   )
-//   t.equal(
-//     m('michael')[1].charAt(1),
-//     'X',
-//     'should transform the C to K and X, when in CHAE (2)'
-//   )
-//   t.equal(
-//     m('chiastic')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHIA'
-//   )
-//   t.equal(
-//     m('chemical')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHEM'
-//   )
-//   t.equal(
-//     m('choral')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHOR'
-//   )
-//   t.equal(
-//     m('chyme')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHYM'
-//   )
-//   t.equal(
-//     m('character')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHARAC'
-//   )
-//   t.equal(
-//     m('charisma')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when in an initial CHARIS'
-//   )
-//   t.equal(
-//     m('von ch')[0].charAt(2),
-//     'K',
-//     'should transform the C to K, when followed by H, and the given value starts with `von `'
-//   )
+#[test]
+fn vowels() {
+    assert_eq!(double_metaphone("a").unwrap().first().unwrap(), "A");
+    assert_eq!(double_metaphone("e").unwrap().first().unwrap(), "A");
+    assert_eq!(double_metaphone("i").unwrap().first().unwrap(), "A");
+    assert_eq!(double_metaphone("o").unwrap().first().unwrap(), "A");
+    assert_eq!(double_metaphone("u").unwrap().first().unwrap(), "A");
+    assert_eq!(double_metaphone("y").unwrap().first().unwrap(), "A");
+}
 
-//   // This might be a bug, not sure.
-//   // Now other C's will transform to K in a string sarting with `sch`.
-//   t.equal(
-//     m('schooner')[0].charAt(1),
-//     'K',
-//     'should transform the C to K, when followed by H, and the given value starts with SCH'
-//   )
+#[test]
+fn drop_initial() {
+    assert_eq!(double_metaphone("ba").unwrap().first().unwrap().len(), 1);
+    assert_eq!(double_metaphone("be").unwrap().first().unwrap().len(), 1);
+    assert_eq!(double_metaphone("bi").unwrap().first().unwrap().len(), 1);
+    assert_eq!(double_metaphone("bo").unwrap().first().unwrap().len(), 1);
+    assert_eq!(double_metaphone("bu").unwrap().first().unwrap().len(), 1);
+    assert_eq!(double_metaphone("by").unwrap().first().unwrap().len(), 1);
+}
 
-//   t.equal(
-//     m('orchestra')[0].charAt(2),
-//     'K',
-//     'should transform the C to K, when in ORCHES'
-//   )
-//   t.equal(
-//     m('architect')[0].charAt(2),
-//     'K',
-//     'should transform the C to K, when in ARCHIT'
-//   )
-//   t.notEqual(
-//     m('arch')[0].charAt(2),
-//     'K',
-//     'should NOT transform the C to K, when in ARCH'
-//   )
-//   t.equal(
-//     m('orchid')[0].charAt(2),
-//     'K',
-//     'should transform the C to K, when in ORCHID'
-//   )
-//   t.equal(
-//     m('chthonic')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when followed by HT'
-//   )
-//   t.equal(
-//     m('fuchsia')[0].charAt(1),
-//     'K',
-//     'should transform the C to K, when followed by HS'
-//   )
+#[test]
+fn b_to_p() {
+    assert_eq!(
+        double_metaphone("b").unwrap().first().unwrap().get(..1),
+        Some("P")
+    );
+    assert_eq!(
+        double_metaphone("bb").unwrap().first().unwrap().get(..1),
+        Some("P")
+    );
+}
 
-//   t.equal(
-//     m('chloride')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when an initial, and followed by H and either ` `, B, F, H, L, M, N, R, V, or W (1)'
-//   )
-//   t.equal(
-//     m('chroma')[0].charAt(0),
-//     'K',
-//     'should transform the C to K, when an initial, and followed by H and either ` `, B, F, H, L, M, N, R, V, or W (2)'
-//   )
-//   t.equal(
-//     m('tichner')[1].charAt(1),
-//     'K',
-//     'should transform the C to K, when preceded by A, E, O, or U, followed by H and either " ", B, F, H, L, M, N, R, V, or W'
-//   )
+#[test]
+fn c_cedilla_to_s() {
+    assert_eq!(
+        double_metaphone("Ç").unwrap().first().unwrap().get(..1),
+        Some("S")
+    );
+}
 
-//   t.equal(
-//     m('tichner')[1].charAt(1),
-//     'K',
-//     'should transform the C to K, when preceded by A, E, O, or U, followed by H and either " ", B, F, H, L, M, N, R, V, or W'
-//   )
+#[test]
+fn when_c_to_k() {
+    assert_eq!(
+        double_metaphone("ACH").unwrap().get(0).unwrap().get(1..2),
+        Some("K")
+    );
+    assert_ne!(
+        double_metaphone("AACH").unwrap().get(0).unwrap().get(2..3),
+        Some("K")
+    );
+    assert_ne!(
+        double_metaphone("ACHI").unwrap().get(0).unwrap().get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("ACHB").unwrap().get(0).unwrap().get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("MACHER")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("BACHER")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
 
-//   t.equal(m('McHugh')[0].charAt(1), 'K', 'should transform the C in MCH to K')
-//   t.equal(
-//     m('chore')[0].charAt(0),
-//     'X',
-//     'should transform the C to X, when in an initial CH'
-//   )
+#[test]
+fn caesar() {
+    assert_eq!(
+        double_metaphone("CAESAR").unwrap().get(0).unwrap().get(..1),
+        Some("S")
+    );
+}
 
-//   t.test('should transform the C to X and K, when followed by H', function(st) {
-//     var phonetics = m('achievement')
+#[test]
+fn chianti() {
+    assert_eq!(
+        double_metaphone("chianti")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
 
-//     st.equal(phonetics[0].charAt(1), 'X')
-//     st.equal(phonetics[1].charAt(1), 'K')
+#[test]
+fn michael() {
+    assert_eq!(
+        double_metaphone("michael")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
 
-//     st.end()
-//   })
+    assert_eq!(
+        double_metaphone("michael")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("X")
+    );
+}
+
+#[test]
+fn chiastic() {
+    assert_eq!(
+        double_metaphone("chiastic")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn chemical_c_to_k() {
+    assert_eq!(
+        double_metaphone("chemical")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn choral_c_to_k() {
+    assert_eq!(
+        double_metaphone("choral").unwrap().get(0).unwrap().get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn chyme_c_to_k() {
+    assert_eq!(
+        double_metaphone("chyme").unwrap().get(0).unwrap().get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn character_c_to_k() {
+    assert_eq!(
+        double_metaphone("character")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn charisma_c_to_k() {
+    assert_eq!(
+        double_metaphone("charisma")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn von_ch_c_to_k() {
+    assert_eq!(
+        double_metaphone("von ch")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("K")
+    );
+}
+
+#[test]
+fn schooner_c_to_k() {
+    assert_eq!(
+        double_metaphone("schooner")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
+
+#[test]
+fn orchestra_c_to_k() {
+    assert_eq!(
+        double_metaphone("orchestra")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("K")
+    );
+}
+
+#[test]
+fn architect_c_to_k() {
+    assert_eq!(
+        double_metaphone("architect")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("K")
+    );
+}
+
+#[test]
+fn arch_not_c_to_k() {
+    assert_ne!(
+        double_metaphone("arch").unwrap().get(0).unwrap().get(2..3),
+        Some("K")
+    );
+}
+
+#[test]
+fn orchid_c_to_k() {
+    assert_eq!(
+        double_metaphone("orchid")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("K")
+    );
+}
+
+#[test]
+fn chthonic_c_to_k() {
+    assert_eq!(
+        double_metaphone("chthonic")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn fuchsia_c_to_k() {
+    assert_eq!(
+        double_metaphone("fuchsia")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
+
+#[test]
+fn chloride_c_to_k() {
+    assert_eq!(
+        double_metaphone("chloride")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn chroma_c_to_k() {
+    assert_eq!(
+        double_metaphone("chroma").unwrap().get(0).unwrap().get(..1),
+        Some("K")
+    );
+}
+
+#[test]
+fn tichner_c_to_k() {
+    assert_eq!(
+        double_metaphone("tichner")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
+
+#[test]
+fn mchugh_c_to_k() {
+    assert_eq!(
+        double_metaphone("McHugh")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
+
+#[test]
+fn chore() {
+    assert_eq!(
+        double_metaphone("chore").unwrap().get(0).unwrap().get(..1),
+        Some("X")
+    );
+}
+
+#[test]
+fn h_after_c() {
+    assert_eq!(
+        double_metaphone("achievement")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("X")
+    );
+
+    assert_eq!(
+        double_metaphone("achievement")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
+
+#[test]
+fn czerny() {
+    assert_eq!(
+        double_metaphone("czerny").unwrap().get(0).unwrap().get(..1),
+        Some("S")
+    );
+
+    assert_eq!(
+        double_metaphone("czerny").unwrap().get(1).unwrap().get(..1),
+        Some("X")
+    );
+}
 
 //   t.test(
 //     'should transform the C to S and X, when followed by Z and not preceded by WI',

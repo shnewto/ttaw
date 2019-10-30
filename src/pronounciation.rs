@@ -172,12 +172,12 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 b_case(&mut metaphone);
             }
 
-            'C' => {
-                c_case(&mut metaphone);
-            }
-
             'Ç' => {
                 c_cedilla_case(&mut metaphone);
+            }
+
+            'C' => {
+                c_case(&mut metaphone);
             }
 
             'D' => {
@@ -290,7 +290,6 @@ fn slavo_germanic(chars: &[char]) -> bool {
 }
 
 fn vowel_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
-    // fn vowel_case( pos: &mut usize, _chars: &[char], p: &mut String, s: &mut String) {
     if *pos == 0 {
         *p += "A";
         *s += "A";
@@ -353,7 +352,7 @@ fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     }
 
     if let Some('H') = chars.get(*pos + 1) {
-        if *pos > 0 && "AE" == get_substring(&chars, *pos + 2, *pos + 3) {
+        if *pos > 0 && chars.get(*pos + 2) == Some(&'A') && chars.get(*pos + 3) == Some(&'E') {
             *p += "K";
             *s += "X";
             *pos += 2;
@@ -556,7 +555,6 @@ fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
             return;
         }
 
-        // Such as `Ghislane`, `Ghiradelli`.
         if *pos == 0 {
             if chars.get(*pos + 2) == Some(&'I') {
                 *p += "J";
@@ -628,7 +626,6 @@ fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
         return;
     }
 
-    // Such as `Tagliaro`.
     if get_substring(&chars, *pos + 1, *pos + 3) == "LI" && !slavo_germanic(&chars) {
         *p += "KL";
         *s += "L";
@@ -710,7 +707,6 @@ fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 }
 
 fn h_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
-    // Only keep if first & before vowel or btw. 2 vowels.
     if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok()
         && (*pos == 0
             || Word::parse(
@@ -919,7 +915,6 @@ fn s_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     }
 
     if chars.get(*pos + 1) == Some(&'H') {
-        // Germanic.
         if Word::parse(
             Rule::h_for_s,
             get_substring(&chars, *pos + 1, *pos + 5).as_str(),
@@ -1175,7 +1170,6 @@ fn x_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 }
 
 fn z_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
-    // Chinese pinyin such as `Zhao`.
     if chars.get(*pos + 1) == Some(&'H') {
         *p += "J";
         *s += "J";
