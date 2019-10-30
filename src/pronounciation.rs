@@ -407,7 +407,7 @@ fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
         return;
     }
 
-    if chars.get(*pos + 1) == Some(&'Z') && get_substring(chars, pos.wrapping_sub(2), *pos) == "WI"
+    if chars.get(*pos + 1) == Some(&'Z') && get_substring(chars, pos.wrapping_sub(2), *pos) != "WI"
     {
         *p += "S";
         *s += "X";

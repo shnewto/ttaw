@@ -475,154 +475,405 @@ fn czerny() {
     );
 }
 
-//   t.test(
-//     'should transform the C to S and X, when followed by Z and not preceded by WI',
-//     function(st) {
-//       var phonetics = m('czerny')
+#[test]
+fn focaccia() {
+    assert_eq!(
+        double_metaphone("focaccia")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("X")
+    );
+}
 
-//       st.equal(phonetics[0].charAt(0), 'S')
-//       st.equal(phonetics[1].charAt(0), 'X')
+#[test]
+fn accident() {
+    assert_eq!(
+        double_metaphone("accident")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("accident")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("S")
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn accede() {
+    assert_eq!(
+        double_metaphone("accede")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("accede")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("S")
+    );
+}
 
-//   t.equal(
-//     m('focaccia')[0].charAt(2),
-//     'X',
-//     'should transform the C to X, when followed by CIA'
-//   )
+#[test]
+fn succeed() {
+    assert_eq!(
+        double_metaphone("succeed")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("succeed")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("S")
+    );
+}
 
-//   t.test(
-//     'should transform the C to KS, when in an initial ACC, followed by either E, I, or H (but not HU)',
-//     function(st) {
-//       var phonetics = m('accident')
+#[test]
+fn bertucci() {
+    assert_eq!(
+        double_metaphone("bertucci")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("X")
+    );
+}
 
-//       st.equal(phonetics[0].charAt(1), 'K')
-//       st.equal(phonetics[0].charAt(2), 'S')
+#[test]
+fn hiccups_c_to_k() {
+    assert_eq!(
+        double_metaphone("hiccups")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
 
-//       phonetics = m('accede')
+#[test]
+fn knack_c_to_k() {
+    assert_eq!(
+        double_metaphone("knack").unwrap().get(0).unwrap().get(1..2),
+        Some("K")
+    );
+}
 
-//       st.equal(phonetics[0].charAt(1), 'K')
-//       st.equal(phonetics[0].charAt(2), 'S')
+#[test]
+fn ancient() {
+    assert_eq!(
+        double_metaphone("ancient")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("S")
+    );
 
-//       st.end()
-//     }
-//   )
+    assert_eq!(
+        double_metaphone("ancient")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(2..3),
+        Some("X")
+    );
+}
 
-//   t.test('should transform the C to KS, when in UCCEE or UCCES', function(st) {
-//     var phonetics = m('succeed')
+#[test]
+fn delicious() {
+    assert_eq!(
+        double_metaphone("delicious")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("S")
+    );
 
-//     st.equal(phonetics[0].charAt(1), 'K')
-//     st.equal(phonetics[0].charAt(2), 'S')
+    assert_eq!(
+        double_metaphone("delicious")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(2..3),
+        Some("X")
+    );
+}
 
-//     st.end()
-//   })
+#[test]
+fn acicula() {
+    assert_eq!(
+        double_metaphone("acicula")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("S")
+    );
+}
 
-//   t.test(
-//     'should transform the C to X, when followed by C (but not in an initial MCC), either E, I, or H (but not HU)',
-//     function(st) {
-//       st.equal(m('bacci')[0].charAt(1), 'X')
-//       st.equal(m('bertucci')[0].charAt(3), 'X')
+#[test]
+fn abduce() {
+    assert_eq!(
+        double_metaphone("abduce")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("S")
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn acyl() {
+    assert_eq!(
+        double_metaphone("acyl").unwrap().get(0).unwrap().get(1..2),
+        Some("S")
+    );
+}
 
-//   t.equal(
-//     m('hiccups')[0].charAt(1),
-//     'K',
-//     'should transform the C to K, when followed by C (but not in an initial MCC)'
-//   )
-//   t.equal(
-//     m('knack')[0].charAt(1),
-//     'K',
-//     'should transform the C to K, when followed by either G, K, or Q'
-//   )
+#[test]
+fn maccaffery() {
+    assert_eq!(
+        double_metaphone("Mac Caffrey")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    )
+}
 
-//   t.test(
-//     'should transform the C to S and X, when followed by I and either E, or O',
-//     function(st) {
-//       var phonetics = m('ancient')
+#[test]
+fn macgregor() {
+    assert_eq!(
+        double_metaphone("Mac Gregor")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    )
+}
 
-//       st.equal(phonetics[0].charAt(2), 'S')
-//       st.equal(phonetics[1].charAt(2), 'X')
-
-//       phonetics = m('delicious')
-
-//       st.equal(phonetics[0].charAt(2), 'S')
-//       st.equal(phonetics[1].charAt(2), 'X')
-
-//       st.end()
-//     }
-//   )
-
-//   t.test(
-//     'should transform the C to S, when followed by either I, E, or Y',
-//     function(st) {
-//       st.equal(m('acicula')[0].charAt(1), 'S')
-//       st.equal(m('abduce')[0].charAt(3), 'S')
-//       st.equal(m('acyl')[0].charAt(1), 'S')
-
-//       st.end()
-//     }
-//   )
-
-//   t.equal(m('Mac Caffrey')[0].charAt(1), 'K', 'should transform "C C" to K')
-//   t.equal(m('Mac Gregor')[0].charAt(1), 'K', 'should transform "C G" to K')
-//   t.equal(m('Mac Quillan')[0].charAt(1), 'K', 'should transform "C G" to K')
-//   t.equal(m('aback')[0].charAt(2), 'K', 'should transform CK to K')
-//   t.equal(m('acquit')[0].charAt(1), 'K', 'should transform CQ to K')
-//   t.equal(
-//     m('acclimate')[0].charAt(1),
-//     'K',
-//     'should transform CC to K, when not followed by E or I'
-//   )
-//   t.equal(m('edge')[0].charAt(1), 'J', 'should transform DGE to J')
-//   t.equal(m('pidgin')[0].charAt(1), 'J', 'should transform DGI to J')
-//   t.equal(m('edgy')[0].charAt(1), 'J', 'should transform DGY to J')
-//   t.equal(m('Edgar')[0].slice(1, 3), 'TK', 'should transform DG to TK')
-//   t.equal(m('width')[0].charAt(1), 'T', 'should transform DT to T')
-//   t.equal(m('add')[0].charAt(1), 'T', 'should transform DD to T')
-//   t.equal(m('Abduce')[0].charAt(2), 'T', 'should transform D to T')
-//   t.equal(m('affect')[0].charAt(1), 'F', 'should transform FF to F')
-//   t.equal(m('abaft')[0].charAt(2), 'F', 'should transform F to F')
-//   t.equal(
-//     m('aargh')[0].charAt(2),
-//     'K',
-//     'should transform GH to K when preceded by a consonant'
-//   )
-//   t.equal(m('ghislane')[0].charAt(0), 'J', 'should transform initial GHI to J')
-//   t.equal(m('ghoul')[0].charAt(0), 'K', 'should transform initial GH to K')
-//   t.equal(m('hugh')[0], 'H', 'should drop GH in B.GH, H.GH, or D.GH')
-//   t.equal(m('bough')[0], 'P', 'should drop GH in B..GH, H..GH, or D..GH')
-//   t.equal(m('broughton')[0], 'PRTN', 'should drop GH in B...GH or H...GH')
-//   t.equal(
-//     m('laugh')[0],
-//     'LF',
-//     'should transform GH to F in C.UGH, G.UGH, L.UGH, R.UGH, T.UGH'
-//   )
-//   t.equal(
-//     m('curagh')[0],
-//     'KRK',
-//     'should transform GH to K, when preceded by anything other than I'
-//   )
-//   t.equal(m('weight')[0], 'AT', 'should drop GH')
+#[test]
+fn macquillan() {
+    assert_eq!(
+        double_metaphone("Mac Quillan")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    )
+}
+#[test]
+fn aback() {
+    assert_eq!(
+        double_metaphone("aback").unwrap().get(0).unwrap().get(2..3),
+        Some("K")
+    )
+}
+#[test]
+fn acquit() {
+    assert_eq!(
+        double_metaphone("acquit")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    )
+}
+#[test]
+fn acclimate() {
+    assert_eq!(
+        double_metaphone("acclimate")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    )
+}
+#[test]
+fn edge() {
+    assert_eq!(
+        double_metaphone("edge").unwrap().get(0).unwrap().get(1..2),
+        Some("J")
+    )
+}
+#[test]
+fn pidgin() {
+    assert_eq!(
+        double_metaphone("pidgin")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("J")
+    )
+}
+#[test]
+fn edgy() {
+    assert_eq!(
+        double_metaphone("edgy").unwrap().get(0).unwrap().get(1..2),
+        Some("J")
+    )
+}
+#[test]
+fn edgar() {
+    assert_eq!(
+        double_metaphone("Edgar").unwrap().get(0).unwrap().get(1..3),
+        Some("TK")
+    )
+}
+#[test]
+fn width() {
+    assert_eq!(
+        double_metaphone("width").unwrap().get(0).unwrap().get(1..2),
+        Some("T")
+    )
+}
+#[test]
+fn add() {
+    assert_eq!(
+        double_metaphone("add").unwrap().get(0).unwrap().get(1..2),
+        Some("T")
+    )
+}
+#[test]
+fn abduce_slice() {
+    assert_eq!(
+        double_metaphone("Abduce")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("T")
+    )
+}
+#[test]
+fn affect() {
+    assert_eq!(
+        double_metaphone("affect")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("F")
+    )
+}
+#[test]
+fn abaft() {
+    assert_eq!(
+        double_metaphone("abaft").unwrap().get(0).unwrap().get(2..3),
+        Some("F")
+    )
+}
+#[test]
+fn aargh() {
+    assert_eq!(
+        double_metaphone("aargh").unwrap().get(0).unwrap().get(2..3),
+        Some("K")
+    )
+}
+#[test]
+fn ghislane() {
+    assert_eq!(
+        double_metaphone("ghislane")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("J")
+    )
+}
+#[test]
+fn ghoul() {
+    assert_eq!(
+        double_metaphone("ghoul").unwrap().get(0).unwrap().get(..1),
+        Some("K")
+    )
+}
+#[test]
+fn hugh() {
+    assert_eq!(
+        double_metaphone("hugh").unwrap().get(0),
+        Some(&"H".to_string())
+    )
+}
+#[test]
+fn bough() {
+    assert_eq!(
+        double_metaphone("bough").unwrap().get(0),
+        Some(&"P".to_string())
+    )
+}
+#[test]
+fn broughton() {
+    assert_eq!(
+        double_metaphone("broughton").unwrap().get(0),
+        Some(&"PRTN".to_string())
+    )
+}
+#[test]
+fn laugh() {
+    assert_eq!(
+        double_metaphone("laugh").unwrap().get(0),
+        Some(&"LF".to_string())
+    )
+}
+#[test]
+fn curagh() {
+    assert_eq!(
+        double_metaphone("curagh").unwrap().get(0),
+        Some(&"KRK".to_string())
+    )
+}
+#[test]
+fn weight() {
+    assert_eq!(
+        double_metaphone("weight").unwrap().get(0),
+        Some(&"AT".to_string())
+    )
+}
 
 //   t.test(
 //     'should transform GN to KN and N, when preceded by a vowel and ^, and not Slavo-Germanic',
 //     function(st) {
-//       var phonetics = m('agnize')
+//       var phonetics = double_metaphone("agnize")
 
-//       st.equal(phonetics[0].slice(0, 3), 'AKN')
-//       st.equal(phonetics[1].slice(0, 2), 'AN')
+//       assert_eq!(phonetics[0].get(..3), 'AKN")
+//       assert_eq!(phonetics[1].get(..2), 'AN")
 
 //       st.end()
 //     }
 //   )
 
 //   t.deepEqual(
-//     m('tagliaro'),
+//     double_metaphone("tagliaro"),
 //     ['TKLR', 'TLR'],
 //     'should transform GLI to KL and L'
 //   )
@@ -630,24 +881,30 @@ fn czerny() {
 //   t.test(
 //     'should transform GN to N and KN, when not followed by EY and Y, and not Slavo-Germanic',
 //     function(st) {
-//       var phonetics = m('acceptingness')
+//       var phonetics = double_metaphone("acceptingness")
 
-//       st.equal(phonetics[0].slice(-3), 'NNS')
-//       st.equal(phonetics[1].slice(-4), 'NKNS')
+//       assert_eq!(phonetics[0].slice(-3), 'NNS")
+//       assert_eq!(phonetics[1].slice(-4), 'NKNS")
 
 //       st.end()
 //     }
 //   )
 
-//   t.equal(m('cagney')[0], 'KKN', 'should transform GN to KN')
+#[test]
+fn cagney() {
+    assert_eq!(
+        double_metaphone("cagney").unwrap().get(0),
+        Some(&"KKN".to_string())
+    )
+}
 
 //   t.test(
 //     'should transform an initial GY., GES, GEP, GEB, GEL, GEY, GIB, GIL, GIN, GIE, GEI, and GER to K and J',
 //     function(st) {
-//       var phonetics = m('Gerben')
+//       var phonetics = double_metaphone("Gerben")
 
-//       st.equal(phonetics[0].charAt(0), 'K')
-//       st.equal(phonetics[1].charAt(0), 'J')
+//       assert_eq!(phonetics[0].unwrap().get(..1), 'K")
+//       assert_eq!(phonetics[1].unwrap().get(..1), 'J")
 
 //       st.end()
 //     }
@@ -656,10 +913,10 @@ fn czerny() {
 //   t.test(
 //     'should transform GER to K and J, when not in DANGER, RANGER, and MANGER, and not preceded by E and I',
 //     function(st) {
-//       var phonetics = m('auger')
+//       var phonetics = double_metaphone("auger")
 
-//       st.equal(phonetics[0].charAt(1), 'K')
-//       st.equal(phonetics[1].charAt(1), 'J')
+//       assert_eq!(phonetics[0].unwrap().get(1..2), 'K")
+//       assert_eq!(phonetics[1].unwrap().get(1..2), 'J")
 
 //       st.end()
 //     }
@@ -668,82 +925,158 @@ fn czerny() {
 //   t.test(
 //     'should transform GY to K and J, when not preceded by E, I, R, and O',
 //     function(st) {
-//       var phonetics = m('bulgy')
+//       var phonetics = double_metaphone("bulgy")
 
-//       st.equal(phonetics[0].charAt(2), 'K')
-//       st.equal(phonetics[1].charAt(2), 'J')
+//       assert_eq!(phonetics[0].unwrap().get(2..3), 'K")
+//       assert_eq!(phonetics[1].unwrap().get(2..3), 'J")
 
 //       st.end()
 //     }
 //   )
 
-//   t.equal(
-//     m('altogether')[0].charAt(3),
-//     'K',
+//   assert_eq!(
+#[test]
+fn altogether() {
+    assert_eq!(
+        double_metaphone("altogether")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("K")
+    )
+}
 //     'should transform the G in GET to K'
 //   )
-//   t.equal(
-//     m('Van Agema')[0].charAt(2),
-//     'K',
+//   assert_eq!(
+#[test]
+fn vanagema() {
+    assert_eq!(
+        double_metaphone("Van Agema")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("K")
+    )
+}
 //     'should transform G to K, when Germanic and followed by E, I, or Y'
 //   )
-//   t.equal(
-//     m('Von Goggin')[0].charAt(3),
-//     'K',
+//   assert_eq!(
+#[test]
+fn vongoggin() {
+    assert_eq!(
+        double_metaphone("Von Goggin")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("K")
+    )
+}
 //     'should transform G to K, when Germanic, preceded by A or O, and followed by GI'
 //   )
-//   t.equal(
-//     m('tangier')[0].charAt(2),
-//     'J',
+//   assert_eq!(
+#[test]
+fn tangier() {
+    assert_eq!(
+        double_metaphone("tangier")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("J")
+    )
+}
 //     'should transform G to J, when followed by "IER "'
 //   )
 
 //   t.test(
 //     'should transform G to J and K, when followed by E, I, or Y, or preceded by A or O and followed by GI',
 //     function(st) {
-//       var phonetics = m('biaggi')
+//       var phonetics = double_metaphone("biaggi")
 
-//       st.equal(phonetics[0].charAt(1), 'J')
-//       st.equal(phonetics[1].charAt(1), 'K')
+//       assert_eq!(phonetics[0].unwrap().get(1..2), 'J")
+//       assert_eq!(phonetics[1].unwrap().get(1..2), 'K")
 
 //       st.end()
 //     }
 //   )
 
-//   t.equal(m('GG')[0], 'K', 'should transform GG to K')
-//   t.equal(m('G')[0], 'K', 'should transform G to K')
-//   t.equal(m('ha')[0], 'H', 'should keep H when initial and followed by a vowel')
-//   t.equal(
-//     m('aha')[0],
-//     'AH',
+#[test]
+fn two_gs() {
+    assert_eq!(
+        double_metaphone("GG").unwrap().get(0),
+        Some(&"K".to_string())
+    )
+}
+#[test]
+fn one_g() {
+    assert_eq!(
+        double_metaphone("G").unwrap().get(0),
+        Some(&"K".to_string())
+    )
+}
+#[test]
+fn ha() {
+    assert_eq!(
+        double_metaphone("ha").unwrap().get(0),
+        Some(&"H".to_string())
+    )
+}
+//   assert_eq!(
+#[test]
+fn aha() {
+    assert_eq!(
+        double_metaphone("aha").unwrap().get(0),
+        Some(&"AH".to_string())
+    )
+}
 //     'should keep H when both followed and preceded by a vowel'
 //   )
-//   t.equal(m('h')[0], '', 'should drop H')
-//   t.equal(
-//     m('San Jacinto')[0].charAt(2),
-//     'H',
+#[test]
+fn one_h() {
+    assert_eq!(double_metaphone("h").unwrap().get(0), Some(&"".to_string()))
+}
+//   assert_eq!(
+#[test]
+fn sanjacinto() {
+    assert_eq!(
+        double_metaphone("San Jacinto")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("H")
+    )
+}
 //     'should transform J to H when obviously spanish (an initial "SAN ")'
 //   )
-//   t.equal(
-//     m('Jose')[0].charAt(0),
-//     'H',
+//   assert_eq!(
+#[test]
+fn jose() {
+    assert_eq!(
+        double_metaphone("Jose").unwrap().get(0),
+        Some(&"H".to_string())
+    )
+}
 //     'should transform J to H in an initial "J... "'
 //   )
 
 //   t.test('should transform the J to J and H, when in JOSE', function(st) {
-//     var phonetics = m('Joseph')
+//     var phonetics = double_metaphone("Joseph")
 
-//     st.equal(phonetics[0].charAt(0), 'J')
-//     st.equal(phonetics[1].charAt(0), 'H')
+//     assert_eq!(phonetics[0].unwrap().get(..1), 'J")
+//     assert_eq!(phonetics[1].unwrap().get(..1), 'H")
 
 //     st.end()
 //   })
 
 //   t.test('should transform the J to J and H, when in JOSE', function(st) {
-//     var phonetics = m('Jankelowicz')
+//     var phonetics = double_metaphone("Jankelowicz")
 
-//     st.equal(phonetics[0].charAt(0), 'J')
-//     st.equal(phonetics[1].charAt(0), 'A')
+//     assert_eq!(phonetics[0].unwrap().get(..1), 'J")
+//     assert_eq!(phonetics[1].unwrap().get(..1), 'A")
 
 //     st.end()
 //   })
@@ -751,40 +1084,73 @@ fn czerny() {
 //   t.test(
 //     'should transform J to J and H, when preceded by a vowel, followed by A or O, and not Slavo-Germanic',
 //     function(st) {
-//       var phonetics = m('bajador')
+//       var phonetics = double_metaphone("bajador")
 
-//       st.equal(phonetics[0].charAt(1), 'J')
-//       st.equal(phonetics[1].charAt(1), 'H')
+//       assert_eq!(phonetics[0].unwrap().get(1..2), 'J")
+//       assert_eq!(phonetics[1].unwrap().get(1..2), 'H")
 
 //       st.end()
 //     }
 //   )
 
 //   t.test('should both keep and drop a final J', function(st) {
-//     var phonetics = m('svaraj')
+//     var phonetics = double_metaphone("svaraj")
 
-//     st.equal(phonetics[0], 'SFRJ')
-//     st.equal(phonetics[1], 'SFR')
+//     assert_eq!(phonetics[0], 'SFRJ")
+//     assert_eq!(phonetics[1], 'SFR")
 
 //     st.end()
 //   })
 
-//   t.equal(
-//     m('abject')[0].charAt(2),
-//     'J',
+//   assert_eq!(
+#[test]
+fn abject() {
+    assert_eq!(
+        double_metaphone("abject")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(2..3),
+        Some("J")
+    )
+}
 //     'should keep J when not preceded by S, K, and L, and not followed by L, T, K, S, N, M, B, and Z'
 //   )
-//   t.equal(m('sjji')[0].charAt(0), 'S', 'should drop JJ')
-//   t.equal(m('disject')[0], 'TSKT', 'should drop J')
-//   t.equal(m('trekker')[0], 'TRKR', 'should transform KK to K')
-//   t.equal(m('like')[0], 'LK', 'should keep K')
+#[test]
+fn sjji() {
+    assert_eq!(
+        double_metaphone("sjji").unwrap().get(0).unwrap().get(..1),
+        Some("S")
+    )
+}
+#[test]
+fn disject() {
+    assert_eq!(
+        double_metaphone("disject").unwrap().get(0),
+        Some(&"TSKT".to_string())
+    )
+}
+#[test]
+fn trekker() {
+    assert_eq!(
+        double_metaphone("trekker").unwrap().get(0),
+        Some(&"TRKR".to_string())
+    )
+}
+#[test]
+fn like() {
+    assert_eq!(
+        double_metaphone("like").unwrap().get(0),
+        Some(&"LK".to_string())
+    )
+}
 
 //   t.test(
 //     'should both transform LL to L, and drop it, when in a final ILLO, ILLA and ALLE',
 //     function(st) {
-//       st.deepEqual(m('cabrillo'), ['KPRL', 'KPR'])
-//       st.deepEqual(m('villa'), ['FL', 'F'])
-//       st.deepEqual(m('crevalle'), ['KRFL', 'KRF'])
+//       st.deepEqual(double_metaphone("cabrillo"), ['KPRL', 'KPR'])
+//       st.deepEqual(double_metaphone("villa"), ['FL', 'F'])
+//       st.deepEqual(double_metaphone("crevalle"), ['KRFL', 'KRF'])
 
 //       st.end()
 //     }
@@ -793,180 +1159,409 @@ fn czerny() {
 //   t.test(
 //     'should both transform the LL to L, and drop it, in ALLE, when the given value ends in A, O, AS, or OS',
 //     function(st) {
-//       st.deepEqual(m('allegretto'), ['ALKRT', 'AKRT'])
-//       st.deepEqual(m('allegros'), ['ALKRS', 'AKRS'])
+//       st.deepEqual(double_metaphone("allegretto"), ['ALKRT', 'AKRT'])
+//       st.deepEqual(double_metaphone("allegros"), ['ALKRS', 'AKRS'])
 //       st.end()
 //     }
 //   )
 
-//   t.equal(m('ll')[0], 'L', 'should transform LL to L')
-//   t.equal(m('l')[0], 'L', 'should keep L')
-//   t.equal(m('thumb')[0], '0M', 'should transform a final UMB to M')
-//   t.equal(
-//     m('dumber')[0],
-//     'TMR',
+#[test]
+fn two_lls() {
+    assert_eq!(
+        double_metaphone("ll").unwrap().get(0),
+        Some(&"L".to_string())
+    )
+}
+#[test]
+fn one_l() {
+    assert_eq!(
+        double_metaphone("l").unwrap().get(0),
+        Some(&"L".to_string())
+    )
+}
+#[test]
+fn thumb() {
+    assert_eq!(
+        double_metaphone("thumb").unwrap().get(0),
+        Some(&"0M".to_string())
+    )
+}
+//   assert_eq!(
+#[test]
+fn dumber() {
+    assert_eq!(
+        double_metaphone("dumber").unwrap().get(0),
+        Some(&"TMR".to_string())
+    )
+}
 //     'should transform UMB to M when followed by ER'
 //   )
-//   t.equal(m('mm')[0], 'M', 'should transform MM to M')
-//   t.equal(m('m')[0], 'M', 'should keep M')
-//   t.equal(m('nn')[0], 'N', 'should transform NN to N')
-//   t.equal(m('n')[0], 'N', 'should keep N')
-//   t.equal(m('Ñ')[0], 'N', 'should transform Ñ to N')
-//   t.equal(m('ph')[0], 'F', 'should transform PH to F')
-//   t.equal(m('pb')[0], 'P', 'should transform PB to P')
-//   t.equal(m('pp')[0], 'P', 'should transform PP to P')
-//   t.equal(m('p')[0], 'P', 'should keep P')
-//   t.equal(m('qq')[0], 'K', 'should transform QQ to K')
-//   t.equal(m('q')[0], 'K', 'should transform Q to K')
+#[test]
+fn tow_mms() {
+    assert_eq!(
+        double_metaphone("mm").unwrap().get(0),
+        Some(&"M".to_string())
+    )
+}
+#[test]
+fn one_m() {
+    assert_eq!(
+        double_metaphone("m").unwrap().get(0),
+        Some(&"M".to_string())
+    )
+}
+#[test]
+fn two_nns() {
+    assert_eq!(
+        double_metaphone("nn").unwrap().get(0),
+        Some(&"N".to_string())
+    )
+}
+#[test]
+fn one_n() {
+    assert_eq!(
+        double_metaphone("n").unwrap().get(0),
+        Some(&"N".to_string())
+    )
+}
+#[test]
+fn top_tilda_n() {
+    assert_eq!(
+        double_metaphone("Ñ").unwrap().get(0),
+        Some(&"N".to_string())
+    )
+}
+#[test]
+fn ph() {
+    assert_eq!(
+        double_metaphone("ph").unwrap().get(0),
+        Some(&"F".to_string())
+    )
+}
+#[test]
+fn pb() {
+    assert_eq!(
+        double_metaphone("pb").unwrap().get(0),
+        Some(&"P".to_string())
+    )
+}
+#[test]
+fn twp_pps() {
+    assert_eq!(
+        double_metaphone("pp").unwrap().get(0),
+        Some(&"P".to_string())
+    )
+}
+#[test]
+fn one_p() {
+    assert_eq!(
+        double_metaphone("p").unwrap().get(0),
+        Some(&"P".to_string())
+    )
+}
+#[test]
+fn two_qqs() {
+    assert_eq!(
+        double_metaphone("qq").unwrap().get(0),
+        Some(&"K".to_string())
+    )
+}
+#[test]
+fn one_q() {
+    assert_eq!(
+        double_metaphone("q").unwrap().get(0),
+        Some(&"K".to_string())
+    )
+}
 
 //   t.deepEqual(
-//     m('Xavier'),
+//     double_metaphone("Xavier"),
 //     ['SF', 'SFR'],
 //     'should both drop and keep a final R when preceded by IE, in turn not preceded by ME and MA'
 //   )
 
-//   t.equal(m('rr')[0], 'R', 'should transform RR to R')
-//   t.equal(m('r')[0], 'R', 'should keep R')
-//   t.equal(
-//     m('island')[0],
-//     'ALNT',
-//     'should drop S when preceded by I or Y and followed by L'
-//   )
-//   t.equal(
-//     m('island')[0],
-//     'ALNT',
+#[test]
+fn two_rrs() {
+    assert_eq!(
+        double_metaphone("rr").unwrap().get(0),
+        Some(&"R".to_string())
+    )
+}
+#[test]
+fn one_r() {
+    assert_eq!(
+        double_metaphone("r").unwrap().get(0),
+        Some(&"R".to_string())
+    )
+}
+//   assert_eq!(
+#[test]
+fn island() {
+    assert_eq!(
+        double_metaphone("island").unwrap().get(0),
+        Some(&"ALNT".to_string())
+    )
+}
 //     'should drop S when preceded by I or Y and followed by L'
 //   )
 
 //   t.test('should transform the S to X and S in an initial SUGAR', function(st) {
-//     var phonetics = m('sugar')
+//     var phonetics = double_metaphone("sugar")
 
-//     st.equal(phonetics[0].charAt(0), 'X')
-//     st.equal(phonetics[1].charAt(0), 'S')
+//     assert_eq!(phonetics[0].unwrap().get(..1), 'X")
+//     assert_eq!(phonetics[1].unwrap().get(..1), 'S")
 
 //     st.end()
 //   })
 
-//   t.equal(
-//     m('Sholz')[0].charAt(0),
-//     'S',
+//   assert_eq!(
+#[test]
+fn sholz() {
+    assert_eq!(
+        double_metaphone("Sholz").unwrap().get(0).unwrap().get(..1),
+        Some("S")
+    )
+}
 //     'should transform the SH to S in SHEIM, SHOEK, SHOLM, SHOLZ'
 //   )
-//   t.equal(m('sh')[0].charAt(0), 'X', 'should transform the SH to X')
+#[test]
+fn sh() {
+    assert_eq!(
+        double_metaphone("sh").unwrap().get(0).unwrap().get(..1),
+        Some("X")
+    )
+}
 
 //   t.deepEqual(
-//     m('sio'),
+//     double_metaphone("sio"),
 //     ['S', 'X'],
 //     'should transform SIO and SIA to S and X, when not Slavo-Germanic'
 //   )
 
 //   t.deepEqual(
-//     m('sioricz'),
+//     double_metaphone("sioricz"),
 //     ['SRS', 'SRX'],
 //     'should transform SIO and SIA to S, when Slavo-Germanic'
 //   )
 
-//   t.deepEqual(m('sz'), ['S', 'X'], 'should transform SZ to X and S')
+//   t.deepEqual(double_metaphone("sz"), ['S', 'X'], 'should transform SZ to X and S")
 
 //   t.deepEqual(
-//     m('sl'),
+//     double_metaphone("sl"),
 //     ['SL', 'XL'],
 //     'should transform S to X and S when followed by L, M, N, or W'
 //   )
 
 //   t.deepEqual(
-//     m('schenker'),
+//     double_metaphone("schenker"),
 //     ['XNKR', 'SKNKR'],
 //     'should transform SCH to X and SK when followed by ER or EN'
 //   )
 
 //   t.deepEqual(
-//     m('schooner'),
+//     double_metaphone("schooner"),
 //     ['SKNR', 'SKNR'],
 //     'should transform SCH to SK when followed by OO, UY, ED, or EM'
 //   )
 
 //   t.deepEqual(
-//     m('schlepp'),
+//     double_metaphone("schlepp"),
 //     ['XLP', 'SLP'],
 //     'should transform SCH to X and S, when initial, and not followed by a non-vowel and W'
 //   )
 
-//   t.equal(m('borscht')[0], 'PRXT', 'should transform SCH to X')
-//   t.equal(m('sci')[0], 'S', 'should transform SCI, SCE, and SCY to S')
-//   t.equal(m('scu')[0], 'SK', 'should transform SC. to SK')
+#[test]
+fn borscht() {
+    assert_eq!(
+        double_metaphone("borscht").unwrap().get(0),
+        Some(&"PRXT".to_string())
+    )
+}
+#[test]
+fn sci() {
+    assert_eq!(
+        double_metaphone("sci").unwrap().get(0),
+        Some(&"S".to_string())
+    )
+}
+#[test]
+fn scu() {
+    assert_eq!(
+        double_metaphone("scu").unwrap().get(0),
+        Some(&"SK".to_string())
+    )
+}
 
 //   t.deepEqual(
-//     m('ois'),
+//     double_metaphone("ois"),
 //     ['A', 'AS'],
 //     'should drop and keep S, when final and preceded by AI or OI'
 //   )
 
-//   t.equal(m('ss')[0], 'S', 'should transform SS to S')
-//   t.equal(m('s')[0], 'S', 'should keep S')
-//   t.equal(m('tion')[0], 'XN', 'should transform TIO to X, when followed by N')
-//   t.equal(m('tia')[0], 'X', 'should transform TIA and TCH to X')
-//   t.equal(m('tch')[0], 'X', 'should transform TIA and TCH to X')
-//   t.equal(
-//     m('thom')[0],
-//     'TM',
+#[test]
+fn two_sss() {
+    assert_eq!(
+        double_metaphone("ss").unwrap().get(0),
+        Some(&"S".to_string())
+    )
+}
+#[test]
+fn one_s() {
+    assert_eq!(
+        double_metaphone("s").unwrap().get(0),
+        Some(&"S".to_string())
+    )
+}
+#[test]
+fn tion() {
+    assert_eq!(
+        double_metaphone("tion").unwrap().get(0),
+        Some(&"XN".to_string())
+    )
+}
+#[test]
+fn tia() {
+    assert_eq!(
+        double_metaphone("tia").unwrap().get(0),
+        Some(&"X".to_string())
+    )
+}
+#[test]
+fn tch() {
+    assert_eq!(
+        double_metaphone("tch").unwrap().get(0),
+        Some(&"X".to_string())
+    )
+}
+//   assert_eq!(
+#[test]
+fn thom() {
+    assert_eq!(
+        double_metaphone("thom").unwrap().get(0),
+        Some(&"TM".to_string())
+    )
+}
 //     'should transform TH to T, when followed by OM or AM (1)'
 //   )
-//   t.equal(
-//     m('tham')[0],
-//     'TM',
+//   assert_eq!(
+#[test]
+fn tham() {
+    assert_eq!(
+        double_metaphone("tham").unwrap().get(0),
+        Some(&"TM".to_string())
+    )
+}
 //     'should transform TH to T, when followed by OM or AM (2)'
 //   )
-//   t.equal(
-//     m('Von Goethals')[0].charAt(3),
-//     'T',
+//   assert_eq!(
+#[test]
+fn vongoethals() {
+    assert_eq!(
+        double_metaphone("Von Goethals")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("T")
+    )
+}
 //     'should transform TH to T, when Germanic'
 //   )
-//   t.equal(
-//     m('Von Matthes')[0].charAt(3),
-//     'T',
+//   assert_eq!(
+#[test]
+fn vonmatthes() {
+    assert_eq!(
+        double_metaphone("Von Matthes")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(3..4),
+        Some("T")
+    )
+}
 //     'should transform TT to T, when Germanic and followed by H'
 //   )
 
-//   t.deepEqual(m('th'), ['0', 'T'], 'should transform TH to 0 and T')
+//   t.deepEqual(double_metaphone("th"), ['0', 'T'], 'should transform TH to 0 and T")
 
-//   t.equal(m('tt')[0], 'T', 'should transform TT to T')
-//   t.equal(m('td')[0], 'T', 'should transform TD to T')
-//   t.equal(m('t')[0], 'T', 'should keep T')
-//   t.equal(m('vv')[0], 'F', 'should transform VV to F')
-//   t.equal(m('v')[0], 'F', 'should transform V to F')
-//   t.equal(m('awr')[0], 'AR', 'should transform WR to R')
+#[test]
+fn two_tts() {
+    assert_eq!(
+        double_metaphone("tt").unwrap().get(0),
+        Some(&"T".to_string())
+    )
+}
+#[test]
+fn td() {
+    assert_eq!(
+        double_metaphone("td").unwrap().get(0),
+        Some(&"T".to_string())
+    )
+}
+#[test]
+fn one_t() {
+    assert_eq!(
+        double_metaphone("t").unwrap().get(0),
+        Some(&"T".to_string())
+    )
+}
+#[test]
+fn two_vvs() {
+    assert_eq!(
+        double_metaphone("vv").unwrap().get(0),
+        Some(&"F".to_string())
+    )
+}
+#[test]
+fn one_v() {
+    assert_eq!(
+        double_metaphone("v").unwrap().get(0),
+        Some(&"F".to_string())
+    )
+}
+#[test]
+fn awr() {
+    assert_eq!(
+        double_metaphone("awr").unwrap().get(0),
+        Some(&"AR".to_string())
+    )
+}
 
 //   t.deepEqual(
-//     m('wa'),
+//     double_metaphone("wa"),
 //     ['A', 'F'],
 //     'should transform W to A and F, when initial and followed by a vowel'
 //   )
 
-//   t.equal(
-//     m('wh')[0],
-//     'A',
+//   assert_eq!(
+#[test]
+fn wh() {
+    assert_eq!(
+        double_metaphone("wh").unwrap().get(0),
+        Some(&"A".to_string())
+    )
+}
 //     'should transform W to A, when initial and followed by H'
 //   )
 
 //   t.test(
 //     'should both drop and transform W to F, when in EWSKI, EWSKY, OWSKI, or OWSKY',
 //     function(st) {
-//       st.deepEqual(m('Tsjaikowski'), ['TSKSK', 'TSKFSK'])
-//       st.deepEqual(m('Tsjaikowsky'), ['TSKSK', 'TSKFSK'])
+//       st.deepEqual(double_metaphone("Tsjaikowski"), ['TSKSK', 'TSKFSK'])
+//       st.deepEqual(double_metaphone("Tsjaikowsky"), ['TSKSK', 'TSKFSK'])
 
 //       st.end()
 //     }
 //   )
 
 //   t.deepEqual(
-//     m('schwa'),
+//     double_metaphone("schwa"),
 //     ['X', 'XF'],
 //     'should both drop and transform W to F, when the value starts with SCH'
 //   )
 
 //   t.deepEqual(
-//     m('Arnow'),
+//     double_metaphone("Arnow"),
 //     ['ARN', 'ARNF'],
 //     'should both drop and transform W to F, when final and preceded by a vowel'
 //   )
@@ -974,56 +1569,143 @@ fn czerny() {
 //   t.test(
 //     'should transform W to TS and FX, when followed by ICZ or ITZ',
 //     function(st) {
-//       st.deepEqual(m('Filipowicz'), ['FLPTS', 'FLPFX'])
-//       st.deepEqual(m('Filipowitz'), ['FLPTS', 'FLPFX'])
+//       st.deepEqual(double_metaphone("Filipowicz"), ['FLPTS', 'FLPFX'])
+//       st.deepEqual(double_metaphone("Filipowitz"), ['FLPTS', 'FLPFX'])
 
 //       st.end()
 //     }
 //   )
 
-//   t.equal(m('w')[0], '', 'should drop W')
-//   t.equal(m('matrix')[0], 'MTRKS', 'should transform X to KS, when final')
+#[test]
+fn w() {
+    assert_eq!(double_metaphone("w").unwrap().get(0), Some(&"".to_string()))
+}
+#[test]
+fn matrix() {
+    assert_eq!(
+        double_metaphone("matrix").unwrap().get(0),
+        Some(&"MTRKS".to_string())
+    )
+}
 
 //   t.test(
 //     'should transform X to KS, when *NOT* preceded by IAU, EAU, AU, or OU',
 //     function(st) {
-//       st.equal(m('iauxa')[0], 'AKS')
-//       st.equal(m('eauxa')[0], 'AKS')
-//       st.equal(m('auxa')[0], 'AKS')
-//       st.equal(m('ouxa')[0], 'AKS')
+#[test]
+fn iauxa() {
+    assert_eq!(
+        double_metaphone("iauxa").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn eauxa() {
+    assert_eq!(
+        double_metaphone("eauxa").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn auxa() {
+    assert_eq!(
+        double_metaphone("auxa").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn ouxa() {
+    assert_eq!(
+        double_metaphone("ouxa").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
 
 //       st.end()
 //     }
 //   )
 
-//   t.equal(m('AUX')[0], 'A', 'should drop `UX` in `AUX`')
-//   t.equal(m('OUX')[0], 'A', 'should drop `UX` in `OUX`')
-//   t.equal(m('breaux')[0], 'PR', 'should drop `aux` in `breaux`')
+#[test]
+fn aux() {
+    assert_eq!(
+        double_metaphone("AUX").unwrap().get(0),
+        Some(&"A".to_string())
+    )
+}
+#[test]
+fn oux() {
+    assert_eq!(
+        double_metaphone("OUX").unwrap().get(0),
+        Some(&"A".to_string())
+    )
+}
+#[test]
+fn breaux() {
+    assert_eq!(
+        double_metaphone("breaux").unwrap().get(0),
+        Some(&"PR".to_string())
+    )
+}
 
-//   t.equal(m('AXC')[0], 'AKS', 'should *not* drop XC')
-//   t.equal(m('axx')[0], 'AKS', 'should *not* drop XX')
-//   t.equal(m('axe')[0], 'AKS', 'should *not* drop X')
-//   t.equal(m('zhao')[0], 'J', 'should transform ZH to J')
+#[test]
+fn axc() {
+    assert_eq!(
+        double_metaphone("AXC").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn axx() {
+    assert_eq!(
+        double_metaphone("axx").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn axe() {
+    assert_eq!(
+        double_metaphone("axe").unwrap().get(0),
+        Some(&"AKS".to_string())
+    )
+}
+#[test]
+fn zhao() {
+    assert_eq!(
+        double_metaphone("zhao").unwrap().get(0),
+        Some(&"J".to_string())
+    )
+}
 
 //   t.test(
 //     'should transform Z to S and TS, when followed by ZA, ZI, or ZO',
 //     function(st) {
-//       st.deepEqual(m('zza'), ['S', 'TS'])
-//       st.deepEqual(m('zzi'), ['S', 'TS'])
-//       st.deepEqual(m('zzo'), ['S', 'TS'])
+//       st.deepEqual(double_metaphone("zza"), ['S', 'TS'])
+//       st.deepEqual(double_metaphone("zzi"), ['S', 'TS'])
+//       st.deepEqual(double_metaphone("zzo"), ['S', 'TS'])
 
 //       st.end()
 //     }
 //   )
 
 //   t.deepEqual(
-//     m('Mazurkiewicz'),
+//     double_metaphone("Mazurkiewicz"),
 //     ['MSRKTS', 'MTSRKFX'],
 //     'should transform Z to S and TS, when not initial, not Slavo-Germanic, and not preceded by T'
 //   )
 
-//   t.equal(m('zz')[0], 'S', 'should transform ZZ to S')
-//   t.equal(m('z')[0], 'S', 'should transform Z to S')
+#[test]
+fn two_zzs() {
+    assert_eq!(
+        double_metaphone("zz").unwrap().get(0),
+        Some(&"S".to_string())
+    )
+}
+#[test]
+fn one_z() {
+    assert_eq!(
+        double_metaphone("z").unwrap().get(0),
+        Some(&"S".to_string())
+    )
+}
 
 //   t.end()
 // })
@@ -1036,21 +1718,21 @@ fn czerny() {
 //   t.plan(7)
 
 //   execa.stdout('./cli.js', ['michael']).then(function(result) {
-//     t.equal(result, 'MKL	MXL', 'argument')
+//     assert_eq!(result, 'MKL	MXL', 'argument")
 //   })
 
 //   execa.stdout('./cli.js', ['detestable', 'vileness']).then(function(result) {
-//     t.equal(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'arguments')
+//     assert_eq!(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'arguments")
 //   })
 
 //   execa.stdout('./cli.js', {input: input}).then(function(result) {
-//     t.equal(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'stdin')
+//     assert_eq!(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'stdin")
 //   })
 
-//   input.write('detestable')
+//   input.write('detestable")
 
 //   setImmediate(function() {
-//     input.end(' vileness')
+//     input.end(' vileness")
 //   })
 
 //   helps.forEach(function(flag) {
@@ -1061,7 +1743,7 @@ fn czerny() {
 
 //   versions.forEach(function(flag) {
 //     execa.stdout('./cli.js', [flag]).then(function(result) {
-//       t.equal(result, version, flag)
+//       assert_eq!(result, version, flag)
 //     })
 //   })
 // })
