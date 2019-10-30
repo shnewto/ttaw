@@ -1056,8 +1056,8 @@ fn sanjacinto() {
 #[test]
 fn jose() {
     assert_eq!(
-        double_metaphone("Jose").unwrap().get(0),
-        Some(&"H".to_string())
+        double_metaphone("Jose").unwrap().get(0).unwrap().get(..1),
+        Some("H")
     )
 }
 //     'should transform J to H in an initial "J... "'

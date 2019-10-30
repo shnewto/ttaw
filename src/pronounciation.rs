@@ -148,7 +148,7 @@ impl Metaphone {
 
 pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
     let mut metaphone = Metaphone::new();
-    let word: String = input.to_uppercase();
+    let word: String = input.to_uppercase() + "     ";
 
     metaphone.chars = word.chars().collect::<Vec<char>>();
 
@@ -726,8 +726,7 @@ fn h_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 
 fn j_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     if get_substring(&chars, *pos, *pos + 4) == "JOSE" || get_substring(&chars, 0, 4) == "SAN " {
-        if get_substring(&chars, *pos, *pos + 4) == "SAN "
-            || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
+        if get_substring(&chars, 0, 4) == "SAN " || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
         {
             *p += "H";
             *s += "H";
@@ -754,7 +753,7 @@ fn j_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     {
         *p += "J";
         *s += "H";
-    } else if *pos == chars.len().wrapping_sub(1) {
+    } else if *pos == chars.len().wrapping_sub(6) {
         *p += "J";
     } else if chars.get(pos.wrapping_sub(1)) != Some(&'S')
         && chars.get(pos.wrapping_sub(1)) != Some(&'K')
@@ -786,7 +785,7 @@ fn k_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 
 fn l_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     if chars.get(*pos + 1) == Some(&'L') {
-        if *pos == chars.len().wrapping_sub(3)
+        if *pos == chars.len().wrapping_sub(9)
             && ((chars.get(pos.wrapping_sub(1)) == Some(&'A') && chars.get(*pos + 2) == Some(&'E'))
                 || (chars.get(pos.wrapping_sub(1)) == Some(&'I')
                     && (chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))))
@@ -796,7 +795,12 @@ fn l_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
                     || chars.last() == Some(&'O')
                     || Word::parse(
                         Rule::alle,
-                        get_substring(&chars, chars.len().wrapping_sub(1), chars.len()).as_str(),
+                        get_substring(
+                            &chars,
+                            chars.len().wrapping_sub(6),
+                            chars.len().wrapping_sub(5),
+                        )
+                        .as_str(),
                     )
                     .is_ok()))
         {
@@ -818,7 +822,7 @@ fn m_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     if chars.get(*pos + 1) == Some(&'M')
         || (chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && chars.get(*pos + 1) == Some(&'B')
-            && (*pos + 1 == chars.len().wrapping_sub(1)
+            && (*pos + 1 == chars.len().wrapping_sub(6)
                 || get_substring(&chars, *pos + 2, *pos + 4) == "ER"))
     {
         *pos += 1;
@@ -875,7 +879,7 @@ fn q_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 }
 
 fn r_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
-    if *pos == chars.len().wrapping_sub(1)
+    if *pos == chars.len().wrapping_sub(6)
         && !slavo_germanic(&chars)
         && chars.get(pos.wrapping_sub(1)) == Some(&'E')
         && chars.get(pos.wrapping_sub(2)) == Some(&'I')
@@ -1023,7 +1027,7 @@ fn s_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
         return;
     }
 
-    if *pos == chars.len().wrapping_sub(1)
+    if *pos == chars.len().wrapping_sub(6)
         && (get_substring(&chars, pos.wrapping_sub(2), *pos) == "AI"
             || get_substring(&chars, pos.wrapping_sub(2), *pos) == "OI")
     {
@@ -1125,7 +1129,7 @@ fn w_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
         && chars.get(*pos + 2) == Some(&'K')
         && (chars.get(*pos + 3) == Some(&'I') || chars.get(*pos + 3) == Some(&'Y')))
         || get_substring(&chars, 0, 3) == "SCH"
-        || (*pos == chars.len().wrapping_sub(1)
+        || (*pos == chars.len().wrapping_sub(6)
             && Word::parse(
                 Rule::vowels,
                 get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
@@ -1153,7 +1157,7 @@ fn w_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
 }
 
 fn x_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
-    if !(*pos == chars.len().wrapping_sub(1)
+    if !(*pos == chars.len().wrapping_sub(6)
         && (chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && (chars.get(pos.wrapping_sub(2)) == Some(&'A')
                 || chars.get(pos.wrapping_sub(2)) == Some(&'O'))))
