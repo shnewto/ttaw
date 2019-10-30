@@ -127,342 +127,221 @@ mod tests {
     }
 }
 
-pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
-    let word: String = input.to_uppercase();
-    let mut primary = String::new();
-    let mut secondary = String::new();
+#[derive(Debug, Clone, PartialEq)]
+struct Metaphone {
+    pos: usize,
+    chars: Vec<char>,
+    p: String,
+    s: String,
+}
 
-    let characters = word.chars().collect::<Vec<char>>();
-    let mut pos: usize = 0;
+impl Metaphone {
+    pub fn new() -> Metaphone {
+        Metaphone {
+            pos: 0,
+            chars: vec![],
+            p: String::new(),
+            s: String::new(),
+        }
+    }
+}
+
+pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
+    let mut metaphone = Metaphone::new();
+    let word: String = input.to_uppercase();
+
+    metaphone.chars = word.chars().collect::<Vec<char>>();
 
     if Word::parse(Rule::initial_exceptions, word.as_str()).is_ok() {
-        pos += 1;
-    } else if let Some('X') = characters.first() {
-        pos += 1
+        metaphone.pos += 1;
+    } else if let Some('X') = metaphone.chars.first() {
+        metaphone.pos += 1
     }
 
-    'a: while let Some(c) = characters.get(pos) {
+    while let Some(c) = metaphone.chars.get(metaphone.pos) {
         match c {
             'A' | 'E' | 'I' | 'O' | 'U' | 'Y' | 'À' | 'Ê' | 'É' => {
-                if pos == 0 {
-                    primary += "A";
-                    secondary += "A";
-                }
-
-                pos += 1;
+                vowel_case(&mut metaphone);
             }
 
             'B' => {
-                primary += "P";
-                secondary += "P";
-
-                if let Some('B') = characters.get(pos + 1) {
-                    pos += 1;
-                }
-
-                pos += 1;
+                b_case(&mut metaphone);
             }
 
             'Ç' => {
-                primary += "S";
-                secondary += "S";
-                pos += 1;
+                c_cedilla_case(&mut metaphone);
             }
 
             'C' => {
-                c_case(&mut pos, &characters, &mut primary, &mut secondary);
+                c_case(&mut metaphone);
             }
+
             'D' => {
-                d_case(&mut pos, &characters, &mut primary, &mut secondary);
+                d_case(&mut metaphone);
             }
+
             'F' => {
-                if characters.get(pos + 1) == Some(&'F') {
-                    pos += 1;
-                }
-
-                pos += 1;
-                primary += "F";
-                secondary += "F";
-
-                continue 'a;
+                f_case(&mut metaphone);
             }
+
             'G' => {
-                g_case(&mut pos, &characters, &mut primary, &mut secondary);
+                g_case(&mut metaphone);
             }
+
             'H' => {
-                // Only keep if first & before vowel or btw. 2 vowels.
-                if Word::parse(
-                    Rule::vowels,
-                    get_char_as_string(&characters, pos + 1).as_str(),
-                )
-                .is_ok()
-                    && (pos == 0
-                        || Word::parse(
-                            Rule::vowels,
-                            get_char_as_string(&characters, pos.wrapping_sub(1)).as_str(),
-                        )
-                        .is_ok())
-                {
-                    primary += "H";
-                    secondary += "H";
-
-                    pos += 1;
-                }
-
-                pos += 1;
-
-                continue 'a;
+                h_case(&mut metaphone);
             }
+
             'J' => {
-                j_case(&mut pos, &characters, &mut primary, &mut secondary);
+                j_case(&mut metaphone);
             }
+
             'K' => {
-                if characters.get(pos + 1) == Some(&'K') {
-                    pos += 1;
-                }
-
-                primary += "K";
-                secondary += "K";
-                pos += 1;
-
-                continue 'a;
+                k_case(&mut metaphone);
             }
+
             'L' => {
-                if characters.get(pos + 1) == Some(&'L') {
-                    // Spanish such as `cabrillo`, `gallegos`.
-                    if pos == characters.len() - 3
-                        && ((characters.get(pos.wrapping_sub(1)) == Some(&'A')
-                            && characters.get(pos + 2) == Some(&'E'))
-                            || (characters.get(pos.wrapping_sub(1)) == Some(&'I')
-                                && (characters.get(pos + 2) == Some(&'O')
-                                    || characters.get(pos + 2) == Some(&'A'))))
-                        || (characters.get(pos.wrapping_sub(1)) == Some(&'A')
-                            && characters.get(pos + 2) == Some(&'E')
-                            && (characters.get(characters.len()) == Some(&'A')
-                                || characters.get(characters.len()) == Some(&'O')
-                                || Word::parse(
-                                    Rule::alle,
-                                    get_substring(
-                                        &characters,
-                                        characters.len().wrapping_sub(1),
-                                        characters.len(),
-                                    )
-                                    .as_str(),
-                                )
-                                .is_ok()))
-                    {
-                        primary += "L";
-                        pos += 2;
-
-                        continue 'a;
-                    }
-
-                    pos += 1;
-                }
-
-                primary += "L";
-                secondary += "L";
-                pos += 1;
-
-                continue 'a;
+                l_case(&mut metaphone);
             }
 
             'M' => {
-                if characters.get(pos + 1) == Some(&'M') ||
-          // Such as `dumb`, `thumb`.
-          (characters.get(pos.wrapping_sub(1))  ==Some(&'U') &&
-            characters.get(pos + 1) == Some(&'B') &&
-            (pos + 1 == characters.len() ||  get_substring(&characters, pos + 2, pos + 4) == "ER"))
-                {
-                    pos += 1;
-                }
-
-                pos += 1;
-                primary += "M";
-                secondary += "M";
-
-                continue 'a;
+                m_case(&mut metaphone);
             }
+
             'N' => {
-                if characters.get(pos + 1) == Some(&'N') {
-                    pos += 1;
-                }
-
-                pos += 1;
-                primary += "N";
-                secondary += "N";
-
-                continue 'a;
+                n_case(&mut metaphone);
             }
+
             'P' => {
-                if characters.get(pos + 1) == Some(&'H') {
-                    primary += "F";
-                    secondary += "F";
-                    pos += 2;
-
-                    continue 'a;
-                }
-
-                // Also account for `campbell` and `raspberry`.
-                let subvalue = characters.get(pos + 1);
-
-                if subvalue == Some(&'P') || subvalue == Some(&'B') {
-                    pos += 1;
-                }
-
-                pos += 1;
-
-                primary += "P";
-                secondary += "P";
-
-                continue 'a;
+                p_case(&mut metaphone);
             }
+
             'Q' => {
-                if characters.get(pos + 1) == Some(&'Q') {
-                    pos += 1;
-                }
-
-                pos += 1;
-                primary += "K";
-                secondary += "K";
-
-                continue 'a;
+                q_case(&mut metaphone);
             }
+
             'R' => {
-                // French such as `Rogier`, but exclude `Hochmeier`.
-                if pos == characters.len()
-                    && !slavo_germanic(&characters)
-                    && characters.get(pos.wrapping_sub(1)) == Some(&'E')
-                    && characters.get(pos - 2) == Some(&'I')
-                    && characters.get(pos - 4) != Some(&'M')
-                    && (characters.get(pos - 3) != Some(&'E')
-                        && characters.get(pos - 3) != Some(&'A'))
-                {
-                    secondary += "R";
-                } else {
-                    primary += "R";
-                    secondary += "R";
-                }
-
-                if characters.get(pos + 1) == Some(&'R') {
-                    pos += 1;
-                }
-
-                pos += 1;
-
-                continue 'a;
+                r_case(&mut metaphone);
             }
+
             'S' => {
-                s_case(&mut pos, &characters, &mut primary, &mut secondary);
+                s_case(&mut metaphone);
             }
+
             'T' => {
-                t_case(&mut pos, &characters, &mut primary, &mut secondary);
+                t_case(&mut metaphone);
             }
+
             'V' => {
-                if characters.get(pos + 1) == Some(&'V') {
-                    pos += 1;
-                }
-
-                primary += "F";
-                secondary += "F";
-                pos += 1;
-
-                continue 'a;
+                v_case(&mut metaphone);
             }
+
             'W' => {
-                w_case(&mut pos, &characters, &mut primary, &mut secondary);
+                w_case(&mut metaphone);
             }
+
             'X' => {
-                if !(pos == characters.len()
-                    && (characters.get(pos.wrapping_sub(1)) == Some(&'U')
-                        && (characters.get(pos - 2) == Some(&'A')
-                            || characters.get(pos - 2) == Some(&'O'))))
-                {
-                    primary += "KS";
-                    secondary += "KS"
-                }
-
-                if characters.get(pos + 1) == Some(&'C') || characters.get(pos + 1) == Some(&'X') {
-                    pos += 1;
-                }
-
-                pos += 1;
-
-                continue 'a;
+                x_case(&mut metaphone);
             }
+
             'Z' => {
-                z_case(&mut pos, &characters, &mut primary, &mut secondary);
+                z_case(&mut metaphone);
             }
-            _ => pos += 1,
+
+            _ => metaphone.pos += 1,
         }
     }
-    Ok(vec![primary, secondary])
+
+    Ok(vec![metaphone.p, metaphone.s])
 }
 
-fn get_char_as_string(characters: &[char], pos: usize) -> String {
-    match characters.get(pos) {
+fn get_char_as_string(chars: &[char], pos: usize) -> String {
+    match chars.get(pos) {
         Some(c) => c.to_string(),
         None => String::new(),
     }
 }
 
-fn get_substring(characters: &[char], start: usize, end: usize) -> String {
-    match characters.get(start..end) {
+fn get_substring(chars: &[char], start: usize, end: usize) -> String {
+    match chars.get(start..end) {
         Some(s) => s.iter().collect::<String>(),
         None => String::new(),
     }
 }
 
-fn germanic(characters: &[char]) -> bool {
-    Word::parse(
-        Rule::germanic,
-        characters.iter().collect::<String>().as_str(),
-    )
-    .is_ok()
+fn germanic(chars: &[char]) -> bool {
+    Word::parse(Rule::germanic, chars.iter().collect::<String>().as_str()).is_ok()
 }
 
-fn slavo_germanic(characters: &[char]) -> bool {
+fn slavo_germanic(chars: &[char]) -> bool {
     Word::parse(
         Rule::slavo_germanic,
-        characters.iter().collect::<String>().as_str(),
+        chars.iter().collect::<String>().as_str(),
     )
     .is_ok()
 }
 
-fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
-    if characters.get(pos.wrapping_sub(1)) == Some(&'A')
-        && characters.get(*pos + 1) == Some(&'H')
-        && characters.get(*pos + 2) != Some(&'I')
+fn vowel_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
+    // fn vowel_case( pos: &mut usize, _chars: &[char], p: &mut String, s: &mut String) {
+    if *pos == 0 {
+        *p += "A";
+        *s += "A";
+    }
+
+    *pos += 1;
+}
+
+fn b_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    *p += "P";
+    *s += "P";
+
+    if let Some('B') = chars.get(*pos + 1) {
+        *pos += 1;
+    }
+
+    *pos += 1;
+}
+
+fn c_cedilla_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
+    *p += "S";
+    *s += "S";
+    *pos += 1;
+}
+
+fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(pos.wrapping_sub(1)) == Some(&'A')
+        && chars.get(*pos + 1) == Some(&'H')
+        && chars.get(*pos + 2) != Some(&'I')
     {
-        let sub_value: String = get_substring(&characters, pos.wrapping_sub(2), *pos + 4);
+        let sub_value: String = get_substring(&chars, pos.wrapping_sub(2), *pos + 4);
         if sub_value.as_str() == "BACHER" || sub_value.as_str() == "MACHER" {
-            *primary += "K";
-            *secondary += "K";
+            *p += "K";
+            *s += "K";
             *pos += 2;
 
             return;
         }
 
-        if "AESAR" == get_substring(&characters, 1, 6) {
-            *primary += "S";
-            *secondary += "S";
+        if "AESAR" == get_substring(&chars, 1, 6) {
+            *p += "S";
+            *s += "S";
             *pos += 2;
 
             return;
         }
 
-        if "HIA" == get_substring(&characters, *pos + 1, *pos + 4) {
-            *primary += "K";
-            *secondary += "K";
+        if "HIA" == get_substring(&chars, *pos + 1, *pos + 4) {
+            *p += "K";
+            *s += "K";
             *pos += 2;
 
             return;
         }
 
-        if let Some('H') = characters.get(*pos + 1) {
-            if "AE" == get_substring(&characters, *pos + 2, *pos + 4) {
-                *primary += "K";
-                *secondary += "X";
+        if let Some('H') = chars.get(*pos + 1) {
+            if "AE" == get_substring(&chars, *pos + 2, *pos + 4) {
+                *p += "K";
+                *s += "X";
                 *pos += 2;
 
                 return;
@@ -470,12 +349,12 @@ fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
             if Word::parse(
                 Rule::initial_greek_ch,
-                characters.iter().collect::<String>().as_str(),
+                chars.iter().collect::<String>().as_str(),
             )
             .is_ok()
             {
-                *primary += "K";
-                *secondary += "K";
+                *p += "K";
+                *s += "K";
                 *pos += 2;
 
                 return;
@@ -483,76 +362,75 @@ fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
             let mut pos_plus_2 = String::new();
 
-            if let Some(pp2) = characters.get(*pos + 2) {
+            if let Some(pp2) = chars.get(*pos + 2) {
                 pos_plus_2 = pp2.to_string();
             }
 
-            if germanic(&characters)
+            if germanic(&chars)
                 || pos_plus_2 == "T"
                 || pos_plus_2 == "S"
                 || ((*pos == 0
-                    || characters.get(pos.wrapping_sub(1)) == Some(&'A')
-                    || characters.get(pos.wrapping_sub(1)) == Some(&'E')
-                    || characters.get(pos.wrapping_sub(1)) == Some(&'I')
-                    || characters.get(pos.wrapping_sub(1)) == Some(&'O')
-                    || characters.get(pos.wrapping_sub(1)) == Some(&'U'))
+                    || chars.get(pos.wrapping_sub(1)) == Some(&'A')
+                    || chars.get(pos.wrapping_sub(1)) == Some(&'E')
+                    || chars.get(pos.wrapping_sub(1)) == Some(&'I')
+                    || chars.get(pos.wrapping_sub(1)) == Some(&'O')
+                    || chars.get(pos.wrapping_sub(1)) == Some(&'U'))
                     && Word::parse(Rule::ch_for_k, pos_plus_2.as_str()).is_ok())
-                || characters.get(..2) == Some(&['M', 'C'])
+                || chars.get(..2) == Some(&['M', 'C'])
             {
-                *primary += "K";
-                *secondary += "K";
+                *p += "K";
+                *s += "K";
             } else if *pos == 0 {
-                *primary += "X";
-                *secondary += "X";
+                *p += "X";
+                *s += "X";
             } else {
-                *primary += "X";
-                *secondary += "K"
+                *p += "X";
+                *s += "K"
             }
 
             *pos += 2;
             return;
         }
 
-        if characters.get(*pos + 1) == Some(&'Z')
-            && characters.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
+        if chars.get(*pos + 1) == Some(&'Z')
+            && chars.get(pos.wrapping_sub(2)..*pos) == Some(&['W', 'I'])
         {
-            *primary += "S";
-            *secondary += "X";
+            *p += "S";
+            *s += "X";
             *pos += 2;
 
             return;
         }
 
-        if characters.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
-            *primary += "X";
-            *secondary += "X";
+        if chars.get(*pos + 1..*pos + 4) == Some(&['C', 'I', 'A']) {
+            *p += "X";
+            *s += "X";
             *pos += 3;
 
             return;
         }
 
-        if characters.get(*pos + 1) == Some(&'C') && !(*pos == 1 && characters.get(0) == Some(&'M'))
-        {
-            if (characters.get(*pos + 2) == Some(&'I')
-                || characters.get(*pos + 2) == Some(&'E')
-                || characters.get(*pos + 2) == Some(&'H'))
-                && characters.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
+        if chars.get(*pos + 1) == Some(&'C') && !(*pos == 1 && chars.get(0) == Some(&'M')) {
+            if (chars.get(*pos + 2) == Some(&'I')
+                || chars.get(*pos + 2) == Some(&'E')
+                || chars.get(*pos + 2) == Some(&'H'))
+                && chars.get(*pos + 2..*pos + 4) != Some(&['H', 'U'])
             {
-                let val = get_substring(&characters, pos.wrapping_sub(1), *pos + 4);
+                let val = get_substring(&chars, pos.wrapping_sub(1), *pos + 4);
 
-                if (*pos == 1 && characters.get(pos.wrapping_sub(1)) == Some(&'M'))
+                if (*pos == 1 && chars.get(pos.wrapping_sub(1)) == Some(&'M'))
                     || val == "UCCEE"
                     || val == "UCCES"
                 {
-                    *primary += "KS";
-                    *secondary += "KS";
+                    *p += "KS";
+                    *s += "KS";
                 } else {
-                    *primary += "X";
-                    *secondary += "X";
+                    *p += "X";
+                    *s += "X";
                 }
             } else {
-                *primary += "K";
-                *secondary += "K";
+                *p += "K";
+                *s += "K";
                 *pos += 2;
                 return;
             }
@@ -561,52 +439,52 @@ fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
             return;
         }
 
-        if Some(&'G') == characters.get(*pos + 1)
-            || Some(&'K') == characters.get(*pos + 1)
-            || Some(&'Q') == characters.get(*pos + 1)
+        if Some(&'G') == chars.get(*pos + 1)
+            || Some(&'K') == chars.get(*pos + 1)
+            || Some(&'Q') == chars.get(*pos + 1)
         {
-            *primary += "K";
-            *secondary += "K";
+            *p += "K";
+            *s += "K";
 
             *pos += 2;
             return;
         }
 
-        if Some(&'I') == characters.get(*pos + 1)
-            && (Some(&'E') == characters.get(*pos + 2) || Some(&'O') == characters.get(*pos + 2))
+        if Some(&'I') == chars.get(*pos + 1)
+            && (Some(&'E') == chars.get(*pos + 2) || Some(&'O') == chars.get(*pos + 2))
         {
-            *primary += "S";
-            *secondary += "X";
+            *p += "S";
+            *s += "X";
             *pos += 2;
             return;
         }
 
-        if Some(&'I') == characters.get(*pos + 1)
-            || Some(&'E') == characters.get(*pos + 1)
-            || Some(&'Y') == characters.get(*pos + 1)
+        if Some(&'I') == chars.get(*pos + 1)
+            || Some(&'E') == chars.get(*pos + 1)
+            || Some(&'Y') == chars.get(*pos + 1)
         {
-            *primary += "S";
-            *secondary += "S";
+            *p += "S";
+            *s += "S";
             *pos += 2;
             return;
         }
-        *primary += "K";
-        *secondary += "K";
+        *p += "K";
+        *s += "K";
 
-        if Some(&' ') == characters.get(*pos + 1)
-            && (Some(&'C') == characters.get(*pos + 2)
-                || Some(&'G') == characters.get(*pos + 2)
-                || Some(&'Q') == characters.get(*pos + 2))
+        if Some(&' ') == chars.get(*pos + 1)
+            && (Some(&'C') == chars.get(*pos + 2)
+                || Some(&'G') == chars.get(*pos + 2)
+                || Some(&'Q') == chars.get(*pos + 2))
         {
             *pos += 3;
             return;
         }
 
-        if characters.get(*pos + 1) == Some(&'K')
-            || characters.get(*pos + 1) == Some(&'Q')
-            || (characters.get(*pos + 1) == Some(&'C')
-                && characters.get(*pos + 2) != Some(&'E')
-                && characters.get(*pos + 2) != Some(&'I'))
+        if chars.get(*pos + 1) == Some(&'K')
+            || chars.get(*pos + 1) == Some(&'Q')
+            || (chars.get(*pos + 1) == Some(&'C')
+                && chars.get(*pos + 2) != Some(&'E')
+                && chars.get(*pos + 2) != Some(&'I'))
         {
             *pos += 1;
         }
@@ -615,44 +493,54 @@ fn c_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     }
 }
 
-fn d_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
-    if characters.get(*pos + 1) == Some(&'G') {
-        if characters.get(*pos + 2) == Some(&'E')
-            || characters.get(*pos + 2) == Some(&'I')
-            || characters.get(*pos + 2) == Some(&'Y')
+fn d_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'G') {
+        if chars.get(*pos + 2) == Some(&'E')
+            || chars.get(*pos + 2) == Some(&'I')
+            || chars.get(*pos + 2) == Some(&'Y')
         {
-            *primary += "J";
-            *secondary += "J";
+            *p += "J";
+            *s += "J";
             *pos += 3;
         } else {
-            *primary += "TK";
-            *secondary += "TK";
+            *p += "TK";
+            *s += "TK";
             *pos += 2;
         }
 
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'T') || characters.get(*pos + 1) == Some(&'D') {
-        *primary += "T";
-        *secondary += "T";
+    if chars.get(*pos + 1) == Some(&'T') || chars.get(*pos + 1) == Some(&'D') {
+        *p += "T";
+        *s += "T";
         *pos += 2;
 
         return;
     }
 
-    *primary += "T";
-    *secondary += "T";
+    *p += "T";
+    *s += "T";
     *pos += 1;
 }
 
-fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
-    if characters.get(*pos + 1) == Some(&'H') {
-        let prev = get_char_as_string(&characters, pos.wrapping_sub(1));
+fn f_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'F') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+    *p += "F";
+    *s += "F";
+}
+
+fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'H') {
+        let prev = get_char_as_string(&chars, pos.wrapping_sub(1));
 
         if *pos > 0 && Word::parse(Rule::vowels, prev.as_str()).is_err() {
-            *primary += "K";
-            *secondary += "K";
+            *p += "K";
+            *s += "K";
             *pos += 2;
 
             return;
@@ -660,21 +548,21 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
         // Such as `Ghislane`, `Ghiradelli`.
         if *pos == 0 {
-            if characters.get(*pos + 2) == Some(&'I') {
-                *primary += "J";
-                *secondary += "J";
+            if chars.get(*pos + 2) == Some(&'I') {
+                *p += "J";
+                *s += "J";
             } else {
-                *primary += "K";
-                *secondary += "K";
+                *p += "K";
+                *s += "K";
             }
 
             *pos += 2;
 
             return;
         }
-        let x = characters.get(pos.wrapping_sub(2));
-        let y = characters.get(pos.wrapping_sub(3));
-        let z = characters.get(pos.wrapping_sub(4));
+        let x = chars.get(pos.wrapping_sub(2));
+        let y = chars.get(pos.wrapping_sub(3));
+        let z = chars.get(pos.wrapping_sub(4));
 
         if x == Some(&'B')
             || x == Some(&'H')
@@ -686,16 +574,16 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
             return;
         }
-        let s = get_char_as_string(&characters, pos.wrapping_sub(3));
+        let char_as_string = get_char_as_string(&chars, pos.wrapping_sub(3));
         if *pos > 2
-            && characters.get(pos.wrapping_sub(1)) == Some(&'U')
-            && Word::parse(Rule::g_for_f, s.as_str()).is_ok()
+            && chars.get(pos.wrapping_sub(1)) == Some(&'U')
+            && Word::parse(Rule::g_for_f, char_as_string.as_str()).is_ok()
         {
-            *primary += "F";
-            *secondary += "F";
-        } else if *pos > 0 && characters.get(pos.wrapping_sub(1)) != Some(&'I') {
-            *primary += "K";
-            *secondary += "K";
+            *p += "F";
+            *s += "F";
+        } else if *pos > 0 && chars.get(pos.wrapping_sub(1)) != Some(&'I') {
+            *p += "K";
+            *s += "K";
         }
 
         *pos += 2;
@@ -703,23 +591,23 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'N') {
+    if chars.get(*pos + 1) == Some(&'N') {
         if *pos == 1
-            && Word::parse(Rule::vowels, get_char_as_string(&characters, 0).as_str()).is_ok()
-            && !slavo_germanic(&characters)
+            && Word::parse(Rule::vowels, get_char_as_string(&chars, 0).as_str()).is_ok()
+            && !slavo_germanic(&chars)
         {
-            *primary += "KN";
-            *secondary += "N";
+            *p += "KN";
+            *s += "N";
         // Not like `Cagney`.
-        } else if get_substring(&characters, *pos + 2, *pos + 4) != "EY"
-            && characters.get(*pos + 1) != Some(&'Y')
-            && !slavo_germanic(&characters)
+        } else if get_substring(&chars, *pos + 2, *pos + 4) != "EY"
+            && chars.get(*pos + 1) != Some(&'Y')
+            && !slavo_germanic(&chars)
         {
-            *primary += "N";
-            *secondary += "KN"
+            *p += "N";
+            *s += "KN"
         } else {
-            *primary += "KN";
-            *secondary += "KN"
+            *p += "KN";
+            *s += "KN"
         }
 
         *pos += 2;
@@ -728,9 +616,9 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     }
 
     // Such as `Tagliaro`.
-    if get_substring(&characters, *pos + 1, *pos + 3) == "LI" && !slavo_germanic(&characters) {
-        *primary += "KL";
-        *secondary += "L";
+    if get_substring(&chars, *pos + 1, *pos + 3) == "LI" && !slavo_germanic(&chars) {
+        *p += "KL";
+        *s += "L";
         *pos += 2;
 
         return;
@@ -740,65 +628,65 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     if *pos == 0
         && Word::parse(
             Rule::initial_g_or_for_k_or_j,
-            get_substring(&characters, 1, 3).as_str(),
+            get_substring(&chars, 1, 3).as_str(),
         )
         .is_ok()
     {
-        *primary += "K";
-        *secondary += "J";
+        *p += "K";
+        *s += "J";
         *pos += 2;
 
         return;
     }
 
     // -ger-, -gy-.
-    if get_substring(&characters, *pos + 1, *pos + 3) == "ER"
-        && characters.get(pos.wrapping_sub(1)) != Some(&'I')
-        && characters.get(pos.wrapping_sub(1)) != Some(&'E')
+    if get_substring(&chars, *pos + 1, *pos + 3) == "ER"
+        && chars.get(pos.wrapping_sub(1)) != Some(&'I')
+        && chars.get(pos.wrapping_sub(1)) != Some(&'E')
         && Word::parse(
             Rule::initial_anger_exception,
-            get_substring(&characters, *pos + 1, *pos + 3).as_str(),
+            get_substring(&chars, *pos + 1, *pos + 3).as_str(),
         )
         .is_ok()
         && Word::parse(
             Rule::initial_anger_exception,
-            get_substring(&characters, 0, 6).as_str(),
+            get_substring(&chars, 0, 6).as_str(),
         )
         .is_ok()
-        || (characters.get(*pos + 1) == Some(&'Y')
+        || (chars.get(*pos + 1) == Some(&'Y')
             && Word::parse(
                 Rule::initial_g_or_for_k_or_j,
-                get_char_as_string(&characters, 1).as_str(),
+                get_char_as_string(&chars, 1).as_str(),
             )
             .is_err())
     {
-        *primary += "K";
-        *secondary += "J";
+        *p += "K";
+        *s += "J";
         *pos += 2;
 
         return;
     }
 
     // Italian such as `biaggi`.
-    if characters.get(*pos + 1) == Some(&'E')
-        || characters.get(*pos + 1) == Some(&'I')
-        || characters.get(*pos + 1) == Some(&'Y')
-        || ((characters.get(pos.wrapping_sub(1)) == Some(&'A')
-            || characters.get(pos.wrapping_sub(1)) == Some(&'O'))
-            && characters.get(*pos + 1) == Some(&'G')
-            && characters.get(*pos + 2) == Some(&'I'))
+    if chars.get(*pos + 1) == Some(&'E')
+        || chars.get(*pos + 1) == Some(&'I')
+        || chars.get(*pos + 1) == Some(&'Y')
+        || ((chars.get(pos.wrapping_sub(1)) == Some(&'A')
+            || chars.get(pos.wrapping_sub(1)) == Some(&'O'))
+            && chars.get(*pos + 1) == Some(&'G')
+            && chars.get(*pos + 2) == Some(&'I'))
     {
-        if get_substring(&characters, *pos + 1, *pos + 3) == "ET" || germanic(&characters) {
-            *primary += "K";
-            *secondary += "K";
+        if get_substring(&chars, *pos + 1, *pos + 3) == "ET" || germanic(&chars) {
+            *p += "K";
+            *s += "K";
         } else {
-            *primary += "J";
+            *p += "J";
 
             // Always soft if French ending.
-            if get_substring(&characters, *pos + 1, *pos + 5) == "IER " {
-                *secondary += "J";
+            if get_substring(&chars, *pos + 1, *pos + 5) == "IER " {
+                *s += "J";
             } else {
-                *secondary += "K";
+                *s += "K";
             }
         }
 
@@ -807,28 +695,45 @@ fn g_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'G') {
+    if chars.get(*pos + 1) == Some(&'G') {
         *pos += 1;
     }
 
     *pos += 1;
 
-    *primary += "K";
-    *secondary += "K";
+    *p += "K";
+    *s += "K";
 }
 
-fn j_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
-    if get_substring(&characters, *pos, *pos + 4) == "JOSE"
-        || get_substring(&characters, 0, 4) == "SAN "
+fn h_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    // Only keep if first & before vowel or btw. 2 vowels.
+    if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok()
+        && (*pos == 0
+            || Word::parse(
+                Rule::vowels,
+                get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+            )
+            .is_ok())
     {
-        if get_substring(&characters, *pos, *pos + 4) == "SAN "
-            || (*pos == 0 && characters.get(*pos + 4) == Some(&' '))
+        *p += "H";
+        *s += "H";
+
+        *pos += 1;
+    }
+
+    *pos += 1;
+}
+
+fn j_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if get_substring(&chars, *pos, *pos + 4) == "JOSE" || get_substring(&chars, 0, 4) == "SAN " {
+        if get_substring(&chars, *pos, *pos + 4) == "SAN "
+            || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
         {
-            *primary += "H";
-            *secondary += "H";
+            *p += "H";
+            *s += "H";
         } else {
-            *primary += "J";
-            *secondary += "H";
+            *p += "J";
+            *s += "H";
         }
 
         *pos += 1;
@@ -837,45 +742,165 @@ fn j_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     }
 
     if *pos == 0 {
-        *primary += "J";
+        *p += "J";
 
-        *secondary += "A";
-    } else if !slavo_germanic(&characters)
-        && (characters.get(*pos + 1) == Some(&'A') || characters.get(*pos + 1) == Some(&'O'))
+        *s += "A";
+    } else if !slavo_germanic(&chars)
+        && (chars.get(*pos + 1) == Some(&'A') || chars.get(*pos + 1) == Some(&'O'))
         && Word::parse(
             Rule::vowels,
-            get_char_as_string(&characters, pos.wrapping_sub(1)).as_str(),
+            get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
         )
         .is_ok()
     {
-        *primary += "J";
-        *secondary += "H";
-    } else if *pos == characters.len() {
-        *primary += "J";
-    } else if characters.get(pos.wrapping_sub(1)) != Some(&'S')
-        && characters.get(pos.wrapping_sub(1)) != Some(&'K')
-        && characters.get(pos.wrapping_sub(1)) != Some(&'L')
+        *p += "J";
+        *s += "H";
+    } else if *pos == chars.len() - 1 {
+        *p += "J";
+    } else if chars.get(pos.wrapping_sub(1)) != Some(&'S')
+        && chars.get(pos.wrapping_sub(1)) != Some(&'K')
+        && chars.get(pos.wrapping_sub(1)) != Some(&'L')
         && Word::parse(
             Rule::j_for_j_exception,
-            get_char_as_string(&characters, *pos + 1).as_str(),
+            get_char_as_string(&chars, *pos + 1).as_str(),
         )
         .is_err()
     {
-        *primary += "J";
-        *secondary += "J";
+        *p += "J";
+        *s += "J";
     // It could happen.
-    } else if characters.get(*pos + 1) == Some(&'J') {
+    } else if chars.get(*pos + 1) == Some(&'J') {
         *pos += 1;
     }
 
     *pos += 1;
 }
 
-fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
+fn k_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'K') {
+        *pos += 1;
+    }
+
+    *p += "K";
+    *s += "K";
+    *pos += 1;
+}
+fn l_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'L') {
+        // Spanish such as `cabrillo`, `gallegos`.
+        if *pos == chars.len() - 3
+            && ((chars.get(pos.wrapping_sub(1)) == Some(&'A') && chars.get(*pos + 2) == Some(&'E'))
+                || (chars.get(pos.wrapping_sub(1)) == Some(&'I')
+                    && (chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))))
+            || (chars.get(pos.wrapping_sub(1)) == Some(&'A')
+                && chars.get(*pos + 2) == Some(&'E')
+                && (chars.get(chars.len() - 1) == Some(&'A')
+                    || chars.get(chars.len() - 1) == Some(&'O')
+                    || Word::parse(
+                        Rule::alle,
+                        get_substring(
+                            &chars,
+                            chars.len().wrapping_sub(2),
+                            chars.len().wrapping_sub(1),
+                        )
+                        .as_str(),
+                    )
+                    .is_ok()))
+        {
+            *p += "L";
+            *pos += 2;
+
+            return;
+        }
+
+        *pos += 1;
+    }
+
+    *p += "L";
+    *s += "L";
+    *pos += 1;
+}
+fn m_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'M') ||
+          // Such as `dumb`, `thumb`.
+          (chars.get(pos.wrapping_sub(1))  ==Some(&'U') &&
+            chars.get(*pos + 1) == Some(&'B') &&
+            (*pos + 1 == chars.len() - 1||  get_substring(&chars, *pos + 2, *pos + 4) == "ER"))
+    {
+        *pos += 1;
+    }
+
+    *pos += 1;
+    *p += "M";
+    *s += "M";
+}
+fn n_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'N') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+    *p += "N";
+    *s += "N";
+}
+fn p_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'H') {
+        *p += "F";
+        *s += "F";
+        *pos += 2;
+
+        return;
+    }
+
+    // Also account for `campbell` and `raspberry`.
+    let subvalue = chars.get(*pos + 1);
+
+    if subvalue == Some(&'P') || subvalue == Some(&'B') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+
+    *p += "P";
+    *s += "P";
+}
+fn q_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'Q') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+    *p += "K";
+    *s += "K";
+}
+fn r_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    // French such as `Rogier`, but exclude `Hochmeier`.
+    if *pos == chars.len() - 1
+        && !slavo_germanic(&chars)
+        && chars.get(pos.wrapping_sub(1)) == Some(&'E')
+        && chars.get(pos.wrapping_sub(2)) == Some(&'I')
+        && chars.get(pos.wrapping_sub(4)) != Some(&'M')
+        && (chars.get(pos.wrapping_sub(3)) != Some(&'E')
+            && chars.get(pos.wrapping_sub(3)) != Some(&'A'))
+    {
+        *s += "R";
+    } else {
+        *p += "R";
+        *s += "R";
+    }
+
+    if chars.get(*pos + 1) == Some(&'R') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+}
+
+fn s_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     // Special cases `island`, `isle`, `carlisle`, `carlysle`.
-    if characters.get(*pos + 1) == Some(&'L')
-        && (characters.get(pos.wrapping_sub(1)) == Some(&'I')
-            || characters.get(pos.wrapping_sub(1)) == Some(&'Y'))
+    if chars.get(*pos + 1) == Some(&'L')
+        && (chars.get(pos.wrapping_sub(1)) == Some(&'I')
+            || chars.get(pos.wrapping_sub(1)) == Some(&'Y'))
     {
         *pos += 1;
 
@@ -883,42 +908,42 @@ fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     }
 
     // Special case `sugar-`.
-    if *pos == 0 && get_substring(&characters, 1, 5) == "UGAR" {
-        *primary += "X";
-        *secondary += "S";
+    if *pos == 0 && get_substring(&chars, 1, 5) == "UGAR" {
+        *p += "X";
+        *s += "S";
         *pos += 1;
 
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'H') {
+    if chars.get(*pos + 1) == Some(&'H') {
         // Germanic.
         if Word::parse(
             Rule::h_for_s,
-            get_substring(&characters, *pos + 1, *pos + 5).as_str(),
+            get_substring(&chars, *pos + 1, *pos + 5).as_str(),
         )
         .is_ok()
         {
-            *primary += "S";
-            *secondary += "S";
+            *p += "S";
+            *s += "S";
         } else {
-            *primary += "X";
-            *secondary += "X";
+            *p += "X";
+            *s += "X";
         }
 
         *pos += 2;
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'I')
-        && (characters.get(*pos + 2) == Some(&'O') || characters.get(*pos + 2) == Some(&'A'))
+    if chars.get(*pos + 1) == Some(&'I')
+        && (chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))
     {
-        if slavo_germanic(&characters) {
-            *primary += "S";
-            *secondary += "S";
+        if slavo_germanic(&chars) {
+            *p += "S";
+            *s += "S";
         } else {
-            *primary += "S";
-            *secondary += "X";
+            *p += "S";
+            *s += "X";
         }
 
         *pos += 3;
@@ -929,17 +954,17 @@ fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
     // German & Anglicization's, such as `Smith` match `Schmidt`, `snider`
     // match `Schneider`. Also, -sz- in slavic language although in
     // hungarian it is pronounced `s`.
-    if characters.get(*pos + 1) == Some(&'Z')
+    if chars.get(*pos + 1) == Some(&'Z')
         || (*pos == 0
-            && (characters.get(*pos + 1) == Some(&'L')
-                || characters.get(*pos + 1) == Some(&'M')
-                || characters.get(*pos + 1) == Some(&'N')
-                || characters.get(*pos + 1) == Some(&'W')))
+            && (chars.get(*pos + 1) == Some(&'L')
+                || chars.get(*pos + 1) == Some(&'M')
+                || chars.get(*pos + 1) == Some(&'N')
+                || chars.get(*pos + 1) == Some(&'W')))
     {
-        *primary += "S";
-        *secondary += "X";
+        *p += "S";
+        *s += "X";
 
-        if characters.get(*pos + 1) == Some(&'Z') {
+        if chars.get(*pos + 1) == Some(&'Z') {
             *pos += 1;
         }
 
@@ -948,18 +973,18 @@ fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'C') {
+    if chars.get(*pos + 1) == Some(&'C') {
         // Schlesinger's rule.
-        if characters.get(*pos + 2) == Some(&'H') {
-            let subvalue = get_substring(&characters, *pos + 3, *pos + 5);
+        if chars.get(*pos + 2) == Some(&'H') {
+            let subvalue = get_substring(&chars, *pos + 3, *pos + 5);
             if Word::parse(Rule::dutch_sch, subvalue.as_str()).is_ok() {
                 // Such as `schermerhorn`, `schenker`.
                 if subvalue == "ER" || subvalue == "EN" {
-                    *primary += "X";
-                    *secondary += "SK"
+                    *p += "X";
+                    *s += "SK"
                 } else {
-                    *primary += "SK";
-                    *secondary += "SK"
+                    *p += "SK";
+                    *s += "SK"
                 }
 
                 *pos += 3;
@@ -968,14 +993,14 @@ fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
             }
 
             if *pos == 0
-                && Word::parse(Rule::vowels, get_char_as_string(&characters, 3).as_str()).is_err()
-                && characters.get(3) != Some(&'W')
+                && Word::parse(Rule::vowels, get_char_as_string(&chars, 3).as_str()).is_err()
+                && chars.get(3) != Some(&'W')
             {
-                *primary += "X";
-                *secondary += "S";
+                *p += "X";
+                *s += "S";
             } else {
-                *primary += "X";
-                *secondary += "X";
+                *p += "X";
+                *s += "X";
             }
 
             *pos += 3;
@@ -983,75 +1008,75 @@ fn s_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
             return;
         }
 
-        if characters.get(*pos + 2) == Some(&'I')
-            || characters.get(*pos + 2) == Some(&'E')
-            || characters.get(*pos + 2) == Some(&'Y')
+        if chars.get(*pos + 2) == Some(&'I')
+            || chars.get(*pos + 2) == Some(&'E')
+            || chars.get(*pos + 2) == Some(&'Y')
         {
-            *primary += "S";
-            *secondary += "S";
+            *p += "S";
+            *s += "S";
             *pos += 3;
             return;
         }
 
-        *primary += "SK";
-        *secondary += "SK";
+        *p += "SK";
+        *s += "SK";
         *pos += 3;
 
         return;
     }
 
-    let subvalue = get_substring(&characters, pos.wrapping_sub(2), *pos);
+    let subvalue = get_substring(&chars, pos.wrapping_sub(2), *pos);
 
     // French such as `resnais`, `artois`.
-    if *pos == characters.len() && (subvalue == "AI" || subvalue == "OI") {
-        *secondary += "S";
+    if *pos == chars.len() - 1 && (subvalue == "AI" || subvalue == "OI") {
+        *s += "S";
     } else {
-        *primary += "S";
-        *secondary += "S";
+        *p += "S";
+        *s += "S";
     }
 
-    if characters.get(*pos + 1) == Some(&'S') {
+    if chars.get(*pos + 1) == Some(&'S') {
         *pos += 1;
     }
 
     *pos += 1;
 }
 
-fn t_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
-    if characters.get(*pos + 1) == Some(&'I')
-        && characters.get(*pos + 2) == Some(&'O')
-        && characters.get(*pos + 3) == Some(&'N')
+fn t_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'I')
+        && chars.get(*pos + 2) == Some(&'O')
+        && chars.get(*pos + 3) == Some(&'N')
     {
-        *primary += "X";
-        *secondary += "X";
+        *p += "X";
+        *s += "X";
         *pos += 3;
 
         return;
     }
 
-    if (characters.get(*pos + 1) == Some(&'I') && characters.get(*pos + 2) == Some(&'A'))
-        || (characters.get(*pos + 1) == Some(&'C') && characters.get(*pos + 2) == Some(&'H'))
+    if (chars.get(*pos + 1) == Some(&'I') && chars.get(*pos + 2) == Some(&'A'))
+        || (chars.get(*pos + 1) == Some(&'C') && chars.get(*pos + 2) == Some(&'H'))
     {
-        *primary += "X";
-        *secondary += "X";
+        *p += "X";
+        *s += "X";
         *pos += 3;
 
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'H')
-        || (characters.get(*pos + 1) == Some(&'T') && characters.get(*pos + 2) == Some(&'H'))
+    if chars.get(*pos + 1) == Some(&'H')
+        || (chars.get(*pos + 1) == Some(&'T') && chars.get(*pos + 2) == Some(&'H'))
     {
         // Special case `Thomas`, `Thames` or Germanic.
-        if germanic(&characters)
-            || ((characters.get(*pos + 2) == Some(&'O') || characters.get(*pos + 2) == Some(&'A'))
-                && characters.get(*pos + 3) == Some(&'M'))
+        if germanic(&chars)
+            || ((chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))
+                && chars.get(*pos + 3) == Some(&'M'))
         {
-            *primary += "T";
-            *secondary += "T";
+            *p += "T";
+            *s += "T";
         } else {
-            *primary += "0";
-            *secondary += "T";
+            *p += "0";
+            *s += "T";
         }
 
         *pos += 2;
@@ -1059,19 +1084,30 @@ fn t_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
         return;
     }
 
-    if characters.get(*pos + 1) == Some(&'T') || characters.get(*pos + 1) == Some(&'D') {
+    if chars.get(*pos + 1) == Some(&'T') || chars.get(*pos + 1) == Some(&'D') {
         *pos += 1;
     }
 
     *pos += 1;
-    *primary += "T";
-    *secondary += "T";
+    *p += "T";
+    *s += "T";
 }
-fn w_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
+
+fn v_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if chars.get(*pos + 1) == Some(&'V') {
+        *pos += 1;
+    }
+
+    *p += "F";
+    *s += "F";
+    *pos += 1;
+}
+
+fn w_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     // Can also be in middle of word (as already taken care of for initial).
-    if characters.get(*pos + 1) == Some(&'R') {
-        *primary += "R";
-        *secondary += "R";
+    if chars.get(*pos + 1) == Some(&'R') {
+        *p += "R";
+        *s += "R";
         *pos += 2;
 
         return;
@@ -1079,43 +1115,38 @@ fn w_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
     if *pos == 0 {
         // `Wasserman` should match `Vasserman`.
-        if Word::parse(
-            Rule::vowels,
-            get_char_as_string(&characters, *pos + 1).as_str(),
-        )
-        .is_ok()
-        {
-            *primary += "A";
-            *secondary += "F";
-        } else if characters.get(*pos + 1) == Some(&'H') {
+        if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok() {
+            *p += "A";
+            *s += "F";
+        } else if chars.get(*pos + 1) == Some(&'H') {
             // Need `Uomo` to match `Womo`.
-            *primary += "A";
-            *secondary += "A";
+            *p += "A";
+            *s += "A";
         }
     }
 
     // `Arnow` should match `Arnoff`.
-    if ((characters.get(pos.wrapping_sub(1))  ==Some(&'E') || characters.get(pos.wrapping_sub(1))  == Some(&'O')) &&
-            characters.get(*pos + 1) == Some(&'S') &&
-            characters.get(*pos + 2) == Some(&'K') &&
-            (characters.get(*pos + 3) == Some(&'I') || characters.get(*pos + 3) == Some(&'Y'))) ||
+    if ((chars.get(pos.wrapping_sub(1))  ==Some(&'E') || chars.get(pos.wrapping_sub(1))  == Some(&'O')) &&
+            chars.get(*pos + 1) == Some(&'S') &&
+            chars.get(*pos + 2) == Some(&'K') &&
+            (chars.get(*pos + 3) == Some(&'I') || chars.get(*pos + 3) == Some(&'Y'))) ||
           // Maybe a bug? Shouldn't this be general Germanic?
-          get_substring(&characters, 0, 3) == "SCH" ||
-          (*pos == characters.len() && Word::parse(Rule::vowels, get_char_as_string(&characters, pos.wrapping_sub(1)).as_str()).is_ok())
+          get_substring(&chars, 0, 3) == "SCH" ||
+          (*pos == chars.len() - 1 && Word::parse(Rule::vowels, get_char_as_string(&chars, pos.wrapping_sub(1)).as_str()).is_ok())
     {
-        *secondary += "F";
+        *s += "F";
         *pos += 1;
 
         return;
     }
 
     // Polish such as `Filipowicz`.
-    if characters.get(*pos + 1) == Some(&'I')
-        && (characters.get(*pos + 2) == Some(&'C') || characters.get(*pos + 2) == Some(&'T'))
-        && characters.get(*pos + 3) == Some(&'Z')
+    if chars.get(*pos + 1) == Some(&'I')
+        && (chars.get(*pos + 2) == Some(&'C') || chars.get(*pos + 2) == Some(&'T'))
+        && chars.get(*pos + 3) == Some(&'Z')
     {
-        *primary += "TS";
-        *secondary += "FX";
+        *p += "TS";
+        *s += "FX";
         *pos += 4;
 
         return;
@@ -1123,30 +1154,46 @@ fn w_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary:
 
     *pos += 1;
 }
-fn z_case(pos: &mut usize, characters: &[char], primary: &mut String, secondary: &mut String) {
+
+fn x_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+    if !(*pos == chars.len() - 1
+        && (chars.get(pos.wrapping_sub(1)) == Some(&'U')
+            && (chars.get(pos.wrapping_sub(2)) == Some(&'A')
+                || chars.get(pos.wrapping_sub(2)) == Some(&'O'))))
+    {
+        *p += "KS";
+        *s += "KS"
+    }
+
+    if chars.get(*pos + 1) == Some(&'C') || chars.get(*pos + 1) == Some(&'X') {
+        *pos += 1;
+    }
+
+    *pos += 1;
+}
+
+fn z_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     // Chinese pinyin such as `Zhao`.
-    if characters.get(*pos + 1) == Some(&'H') {
-        *primary += "J";
-        *secondary += "J";
+    if chars.get(*pos + 1) == Some(&'H') {
+        *p += "J";
+        *s += "J";
         *pos += 2;
 
         return;
-    } else if (characters.get(*pos + 1) == Some(&'Z')
-        && (characters.get(*pos + 2) == Some(&'A')
-            || characters.get(*pos + 2) == Some(&'I')
-            || characters.get(*pos + 2) == Some(&'O')))
-        || (slavo_germanic(&characters)
-            && *pos > 0
-            && characters.get(pos.wrapping_sub(1)) != Some(&'T'))
+    } else if (chars.get(*pos + 1) == Some(&'Z')
+        && (chars.get(*pos + 2) == Some(&'A')
+            || chars.get(*pos + 2) == Some(&'I')
+            || chars.get(*pos + 2) == Some(&'O')))
+        || (slavo_germanic(&chars) && *pos > 0 && chars.get(pos.wrapping_sub(1)) != Some(&'T'))
     {
-        *primary += "S";
-        *secondary += "TS"
+        *p += "S";
+        *s += "TS"
     } else {
-        *primary += "S";
-        *secondary += "S";
+        *p += "S";
+        *s += "S";
     }
 
-    if characters.get(*pos + 1) == Some(&'Z') {
+    if chars.get(*pos + 1) == Some(&'Z') {
         *pos += 1;
     }
 
