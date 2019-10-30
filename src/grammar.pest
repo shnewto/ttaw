@@ -6,41 +6,53 @@ slavo_germanic = { SOI ~ any_not_sg* ~ sg ~ ANY* ~ EOI }
 sg = _{ "W" | "K" | "CZ" | "WITZ" }
 any_not_sg = _{ !sg ~ ANY }
 
-germanic = { SOI ~ g ~ ANY* ~ EOI }
+germanic = { SOI ~ any_not_g* ~ g ~ ANY* ~ EOI }
 g = _{ "VAN" | "VON" | "SCH" }
+any_not_g = _{ !g ~ ANY }
 
-initial_exceptions = { SOI ~ ie ~ ANY* ~ EOI }
+initial_exceptions = { SOI ~ any_not_ie* ~ ie ~ ANY* ~ EOI }
 ie = _{ "GN" | "KN" | "PN" | "WR" | "PS" }
+any_not_ie = _{ !ie ~ ANY }
 
-initial_greek_ch = { SOI ~ igc ~ ANY* ~ EOI }
+initial_greek_ch = { SOI ~ any_not_igc* ~ igc ~ ANY* ~ EOI }
 igc = _{ "CH" ~ ("IA" | "EM" | ("OR"~ !"E") | "YM" | "ARAC" | "ARIS") }
+any_not_igc = _{ !igc ~ ANY }
 
 greek_ch = { SOI ~ any_not_gc* ~ gc ~ ANY* ~ EOI }
 gc = _{ "ORCHES" | "ARCHIT" | "ORCHID" }
 any_not_gc = _{ !gc ~ ANY }
 
-ch_for_k = { SOI ~ cfk ~ EOI }
+ch_for_k = { SOI ~ any_not_cfk* ~ cfk ~ ANY* ~ EOI }
 cfk = _{ "B" | "F" | "H" | "L" | "M" | "N" | "R" | "V" | "W" }
+any_not_cfk = _{ !cfk ~ ANY }
 
-g_for_f = { SOI ~ gff ~ EOI }
+g_for_f = { SOI ~ any_not_gff* ~ gff ~ ANY* ~ EOI }
 gff = _{  "C" | "G" | "L" | "R" | "T" }
+any_not_gff = _{ !gff ~ ANY }
 
-initial_g_or_for_k_or_j = { SOI ~ igofkj ~ EOI }
+initial_g_or_for_k_or_j = { SOI ~ any_not_igofkj* ~ igofkj ~ ANY* ~ EOI }
 igofkj = _{ "Y" ~ (whitespace | ("E" ~ ("B" | "I" | "L" | "P" | "R" | "S" | "Y")) | ("I" ~ ("B" | "E" | "L" | "N"))) }
+any_not_igofkj = _{ !igofkj ~ ANY }
 
-initial_anger_exception = { SOI ~ iae ~ EOI }
+initial_anger_exception = { SOI ~ any_not_iae* ~ iae ~ ANY* ~ EOI }
 iae = _{ !("D" | "M" | "R") ~ "ANGER" }
+any_not_iae = _{ !iae ~ ANY }
 
-g_for_k_or_j = { ("E" | "G" | "I" | "R") }
+g_for_k_or_j = { SOI ~ any_not_gfkoj* ~ gfkoj ~ ANY* ~ EOI }
+gfkoj = _{ "E" | "G" | "I" | "R"  }
+any_not_gfkoj = _{ !gfkoj ~ ANY}
 
-j_for_j_exception = { ("L" | "T" | "K" | "S" | "N" | "M" | "B" | "Z")}
-
+j_for_j_exception = { SOI ~ any_not_jfje* ~ jfje ~ ANY* ~ EOI }
+jfje = _{ "L" | "T" | "K" | "S" | "N" | "M" | "B" | "Z" }
+any_not_jfje = _{ !jfje ~ ANY }
 alle = { "AS" | "OS" }
 
-h_for_s = { "EIM" | "OEK" | "OLM" | "OLZ" }
+h_for_s = { SOI ~ any_not_hfs* ~ hfs ~ ANY* ~ EOI }
+hfs = _{ "EIM" | "OEK" | "OLM" | "OLZ" }
+any_not_hfs = _{ !hfs ~ ANY }
 
 dutch_sch = { SOI ~ any_not_ds* ~ ds ~ ANY* ~ EOI }
-any_not_ds = _{ !ds ~ ANY }
 ds = _{("E" ~ ("D" | "M" | "N" | "R")) | "UY" | "OO"}
+any_not_ds = _{ !ds ~ ANY }
 
 whitespace = _{ " " | "\t" }
