@@ -852,6 +852,7 @@ fn curagh() {
         Some(&"KRK".to_string())
     )
 }
+
 #[test]
 fn weight() {
     assert_eq!(
@@ -860,35 +861,46 @@ fn weight() {
     )
 }
 
-//   t.test(
-//     'should transform GN to KN and N, when preceded by a vowel and ^, and not Slavo-Germanic',
-//     function(st) {
-//       var phonetics = double_metaphone("agnize")
+#[test]
+fn agnize() {
+    assert_eq!(
+        double_metaphone("agnize").unwrap().get(0).unwrap().get(..3),
+        Some("AKN")
+    );
 
-//       assert_eq!(phonetics[0].get(..3), 'AKN")
-//       assert_eq!(phonetics[1].get(..2), 'AN")
+    assert_eq!(
+        double_metaphone("agnize").unwrap().get(1).unwrap().get(..2),
+        Some("AN")
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn tagliaro() {
+    assert_eq!(
+        double_metaphone("tagliaro").unwrap().get(0),
+        Some(&"TKLR".to_string())
+    );
 
-//   t.deepEqual(
-//     double_metaphone("tagliaro"),
-//     ['TKLR', 'TLR'],
-//     'should transform GLI to KL and L'
-//   )
+    assert_eq!(
+        double_metaphone("tagliaro").unwrap().get(1),
+        Some(&"TLR".to_string())
+    );
+}
 
-//   t.test(
-//     'should transform GN to N and KN, when not followed by EY and Y, and not Slavo-Germanic',
-//     function(st) {
-//       var phonetics = double_metaphone("acceptingness")
+#[test]
+fn acceptingness() {
+    assert!(double_metaphone("acceptingness")
+        .unwrap()
+        .get(0)
+        .unwrap()
+        .ends_with("NNS"));
 
-//       assert_eq!(phonetics[0].slice(-3), 'NNS")
-//       assert_eq!(phonetics[1].slice(-4), 'NKNS")
-
-//       st.end()
-//     }
-//   )
+    assert!(double_metaphone("acceptingness")
+        .unwrap()
+        .get(1)
+        .unwrap()
+        .ends_with("NKNS"));
+}
 
 #[test]
 fn cagney() {
@@ -898,43 +910,42 @@ fn cagney() {
     )
 }
 
-//   t.test(
-//     'should transform an initial GY., GES, GEP, GEB, GEL, GEY, GIB, GIL, GIN, GIE, GEI, and GER to K and J',
-//     function(st) {
-//       var phonetics = double_metaphone("Gerben")
+#[test]
+fn gerben() {
+    assert_eq!(
+        double_metaphone("Gerben").unwrap().get(0).unwrap().get(..1),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("Gerben").unwrap().get(1).unwrap().get(..1),
+        Some("J")
+    );
+}
 
-//       assert_eq!(phonetics[0].unwrap().get(..1), 'K")
-//       assert_eq!(phonetics[1].unwrap().get(..1), 'J")
+#[test]
+fn auger() {
+    assert_eq!(
+        double_metaphone("auger").unwrap().get(0).unwrap().get(1..2),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("auger").unwrap().get(1).unwrap().get(1..2),
+        Some("J")
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn bulgy() {
+    assert_eq!(
+        double_metaphone("bulgy").unwrap().get(0).unwrap().get(2..3),
+        Some("K")
+    );
+    assert_eq!(
+        double_metaphone("bulgy").unwrap().get(1).unwrap().get(2..3),
+        Some("J")
+    );
+}
 
-//   t.test(
-//     'should transform GER to K and J, when not in DANGER, RANGER, and MANGER, and not preceded by E and I',
-//     function(st) {
-//       var phonetics = double_metaphone("auger")
-
-//       assert_eq!(phonetics[0].unwrap().get(1..2), 'K")
-//       assert_eq!(phonetics[1].unwrap().get(1..2), 'J")
-
-//       st.end()
-//     }
-//   )
-
-//   t.test(
-//     'should transform GY to K and J, when not preceded by E, I, R, and O',
-//     function(st) {
-//       var phonetics = double_metaphone("bulgy")
-
-//       assert_eq!(phonetics[0].unwrap().get(2..3), 'K")
-//       assert_eq!(phonetics[1].unwrap().get(2..3), 'J")
-
-//       st.end()
-//     }
-//   )
-
-//   assert_eq!(
 #[test]
 fn altogether() {
     assert_eq!(
@@ -946,9 +957,7 @@ fn altogether() {
         Some("K")
     )
 }
-//     'should transform the G in GET to K'
-//   )
-//   assert_eq!(
+
 #[test]
 fn vanagema() {
     assert_eq!(
@@ -960,9 +969,7 @@ fn vanagema() {
         Some("K")
     )
 }
-//     'should transform G to K, when Germanic and followed by E, I, or Y'
-//   )
-//   assert_eq!(
+
 #[test]
 fn vongoggin() {
     assert_eq!(
@@ -974,9 +981,7 @@ fn vongoggin() {
         Some("K")
     )
 }
-//     'should transform G to K, when Germanic, preceded by A or O, and followed by GI'
-//   )
-//   assert_eq!(
+
 #[test]
 fn tangier() {
     assert_eq!(
@@ -988,20 +993,26 @@ fn tangier() {
         Some("J")
     )
 }
-//     'should transform G to J, when followed by "IER "'
-//   )
 
-//   t.test(
-//     'should transform G to J and K, when followed by E, I, or Y, or preceded by A or O and followed by GI',
-//     function(st) {
-//       var phonetics = double_metaphone("biaggi")
-
-//       assert_eq!(phonetics[0].unwrap().get(1..2), 'J")
-//       assert_eq!(phonetics[1].unwrap().get(1..2), 'K")
-
-//       st.end()
-//     }
-//   )
+#[test]
+fn biaggi() {
+    assert_eq!(
+        double_metaphone("biaggi")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("J")
+    );
+    assert_eq!(
+        double_metaphone("biaggi")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("K")
+    );
+}
 
 #[test]
 fn two_gs() {
@@ -1024,7 +1035,7 @@ fn ha() {
         Some(&"H".to_string())
     )
 }
-//   assert_eq!(
+
 #[test]
 fn aha() {
     assert_eq!(
@@ -1032,13 +1043,12 @@ fn aha() {
         Some(&"AH".to_string())
     )
 }
-//     'should keep H when both followed and preceded by a vowel'
-//   )
+
 #[test]
 fn one_h() {
     assert_eq!(double_metaphone("h").unwrap().get(0), Some(&"".to_string()))
 }
-//   assert_eq!(
+
 #[test]
 fn sanjacinto() {
     assert_eq!(
@@ -1050,9 +1060,7 @@ fn sanjacinto() {
         Some("H")
     )
 }
-//     'should transform J to H when obviously spanish (an initial "SAN ")'
-//   )
-//   assert_eq!(
+
 #[test]
 fn jose() {
     assert_eq!(
@@ -1060,49 +1068,71 @@ fn jose() {
         Some("H")
     )
 }
-//     'should transform J to H in an initial "J... "'
-//   )
 
-//   t.test('should transform the J to J and H, when in JOSE', function(st) {
-//     var phonetics = double_metaphone("Joseph")
+#[test]
+fn joseph() {
+    assert_eq!(
+        double_metaphone("Joseph").unwrap().get(0).unwrap().get(..1),
+        Some("J")
+    );
+    assert_eq!(
+        double_metaphone("Joseph").unwrap().get(1).unwrap().get(..1),
+        Some("H")
+    );
+}
 
-//     assert_eq!(phonetics[0].unwrap().get(..1), 'J")
-//     assert_eq!(phonetics[1].unwrap().get(..1), 'H")
+#[test]
+fn jankelowicz() {
+    assert_eq!(
+        double_metaphone("Jankelowicz")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(..1),
+        Some("J")
+    );
+    assert_eq!(
+        double_metaphone("Jankelowicz")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(..1),
+        Some("A")
+    );
+}
 
-//     st.end()
-//   })
+#[test]
+fn bajador() {
+    assert_eq!(
+        double_metaphone("bajador")
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .get(1..2),
+        Some("J")
+    );
+    assert_eq!(
+        double_metaphone("bajador")
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .get(1..2),
+        Some("H")
+    );
+}
 
-//   t.test('should transform the J to J and H, when in JOSE', function(st) {
-//     var phonetics = double_metaphone("Jankelowicz")
+#[test]
+fn svaraj() {
+    assert_eq!(
+        double_metaphone("svaraj").unwrap().get(0),
+        Some(&"SFRJ".to_string())
+    );
+    assert_eq!(
+        double_metaphone("svaraj").unwrap().get(1),
+        Some(&"SFR".to_string())
+    );
+}
 
-//     assert_eq!(phonetics[0].unwrap().get(..1), 'J")
-//     assert_eq!(phonetics[1].unwrap().get(..1), 'A")
-
-//     st.end()
-//   })
-
-//   t.test(
-//     'should transform J to J and H, when preceded by a vowel, followed by A or O, and not Slavo-Germanic',
-//     function(st) {
-//       var phonetics = double_metaphone("bajador")
-
-//       assert_eq!(phonetics[0].unwrap().get(1..2), 'J")
-//       assert_eq!(phonetics[1].unwrap().get(1..2), 'H")
-
-//       st.end()
-//     }
-//   )
-
-//   t.test('should both keep and drop a final J', function(st) {
-//     var phonetics = double_metaphone("svaraj")
-
-//     assert_eq!(phonetics[0], 'SFRJ")
-//     assert_eq!(phonetics[1], 'SFR")
-
-//     st.end()
-//   })
-
-//   assert_eq!(
 #[test]
 fn abject() {
     assert_eq!(
@@ -1114,8 +1144,7 @@ fn abject() {
         Some("J")
     )
 }
-//     'should keep J when not preceded by S, K, and L, and not followed by L, T, K, S, N, M, B, and Z'
-//   )
+
 #[test]
 fn sjji() {
     assert_eq!(
@@ -1143,6 +1172,42 @@ fn like() {
         double_metaphone("like").unwrap().get(0),
         Some(&"LK".to_string())
     )
+}
+
+#[test]
+fn cabrillo() {
+    assert_eq!(
+        double_metaphone("cabrillo").unwrap().get(0),
+        Some(&"KPRL".to_string())
+    );
+    assert_eq!(
+        double_metaphone("cabrillo").unwrap().get(1),
+        Some(&"KPR".to_string())
+    );
+}
+
+#[test]
+fn villa() {
+    assert_eq!(
+        double_metaphone("villa").unwrap().get(0),
+        Some(&"FL".to_string())
+    );
+    assert_eq!(
+        double_metaphone("villa").unwrap().get(1),
+        Some(&"F".to_string())
+    );
+}
+
+#[test]
+fn crevalle() {
+    assert_eq!(
+        double_metaphone("crevalle").unwrap().get(0),
+        Some(&"KRFL".to_string())
+    );
+    assert_eq!(
+        double_metaphone("crevalle").unwrap().get(1),
+        Some(&"KRF".to_string())
+    );
 }
 
 //   t.test(
