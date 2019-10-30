@@ -168,12 +168,12 @@ pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
                 b_case(&mut metaphone);
             }
 
-            'Ç' => {
-                c_cedilla_case(&mut metaphone);
-            }
-
             'C' => {
                 c_case(&mut metaphone);
+            }
+
+            'Ç' => {
+                c_cedilla_case(&mut metaphone);
             }
 
             'D' => {
