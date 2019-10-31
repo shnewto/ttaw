@@ -19,7 +19,7 @@ pub fn rhymes(a: &str, b: &str) -> bool {
     );
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
-        a,
+        b,
         b_phonetic.primary,
         b_phonetic.secondary
     );
