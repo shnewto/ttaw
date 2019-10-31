@@ -10,8 +10,6 @@ pub fn alliteration(s: &str) -> bool {
         let a_phonetic = double_metaphone(a);
         let b_phonetic = double_metaphone(b);
 
-        println!("{:?} : {:?} --- {:?} : {:?}", a, a_phonetic, b, b_phonetic);
-
         let mut a_phonetic_head_primary = a_phonetic.primary;
 
         if let Some(c) = a_phonetic_head_primary.get(..1) {
