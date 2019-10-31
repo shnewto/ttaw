@@ -7,16 +7,16 @@ use pest::Parser;
 pub struct Word;
 
 #[derive(Debug, Clone, PartialEq)]
-struct Metaphone {
+struct State {
     pos: usize,
     chars: Vec<char>,
     p: String,
     s: String,
 }
 
-impl Metaphone {
-    pub fn new() -> Metaphone {
-        Metaphone {
+impl State {
+    pub fn new() -> State {
+        State {
             pos: 0,
             chars: vec![],
             p: String::new(),
@@ -25,124 +25,130 @@ impl Metaphone {
     }
 }
 
-// const LEN_OFFSET: usize = 5;
-// const LAST_POS_OFFSET: usize = 6;
+#[derive(Debug, Clone, PartialEq)]
+pub struct DoubleMetaphone {
+    pub primary: String,
+    pub secondary: String,
+}
 
-pub fn double_metaphone(input: &str) -> Result<Vec<String>, ()> {
-    let mut metaphone = Metaphone::new();
+pub fn double_metaphone(input: &str) -> DoubleMetaphone {
+    let mut state = State::new();
     let word: String = input.to_uppercase() + "     ";
 
-    metaphone.chars = word.chars().collect::<Vec<char>>();
+    state.chars = word.chars().collect::<Vec<char>>();
 
     if Word::parse(Rule::initial_exceptions, word.as_str()).is_ok() {
-        metaphone.pos += 1;
+        state.pos += 1;
     }
 
-    if let Some('X') = metaphone.chars.first() {
-        metaphone.p += "S";
-        metaphone.s += "S";
-        metaphone.pos += 1
+    if let Some('X') = state.chars.first() {
+        state.p += "S";
+        state.s += "S";
+        state.pos += 1
     }
 
-    while let Some(c) = metaphone.chars.get(metaphone.pos) {
+    while let Some(c) = state.chars.get(state.pos) {
         match c {
             'A' | 'E' | 'I' | 'O' | 'U' | 'Y' | 'À' | 'Ê' | 'É' => {
-                vowel_case(&mut metaphone);
+                vowel_case(&mut state);
             }
 
             'B' => {
-                b_case(&mut metaphone);
+                b_case(&mut state);
             }
 
             'Ç' => {
-                c_cedilla_case(&mut metaphone);
+                c_cedilla_case(&mut state);
             }
 
             'C' => {
-                c_case(&mut metaphone);
+                c_case(&mut state);
             }
 
             'D' => {
-                d_case(&mut metaphone);
+                d_case(&mut state);
             }
 
             'F' => {
-                f_case(&mut metaphone);
+                f_case(&mut state);
             }
 
             'G' => {
-                g_case(&mut metaphone);
+                g_case(&mut state);
             }
 
             'H' => {
-                h_case(&mut metaphone);
+                h_case(&mut state);
             }
 
             'J' => {
-                j_case(&mut metaphone);
+                j_case(&mut state);
             }
 
             'K' => {
-                k_case(&mut metaphone);
+                k_case(&mut state);
             }
 
             'L' => {
-                l_case(&mut metaphone);
+                l_case(&mut state);
             }
 
             'M' => {
-                m_case(&mut metaphone);
+                m_case(&mut state);
             }
 
             'N' => {
-                n_case(&mut metaphone);
+                n_case(&mut state);
             }
 
             'Ñ' => {
-                top_tilde_n_case(&mut metaphone);
+                top_tilde_n_case(&mut state);
             }
 
             'P' => {
-                p_case(&mut metaphone);
+                p_case(&mut state);
             }
 
             'Q' => {
-                q_case(&mut metaphone);
+                q_case(&mut state);
             }
 
             'R' => {
-                r_case(&mut metaphone);
+                r_case(&mut state);
             }
 
             'S' => {
-                s_case(&mut metaphone);
+                s_case(&mut state);
             }
 
             'T' => {
-                t_case(&mut metaphone);
+                t_case(&mut state);
             }
 
             'V' => {
-                v_case(&mut metaphone);
+                v_case(&mut state);
             }
 
             'W' => {
-                w_case(&mut metaphone);
+                w_case(&mut state);
             }
 
             'X' => {
-                x_case(&mut metaphone);
+                x_case(&mut state);
             }
 
             'Z' => {
-                z_case(&mut metaphone);
+                z_case(&mut state);
             }
 
-            _ => metaphone.pos += 1,
+            _ => state.pos += 1,
         }
     }
 
-    Ok(vec![metaphone.p, metaphone.s])
+    DoubleMetaphone {
+        primary: state.p,
+        secondary: state.s,
+    }
 }
 
 fn get_char_as_string(chars: &[char], pos: usize) -> String {
@@ -171,7 +177,7 @@ fn slavo_germanic(chars: &[char]) -> bool {
     .is_ok()
 }
 
-fn vowel_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
+fn vowel_case(State { pos, p, s, .. }: &mut State) {
     if *pos == 0 {
         *p += "A";
         *s += "A";
@@ -180,7 +186,7 @@ fn vowel_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn b_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn b_case(State { pos, chars, p, s }: &mut State) {
     *p += "P";
     *s += "P";
 
@@ -191,13 +197,13 @@ fn b_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn c_cedilla_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
+fn c_cedilla_case(State { pos, p, s, .. }: &mut State) {
     *p += "S";
     *s += "S";
     *pos += 1;
 }
 
-fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn c_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(pos.wrapping_sub(1)) == Some(&'A')
         && chars.get(*pos + 1) == Some(&'H')
         && chars.get(*pos + 2) != Some(&'I')
@@ -380,7 +386,7 @@ fn c_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn d_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn d_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'G') {
         if chars.get(*pos + 2) == Some(&'E')
             || chars.get(*pos + 2) == Some(&'I')
@@ -411,7 +417,7 @@ fn d_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn f_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn f_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'F') {
         *pos += 1;
     }
@@ -421,7 +427,7 @@ fn f_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "F";
 }
 
-fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn g_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'H') {
         if *pos > 0
             && Word::parse(
@@ -588,7 +594,7 @@ fn g_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "K";
 }
 
-fn h_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn h_case(State { pos, chars, p, s }: &mut State) {
     if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok()
         && (*pos == 0
             || Word::parse(
@@ -606,7 +612,7 @@ fn h_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn j_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn j_case(State { pos, chars, p, s }: &mut State) {
     if get_substring(&chars, *pos, *pos + 4) == "JOSE" || get_substring(&chars, 0, 4) == "SAN " {
         if get_substring(&chars, 0, 4) == "SAN " || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
         {
@@ -655,7 +661,7 @@ fn j_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn k_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn k_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'K') {
         *pos += 1;
     }
@@ -665,7 +671,7 @@ fn k_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn l_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn l_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'L') {
         if *pos == chars.len().wrapping_sub(8)
             && ((chars.get(pos.wrapping_sub(1)) == Some(&'A') && chars.get(*pos + 2) == Some(&'E'))
@@ -700,7 +706,7 @@ fn l_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn m_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn m_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'M')
         || (chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && chars.get(*pos + 1) == Some(&'B')
@@ -715,7 +721,7 @@ fn m_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "M";
 }
 
-fn n_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn n_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'N') {
         *pos += 1;
     }
@@ -725,13 +731,13 @@ fn n_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "N";
 }
 
-fn top_tilde_n_case(Metaphone { pos, p, s, .. }: &mut Metaphone) {
+fn top_tilde_n_case(State { pos, p, s, .. }: &mut State) {
     *pos += 1;
     *p += "N";
     *s += "N";
 }
 
-fn p_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn p_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'H') {
         *p += "F";
         *s += "F";
@@ -750,7 +756,7 @@ fn p_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "P";
 }
 
-fn q_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn q_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'Q') {
         *pos += 1;
     }
@@ -760,7 +766,7 @@ fn q_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "K";
 }
 
-fn r_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn r_case(State { pos, chars, p, s }: &mut State) {
     if *pos == chars.len().wrapping_sub(6)
         && !slavo_germanic(&chars)
         && chars.get(pos.wrapping_sub(1)) == Some(&'E')
@@ -782,7 +788,7 @@ fn r_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn s_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn s_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'L')
         && (chars.get(pos.wrapping_sub(1)) == Some(&'I')
             || chars.get(pos.wrapping_sub(1)) == Some(&'Y'))
@@ -926,7 +932,7 @@ fn s_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn t_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn t_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'I')
         && chars.get(*pos + 2) == Some(&'O')
         && chars.get(*pos + 3) == Some(&'N')
@@ -976,7 +982,7 @@ fn t_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *s += "T";
 }
 
-fn v_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn v_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'V') {
         *pos += 1;
     }
@@ -986,7 +992,7 @@ fn v_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn w_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn w_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'R') {
         *p += "R";
         *s += "R";
@@ -1038,7 +1044,7 @@ fn w_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn x_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn x_case(State { pos, chars, p, s }: &mut State) {
     if !(*pos == chars.len().wrapping_sub(6)
         && (chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && (chars.get(pos.wrapping_sub(2)) == Some(&'A')
@@ -1055,7 +1061,7 @@ fn x_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
     *pos += 1;
 }
 
-fn z_case(Metaphone { pos, chars, p, s }: &mut Metaphone) {
+fn z_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'H') {
         *p += "J";
         *s += "J";
