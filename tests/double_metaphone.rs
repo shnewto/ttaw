@@ -688,6 +688,7 @@ fn macquillan() {
         Some("K")
     )
 }
+
 #[test]
 fn aback() {
     assert_eq!(
@@ -695,6 +696,7 @@ fn aback() {
         Some("K")
     )
 }
+
 #[test]
 fn acquit() {
     assert_eq!(
@@ -706,6 +708,7 @@ fn acquit() {
         Some("K")
     )
 }
+
 #[test]
 fn acclimate() {
     assert_eq!(
@@ -717,6 +720,7 @@ fn acclimate() {
         Some("K")
     )
 }
+
 #[test]
 fn edge() {
     assert_eq!(
@@ -724,6 +728,7 @@ fn edge() {
         Some("J")
     )
 }
+
 #[test]
 fn pidgin() {
     assert_eq!(
@@ -735,6 +740,7 @@ fn pidgin() {
         Some("J")
     )
 }
+
 #[test]
 fn edgy() {
     assert_eq!(
@@ -742,6 +748,7 @@ fn edgy() {
         Some("J")
     )
 }
+
 #[test]
 fn edgar() {
     assert_eq!(
@@ -749,6 +756,7 @@ fn edgar() {
         Some("TK")
     )
 }
+
 #[test]
 fn width() {
     assert_eq!(
@@ -756,6 +764,7 @@ fn width() {
         Some("T")
     )
 }
+
 #[test]
 fn add() {
     assert_eq!(
@@ -763,6 +772,7 @@ fn add() {
         Some("T")
     )
 }
+
 #[test]
 fn abduce_slice() {
     assert_eq!(
@@ -774,6 +784,7 @@ fn abduce_slice() {
         Some("T")
     )
 }
+
 #[test]
 fn affect() {
     assert_eq!(
@@ -785,6 +796,7 @@ fn affect() {
         Some("F")
     )
 }
+
 #[test]
 fn abaft() {
     assert_eq!(
@@ -792,6 +804,7 @@ fn abaft() {
         Some("F")
     )
 }
+
 #[test]
 fn aargh() {
     assert_eq!(
@@ -799,6 +812,7 @@ fn aargh() {
         Some("K")
     )
 }
+
 #[test]
 fn ghislane() {
     assert_eq!(
@@ -810,6 +824,7 @@ fn ghislane() {
         Some("J")
     )
 }
+
 #[test]
 fn ghoul() {
     assert_eq!(
@@ -817,48 +832,38 @@ fn ghoul() {
         Some("K")
     )
 }
+
 #[test]
 fn hugh() {
-    assert_eq!(
-        double_metaphone("hugh").unwrap().get(0),
-        Some(&"H".to_string())
-    )
+    assert_eq!(double_metaphone("hugh").unwrap().get(0).unwrap(), "H")
 }
+
 #[test]
 fn bough() {
-    assert_eq!(
-        double_metaphone("bough").unwrap().get(0),
-        Some(&"P".to_string())
-    )
+    assert_eq!(double_metaphone("bough").unwrap().get(0).unwrap(), "P")
 }
+
 #[test]
 fn broughton() {
     assert_eq!(
-        double_metaphone("broughton").unwrap().get(0),
-        Some(&"PRTN".to_string())
-    )
-}
-#[test]
-fn laugh() {
-    assert_eq!(
-        double_metaphone("laugh").unwrap().get(0),
-        Some(&"LF".to_string())
-    )
-}
-#[test]
-fn curagh() {
-    assert_eq!(
-        double_metaphone("curagh").unwrap().get(0),
-        Some(&"KRK".to_string())
+        double_metaphone("broughton").unwrap().get(0).unwrap(),
+        "PRTN"
     )
 }
 
 #[test]
+fn laugh() {
+    assert_eq!(double_metaphone("laugh").unwrap().get(0).unwrap(), "LF")
+}
+
+#[test]
+fn curagh() {
+    assert_eq!(double_metaphone("curagh").unwrap().get(0).unwrap(), "KRK")
+}
+
+#[test]
 fn weight() {
-    assert_eq!(
-        double_metaphone("weight").unwrap().get(0),
-        Some(&"AT".to_string())
-    )
+    assert_eq!(double_metaphone("weight").unwrap().get(0).unwrap(), "AT")
 }
 
 #[test]
@@ -877,14 +882,11 @@ fn agnize() {
 #[test]
 fn tagliaro() {
     assert_eq!(
-        double_metaphone("tagliaro").unwrap().get(0),
-        Some(&"TKLR".to_string())
+        double_metaphone("tagliaro").unwrap().get(0).unwrap(),
+        "TKLR"
     );
 
-    assert_eq!(
-        double_metaphone("tagliaro").unwrap().get(1),
-        Some(&"TLR".to_string())
-    );
+    assert_eq!(double_metaphone("tagliaro").unwrap().get(1).unwrap(), "TLR");
 }
 
 #[test]
@@ -904,10 +906,7 @@ fn acceptingness() {
 
 #[test]
 fn cagney() {
-    assert_eq!(
-        double_metaphone("cagney").unwrap().get(0),
-        Some(&"KKN".to_string())
-    )
+    assert_eq!(double_metaphone("cagney").unwrap().get(0).unwrap(), "KKN")
 }
 
 #[test]
@@ -1016,37 +1015,27 @@ fn biaggi() {
 
 #[test]
 fn two_gs() {
-    assert_eq!(
-        double_metaphone("GG").unwrap().get(0),
-        Some(&"K".to_string())
-    )
+    assert_eq!(double_metaphone("GG").unwrap().get(0).unwrap(), "K")
 }
+
 #[test]
 fn one_g() {
-    assert_eq!(
-        double_metaphone("G").unwrap().get(0),
-        Some(&"K".to_string())
-    )
+    assert_eq!(double_metaphone("G").unwrap().get(0).unwrap(), "K")
 }
+
 #[test]
 fn ha() {
-    assert_eq!(
-        double_metaphone("ha").unwrap().get(0),
-        Some(&"H".to_string())
-    )
+    assert_eq!(double_metaphone("ha").unwrap().get(0).unwrap(), "H")
 }
 
 #[test]
 fn aha() {
-    assert_eq!(
-        double_metaphone("aha").unwrap().get(0),
-        Some(&"AH".to_string())
-    )
+    assert_eq!(double_metaphone("aha").unwrap().get(0).unwrap(), "AH")
 }
 
 #[test]
 fn one_h() {
-    assert_eq!(double_metaphone("h").unwrap().get(0), Some(&"".to_string()))
+    assert_eq!(double_metaphone("h").unwrap().get(0).unwrap(), "")
 }
 
 #[test]
@@ -1123,14 +1112,8 @@ fn bajador() {
 
 #[test]
 fn svaraj() {
-    assert_eq!(
-        double_metaphone("svaraj").unwrap().get(0),
-        Some(&"SFRJ".to_string())
-    );
-    assert_eq!(
-        double_metaphone("svaraj").unwrap().get(1),
-        Some(&"SFR".to_string())
-    );
+    assert_eq!(double_metaphone("svaraj").unwrap().get(0).unwrap(), "SFRJ");
+    assert_eq!(double_metaphone("svaraj").unwrap().get(1).unwrap(), "SFR");
 }
 
 #[test]
@@ -1152,234 +1135,178 @@ fn sjji() {
         Some("S")
     )
 }
+
 #[test]
 fn disject() {
-    assert_eq!(
-        double_metaphone("disject").unwrap().get(0),
-        Some(&"TSKT".to_string())
-    )
+    assert_eq!(double_metaphone("disject").unwrap().get(0).unwrap(), "TSKT")
 }
+
 #[test]
 fn trekker() {
-    assert_eq!(
-        double_metaphone("trekker").unwrap().get(0),
-        Some(&"TRKR".to_string())
-    )
+    assert_eq!(double_metaphone("trekker").unwrap().get(0).unwrap(), "TRKR")
 }
+
 #[test]
 fn like() {
-    assert_eq!(
-        double_metaphone("like").unwrap().get(0),
-        Some(&"LK".to_string())
-    )
+    assert_eq!(double_metaphone("like").unwrap().get(0).unwrap(), "LK")
 }
 
 #[test]
 fn cabrillo() {
     assert_eq!(
-        double_metaphone("cabrillo").unwrap().get(0),
-        Some(&"KPRL".to_string())
+        double_metaphone("cabrillo").unwrap().get(0).unwrap(),
+        "KPRL"
     );
-    assert_eq!(
-        double_metaphone("cabrillo").unwrap().get(1),
-        Some(&"KPR".to_string())
-    );
+    assert_eq!(double_metaphone("cabrillo").unwrap().get(1).unwrap(), "KPR");
 }
 
 #[test]
 fn villa() {
-    assert_eq!(
-        double_metaphone("villa").unwrap().get(0),
-        Some(&"FL".to_string())
-    );
-    assert_eq!(
-        double_metaphone("villa").unwrap().get(1),
-        Some(&"F".to_string())
-    );
+    assert_eq!(double_metaphone("villa").unwrap().get(0).unwrap(), "FL");
+    assert_eq!(double_metaphone("villa").unwrap().get(1).unwrap(), "F");
 }
 
 #[test]
 fn crevalle() {
     assert_eq!(
-        double_metaphone("crevalle").unwrap().get(0),
-        Some(&"KRFL".to_string())
+        double_metaphone("crevalle").unwrap().get(0).unwrap(),
+        "KRFL"
+    );
+    assert_eq!(double_metaphone("crevalle").unwrap().get(1).unwrap(), "KRF");
+}
+
+#[test]
+fn allegretto() {
+    assert_eq!(
+        double_metaphone("allegretto").unwrap().get(0).unwrap(),
+        "ALKRT"
     );
     assert_eq!(
-        double_metaphone("crevalle").unwrap().get(1),
-        Some(&"KRF".to_string())
+        double_metaphone("allegretto").unwrap().get(1).unwrap(),
+        "AKRT"
     );
 }
 
-//   t.test(
-//     'should both transform LL to L, and drop it, when in a final ILLO, ILLA and ALLE',
-//     function(st) {
-//       st.deepEqual(double_metaphone("cabrillo"), ['KPRL', 'KPR'])
-//       st.deepEqual(double_metaphone("villa"), ['FL', 'F'])
-//       st.deepEqual(double_metaphone("crevalle"), ['KRFL', 'KRF'])
-
-//       st.end()
-//     }
-//   )
-
-//   t.test(
-//     'should both transform the LL to L, and drop it, in ALLE, when the given value ends in A, O, AS, or OS',
-//     function(st) {
-//       st.deepEqual(double_metaphone("allegretto"), ['ALKRT', 'AKRT'])
-//       st.deepEqual(double_metaphone("allegros"), ['ALKRS', 'AKRS'])
-//       st.end()
-//     }
-//   )
+#[test]
+fn allegros() {
+    assert_eq!(
+        double_metaphone("allegros").unwrap().get(0).unwrap(),
+        "ALKRS"
+    );
+    assert_eq!(
+        double_metaphone("allegros").unwrap().get(1).unwrap(),
+        "AKRS"
+    );
+}
 
 #[test]
 fn two_lls() {
-    assert_eq!(
-        double_metaphone("ll").unwrap().get(0),
-        Some(&"L".to_string())
-    )
-}
-#[test]
-fn one_l() {
-    assert_eq!(
-        double_metaphone("l").unwrap().get(0),
-        Some(&"L".to_string())
-    )
-}
-#[test]
-fn thumb() {
-    assert_eq!(
-        double_metaphone("thumb").unwrap().get(0),
-        Some(&"0M".to_string())
-    )
-}
-//   assert_eq!(
-#[test]
-fn dumber() {
-    assert_eq!(
-        double_metaphone("dumber").unwrap().get(0),
-        Some(&"TMR".to_string())
-    )
-}
-//     'should transform UMB to M when followed by ER'
-//   )
-#[test]
-fn tow_mms() {
-    assert_eq!(
-        double_metaphone("mm").unwrap().get(0),
-        Some(&"M".to_string())
-    )
-}
-#[test]
-fn one_m() {
-    assert_eq!(
-        double_metaphone("m").unwrap().get(0),
-        Some(&"M".to_string())
-    )
-}
-#[test]
-fn two_nns() {
-    assert_eq!(
-        double_metaphone("nn").unwrap().get(0),
-        Some(&"N".to_string())
-    )
-}
-#[test]
-fn one_n() {
-    assert_eq!(
-        double_metaphone("n").unwrap().get(0),
-        Some(&"N".to_string())
-    )
-}
-#[test]
-fn top_tilda_n() {
-    assert_eq!(
-        double_metaphone("Ñ").unwrap().get(0),
-        Some(&"N".to_string())
-    )
-}
-#[test]
-fn ph() {
-    assert_eq!(
-        double_metaphone("ph").unwrap().get(0),
-        Some(&"F".to_string())
-    )
-}
-#[test]
-fn pb() {
-    assert_eq!(
-        double_metaphone("pb").unwrap().get(0),
-        Some(&"P".to_string())
-    )
-}
-#[test]
-fn twp_pps() {
-    assert_eq!(
-        double_metaphone("pp").unwrap().get(0),
-        Some(&"P".to_string())
-    )
-}
-#[test]
-fn one_p() {
-    assert_eq!(
-        double_metaphone("p").unwrap().get(0),
-        Some(&"P".to_string())
-    )
-}
-#[test]
-fn two_qqs() {
-    assert_eq!(
-        double_metaphone("qq").unwrap().get(0),
-        Some(&"K".to_string())
-    )
-}
-#[test]
-fn one_q() {
-    assert_eq!(
-        double_metaphone("q").unwrap().get(0),
-        Some(&"K".to_string())
-    )
+    assert_eq!(double_metaphone("ll").unwrap().get(0).unwrap(), "L")
 }
 
-//   t.deepEqual(
-//     double_metaphone("Xavier"),
-//     ['SF', 'SFR'],
-//     'should both drop and keep a final R when preceded by IE, in turn not preceded by ME and MA'
-//   )
+#[test]
+fn one_l() {
+    assert_eq!(double_metaphone("l").unwrap().get(0).unwrap(), "L")
+}
+
+#[test]
+fn thumb() {
+    assert_eq!(double_metaphone("thumb").unwrap().get(0).unwrap(), "0M")
+}
+
+#[test]
+fn dumber() {
+    assert_eq!(double_metaphone("dumber").unwrap().get(0).unwrap(), "TMR")
+}
+
+#[test]
+fn tow_mms() {
+    assert_eq!(double_metaphone("mm").unwrap().get(0).unwrap(), "M")
+}
+
+#[test]
+fn one_m() {
+    assert_eq!(double_metaphone("m").unwrap().get(0).unwrap(), "M")
+}
+
+#[test]
+fn two_nns() {
+    assert_eq!(double_metaphone("nn").unwrap().get(0).unwrap(), "N")
+}
+
+#[test]
+fn one_n() {
+    assert_eq!(double_metaphone("n").unwrap().get(0).unwrap(), "N")
+}
+
+#[test]
+fn top_tilda_n() {
+    assert_eq!(double_metaphone("Ñ").unwrap().get(0).unwrap(), "N")
+}
+
+#[test]
+fn ph() {
+    assert_eq!(double_metaphone("ph").unwrap().get(0).unwrap(), "F")
+}
+
+#[test]
+fn pb() {
+    assert_eq!(double_metaphone("pb").unwrap().get(0).unwrap(), "P")
+}
+
+#[test]
+fn twp_pps() {
+    assert_eq!(double_metaphone("pp").unwrap().get(0).unwrap(), "P")
+}
+
+#[test]
+fn one_p() {
+    assert_eq!(double_metaphone("p").unwrap().get(0).unwrap(), "P")
+}
+
+#[test]
+fn two_qqs() {
+    assert_eq!(double_metaphone("qq").unwrap().get(0).unwrap(), "K")
+}
+
+#[test]
+fn one_q() {
+    assert_eq!(double_metaphone("q").unwrap().get(0).unwrap(), "K")
+}
+
+#[test]
+fn xavier_drop_r() {
+    assert_eq!(double_metaphone("Xavier").unwrap().get(0).unwrap(), "SF");
+    assert_eq!(double_metaphone("Xavier").unwrap().get(1).unwrap(), "SFR");
+}
 
 #[test]
 fn two_rrs() {
-    assert_eq!(
-        double_metaphone("rr").unwrap().get(0),
-        Some(&"R".to_string())
-    )
+    assert_eq!(double_metaphone("rr").unwrap().get(0).unwrap(), "R")
 }
+
 #[test]
 fn one_r() {
-    assert_eq!(
-        double_metaphone("r").unwrap().get(0),
-        Some(&"R".to_string())
-    )
+    assert_eq!(double_metaphone("r").unwrap().get(0).unwrap(), "R")
 }
-//   assert_eq!(
+
 #[test]
 fn island() {
-    assert_eq!(
-        double_metaphone("island").unwrap().get(0),
-        Some(&"ALNT".to_string())
-    )
+    assert_eq!(double_metaphone("island").unwrap().get(0).unwrap(), "ALNT")
 }
-//     'should drop S when preceded by I or Y and followed by L'
-//   )
 
-//   t.test('should transform the S to X and S in an initial SUGAR', function(st) {
-//     var phonetics = double_metaphone("sugar")
+#[test]
+fn sugar() {
+    assert_eq!(
+        double_metaphone("sugar").unwrap().get(0).unwrap().get(..1),
+        Some("X")
+    );
+    assert_eq!(
+        double_metaphone("sugar").unwrap().get(1).unwrap().get(..1),
+        Some("S")
+    );
+}
 
-//     assert_eq!(phonetics[0].unwrap().get(..1), 'X")
-//     assert_eq!(phonetics[1].unwrap().get(..1), 'S")
-
-//     st.end()
-//   })
-
-//   assert_eq!(
 #[test]
 fn sholz() {
     assert_eq!(
@@ -1387,8 +1314,7 @@ fn sholz() {
         Some("S")
     )
 }
-//     'should transform the SH to S in SHEIM, SHOEK, SHOLM, SHOLZ'
-//   )
+
 #[test]
 fn sh() {
     assert_eq!(
@@ -1397,128 +1323,122 @@ fn sh() {
     )
 }
 
-//   t.deepEqual(
-//     double_metaphone("sio"),
-//     ['S', 'X'],
-//     'should transform SIO and SIA to S and X, when not Slavo-Germanic'
-//   )
+#[test]
+fn sio() {
+    assert_eq!(
+        double_metaphone("sio").unwrap().get(0).unwrap().get(..1),
+        Some("S")
+    );
+    assert_eq!(
+        double_metaphone("sio").unwrap().get(1).unwrap().get(..1),
+        Some("X")
+    );
+}
 
-//   t.deepEqual(
-//     double_metaphone("sioricz"),
-//     ['SRS', 'SRX'],
-//     'should transform SIO and SIA to S, when Slavo-Germanic'
-//   )
+#[test]
+fn sioricz() {
+    assert_eq!(double_metaphone("sioricz").unwrap().get(0).unwrap(), "SRS");
+    assert_eq!(double_metaphone("sioricz").unwrap().get(1).unwrap(), "SRX");
+}
 
-//   t.deepEqual(double_metaphone("sz"), ['S', 'X'], 'should transform SZ to X and S")
+#[test]
+fn sz() {
+    assert_eq!(double_metaphone("sz").unwrap().get(0).unwrap(), "S");
+    assert_eq!(double_metaphone("sz").unwrap().get(1).unwrap(), "X");
+}
 
-//   t.deepEqual(
-//     double_metaphone("sl"),
-//     ['SL', 'XL'],
-//     'should transform S to X and S when followed by L, M, N, or W'
-//   )
+#[test]
+fn sl() {
+    assert_eq!(double_metaphone("sl").unwrap().get(0).unwrap(), "SL");
+    assert_eq!(double_metaphone("sl").unwrap().get(1).unwrap(), "XL");
+}
 
-//   t.deepEqual(
-//     double_metaphone("schenker"),
-//     ['XNKR', 'SKNKR'],
-//     'should transform SCH to X and SK when followed by ER or EN'
-//   )
+#[test]
+fn schenker() {
+    assert_eq!(
+        double_metaphone("schenker").unwrap().get(0).unwrap(),
+        "XNKR"
+    );
+    assert_eq!(
+        double_metaphone("schenker").unwrap().get(1).unwrap(),
+        "SKNKR"
+    );
+}
 
-//   t.deepEqual(
-//     double_metaphone("schooner"),
-//     ['SKNR', 'SKNR'],
-//     'should transform SCH to SK when followed by OO, UY, ED, or EM'
-//   )
+#[test]
+fn schooner() {
+    assert_eq!(
+        double_metaphone("schooner").unwrap().get(0).unwrap(),
+        "SKNR"
+    );
+    assert_eq!(
+        double_metaphone("schooner").unwrap().get(1).unwrap(),
+        "SKNR"
+    );
+}
 
-//   t.deepEqual(
-//     double_metaphone("schlepp"),
-//     ['XLP', 'SLP'],
-//     'should transform SCH to X and S, when initial, and not followed by a non-vowel and W'
-//   )
+#[test]
+fn schlepp() {
+    assert_eq!(double_metaphone("schlepp").unwrap().get(0).unwrap(), "XLP");
+    assert_eq!(double_metaphone("schlepp").unwrap().get(1).unwrap(), "SLP");
+}
 
 #[test]
 fn borscht() {
-    assert_eq!(
-        double_metaphone("borscht").unwrap().get(0),
-        Some(&"PRXT".to_string())
-    )
-}
-#[test]
-fn sci() {
-    assert_eq!(
-        double_metaphone("sci").unwrap().get(0),
-        Some(&"S".to_string())
-    )
-}
-#[test]
-fn scu() {
-    assert_eq!(
-        double_metaphone("scu").unwrap().get(0),
-        Some(&"SK".to_string())
-    )
+    assert_eq!(double_metaphone("borscht").unwrap().get(0).unwrap(), "PRXT")
 }
 
-//   t.deepEqual(
-//     double_metaphone("ois"),
-//     ['A', 'AS'],
-//     'should drop and keep S, when final and preceded by AI or OI'
-//   )
+#[test]
+fn sci() {
+    assert_eq!(double_metaphone("sci").unwrap().get(0).unwrap(), "S")
+}
+
+#[test]
+fn scu() {
+    assert_eq!(double_metaphone("scu").unwrap().get(0).unwrap(), "SK")
+}
+
+#[test]
+fn ois() {
+    assert_eq!(double_metaphone("ois").unwrap().get(0).unwrap(), "A");
+    assert_eq!(double_metaphone("ois").unwrap().get(1).unwrap(), "AS");
+}
 
 #[test]
 fn two_sss() {
-    assert_eq!(
-        double_metaphone("ss").unwrap().get(0),
-        Some(&"S".to_string())
-    )
+    assert_eq!(double_metaphone("ss").unwrap().get(0).unwrap(), "S")
 }
+
 #[test]
 fn one_s() {
-    assert_eq!(
-        double_metaphone("s").unwrap().get(0),
-        Some(&"S".to_string())
-    )
+    assert_eq!(double_metaphone("s").unwrap().get(0).unwrap(), "S")
 }
+
 #[test]
 fn tion() {
-    assert_eq!(
-        double_metaphone("tion").unwrap().get(0),
-        Some(&"XN".to_string())
-    )
+    assert_eq!(double_metaphone("tion").unwrap().get(0).unwrap(), "XN")
 }
+
 #[test]
 fn tia() {
-    assert_eq!(
-        double_metaphone("tia").unwrap().get(0),
-        Some(&"X".to_string())
-    )
+    assert_eq!(double_metaphone("tia").unwrap().get(0).unwrap(), "X")
 }
+
 #[test]
 fn tch() {
-    assert_eq!(
-        double_metaphone("tch").unwrap().get(0),
-        Some(&"X".to_string())
-    )
+    assert_eq!(double_metaphone("tch").unwrap().get(0).unwrap(), "X")
 }
-//   assert_eq!(
+
 #[test]
 fn thom() {
-    assert_eq!(
-        double_metaphone("thom").unwrap().get(0),
-        Some(&"TM".to_string())
-    )
+    assert_eq!(double_metaphone("thom").unwrap().get(0).unwrap(), "TM")
 }
-//     'should transform TH to T, when followed by OM or AM (1)'
-//   )
-//   assert_eq!(
+
 #[test]
 fn tham() {
-    assert_eq!(
-        double_metaphone("tham").unwrap().get(0),
-        Some(&"TM".to_string())
-    )
+    assert_eq!(double_metaphone("tham").unwrap().get(0).unwrap(), "TM")
 }
-//     'should transform TH to T, when followed by OM or AM (2)'
-//   )
-//   assert_eq!(
+
 #[test]
 fn vongoethals() {
     assert_eq!(
@@ -1530,9 +1450,7 @@ fn vongoethals() {
         Some("T")
     )
 }
-//     'should transform TH to T, when Germanic'
-//   )
-//   assert_eq!(
+
 #[test]
 fn vonmatthes() {
     assert_eq!(
@@ -1544,271 +1462,245 @@ fn vonmatthes() {
         Some("T")
     )
 }
-//     'should transform TT to T, when Germanic and followed by H'
-//   )
 
-//   t.deepEqual(double_metaphone("th"), ['0', 'T'], 'should transform TH to 0 and T")
+#[test]
+fn th() {
+    assert_eq!(double_metaphone("th").unwrap().get(0).unwrap(), "0");
+    assert_eq!(double_metaphone("th").unwrap().get(1).unwrap(), "T");
+}
 
 #[test]
 fn two_tts() {
-    assert_eq!(
-        double_metaphone("tt").unwrap().get(0),
-        Some(&"T".to_string())
-    )
+    assert_eq!(double_metaphone("tt").unwrap().get(0).unwrap(), "T")
 }
+
 #[test]
 fn td() {
-    assert_eq!(
-        double_metaphone("td").unwrap().get(0),
-        Some(&"T".to_string())
-    )
+    assert_eq!(double_metaphone("td").unwrap().get(0).unwrap(), "T")
 }
+
 #[test]
 fn one_t() {
-    assert_eq!(
-        double_metaphone("t").unwrap().get(0),
-        Some(&"T".to_string())
-    )
+    assert_eq!(double_metaphone("t").unwrap().get(0).unwrap(), "T")
 }
+
 #[test]
 fn two_vvs() {
-    assert_eq!(
-        double_metaphone("vv").unwrap().get(0),
-        Some(&"F".to_string())
-    )
+    assert_eq!(double_metaphone("vv").unwrap().get(0).unwrap(), "F")
 }
+
 #[test]
 fn one_v() {
-    assert_eq!(
-        double_metaphone("v").unwrap().get(0),
-        Some(&"F".to_string())
-    )
+    assert_eq!(double_metaphone("v").unwrap().get(0).unwrap(), "F")
 }
+
 #[test]
 fn awr() {
-    assert_eq!(
-        double_metaphone("awr").unwrap().get(0),
-        Some(&"AR".to_string())
-    )
+    assert_eq!(double_metaphone("awr").unwrap().get(0).unwrap(), "AR")
 }
 
-//   t.deepEqual(
-//     double_metaphone("wa"),
-//     ['A', 'F'],
-//     'should transform W to A and F, when initial and followed by a vowel'
-//   )
+#[test]
+fn wa() {
+    assert_eq!(double_metaphone("wa").unwrap().get(0).unwrap(), "A");
+    assert_eq!(double_metaphone("wa").unwrap().get(1).unwrap(), "F");
+}
 
-//   assert_eq!(
 #[test]
 fn wh() {
-    assert_eq!(
-        double_metaphone("wh").unwrap().get(0),
-        Some(&"A".to_string())
-    )
+    assert_eq!(double_metaphone("wh").unwrap().get(0).unwrap(), "A")
 }
-//     'should transform W to A, when initial and followed by H'
-//   )
 
-//   t.test(
-//     'should both drop and transform W to F, when in EWSKI, EWSKY, OWSKI, or OWSKY',
-//     function(st) {
-//       st.deepEqual(double_metaphone("Tsjaikowski"), ['TSKSK', 'TSKFSK'])
-//       st.deepEqual(double_metaphone("Tsjaikowsky"), ['TSKSK', 'TSKFSK'])
+#[test]
+fn tsjaikowski() {
+    assert_eq!(
+        double_metaphone("Tsjaikowski").unwrap().get(0).unwrap(),
+        "TSKSK"
+    );
+    assert_eq!(
+        double_metaphone("Tsjaikowski").unwrap().get(1).unwrap(),
+        "TSKFSK"
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn tsjaikowsky() {
+    assert_eq!(
+        double_metaphone("Tsjaikowsky").unwrap().get(0).unwrap(),
+        "TSKSK"
+    );
+    assert_eq!(
+        double_metaphone("Tsjaikowsky").unwrap().get(1).unwrap(),
+        "TSKFSK"
+    );
+}
 
-//   t.deepEqual(
-//     double_metaphone("schwa"),
-//     ['X', 'XF'],
-//     'should both drop and transform W to F, when the value starts with SCH'
-//   )
+#[test]
+fn schwa() {
+    assert_eq!(double_metaphone("schwa").unwrap().get(0).unwrap(), "X");
+    assert_eq!(double_metaphone("schwa").unwrap().get(1).unwrap(), "XF");
+}
 
-//   t.deepEqual(
-//     double_metaphone("Arnow"),
-//     ['ARN', 'ARNF'],
-//     'should both drop and transform W to F, when final and preceded by a vowel'
-//   )
+#[test]
+fn arnow() {
+    assert_eq!(double_metaphone("Arnow").unwrap().get(0).unwrap(), "ARN");
+    assert_eq!(double_metaphone("Arnow").unwrap().get(1).unwrap(), "ARNF");
+}
 
-//   t.test(
-//     'should transform W to TS and FX, when followed by ICZ or ITZ',
-//     function(st) {
-//       st.deepEqual(double_metaphone("Filipowicz"), ['FLPTS', 'FLPFX'])
-//       st.deepEqual(double_metaphone("Filipowitz"), ['FLPTS', 'FLPFX'])
+#[test]
+fn filipowicz() {
+    assert_eq!(
+        double_metaphone("Filipowicz").unwrap().get(0).unwrap(),
+        "FLPTS"
+    );
+    assert_eq!(
+        double_metaphone("Filipowicz").unwrap().get(1).unwrap(),
+        "FLPFX"
+    );
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn filipowitz() {
+    assert_eq!(
+        double_metaphone("Filipowitz").unwrap().get(0).unwrap(),
+        "FLPTS"
+    );
+    assert_eq!(
+        double_metaphone("Filipowitz").unwrap().get(1).unwrap(),
+        "FLPFX"
+    );
+}
 
 #[test]
 fn w() {
-    assert_eq!(double_metaphone("w").unwrap().get(0), Some(&"".to_string()))
+    assert_eq!(double_metaphone("w").unwrap().get(0).unwrap(), "")
 }
+
 #[test]
 fn matrix() {
-    assert_eq!(
-        double_metaphone("matrix").unwrap().get(0),
-        Some(&"MTRKS".to_string())
-    )
+    assert_eq!(double_metaphone("matrix").unwrap().get(0).unwrap(), "MTRKS")
 }
 
-//   t.test(
-//     'should transform X to KS, when *NOT* preceded by IAU, EAU, AU, or OU',
-//     function(st) {
 #[test]
 fn iauxa() {
-    assert_eq!(
-        double_metaphone("iauxa").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
-}
-#[test]
-fn eauxa() {
-    assert_eq!(
-        double_metaphone("eauxa").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
-}
-#[test]
-fn auxa() {
-    assert_eq!(
-        double_metaphone("auxa").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
-}
-#[test]
-fn ouxa() {
-    assert_eq!(
-        double_metaphone("ouxa").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
+    assert_eq!(double_metaphone("iauxa").unwrap().get(0).unwrap(), "AKS")
 }
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn eauxa() {
+    assert_eq!(double_metaphone("eauxa").unwrap().get(0).unwrap(), "AKS")
+}
+
+#[test]
+fn auxa() {
+    assert_eq!(double_metaphone("auxa").unwrap().get(0).unwrap(), "AKS")
+}
+
+#[test]
+fn ouxa() {
+    assert_eq!(double_metaphone("ouxa").unwrap().get(0).unwrap(), "AKS")
+}
 
 #[test]
 fn aux() {
-    assert_eq!(
-        double_metaphone("AUX").unwrap().get(0),
-        Some(&"A".to_string())
-    )
+    assert_eq!(double_metaphone("AUX").unwrap().get(0).unwrap(), "A")
 }
+
 #[test]
 fn oux() {
-    assert_eq!(
-        double_metaphone("OUX").unwrap().get(0),
-        Some(&"A".to_string())
-    )
+    assert_eq!(double_metaphone("OUX").unwrap().get(0).unwrap(), "A")
 }
+
 #[test]
 fn breaux() {
-    assert_eq!(
-        double_metaphone("breaux").unwrap().get(0),
-        Some(&"PR".to_string())
-    )
+    assert_eq!(double_metaphone("breaux").unwrap().get(0).unwrap(), "PR")
 }
 
 #[test]
 fn axc() {
-    assert_eq!(
-        double_metaphone("AXC").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
+    assert_eq!(double_metaphone("AXC").unwrap().get(0).unwrap(), "AKS")
 }
+
 #[test]
 fn axx() {
-    assert_eq!(
-        double_metaphone("axx").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
+    assert_eq!(double_metaphone("axx").unwrap().get(0).unwrap(), "AKS")
 }
+
 #[test]
 fn axe() {
-    assert_eq!(
-        double_metaphone("axe").unwrap().get(0),
-        Some(&"AKS".to_string())
-    )
+    assert_eq!(double_metaphone("axe").unwrap().get(0).unwrap(), "AKS")
 }
+
 #[test]
 fn zhao() {
-    assert_eq!(
-        double_metaphone("zhao").unwrap().get(0),
-        Some(&"J".to_string())
-    )
+    assert_eq!(double_metaphone("zhao").unwrap().get(0).unwrap(), "J")
 }
 
-//   t.test(
-//     'should transform Z to S and TS, when followed by ZA, ZI, or ZO',
-//     function(st) {
-//       st.deepEqual(double_metaphone("zza"), ['S', 'TS'])
-//       st.deepEqual(double_metaphone("zzi"), ['S', 'TS'])
-//       st.deepEqual(double_metaphone("zzo"), ['S', 'TS'])
+#[test]
+fn zza() {
+    assert_eq!(double_metaphone("zza").unwrap().get(0).unwrap(), "S");
+    assert_eq!(double_metaphone("zza").unwrap().get(1).unwrap(), "TS");
+}
 
-//       st.end()
-//     }
-//   )
+#[test]
+fn zzi() {
+    assert_eq!(double_metaphone("zzi").unwrap().get(0).unwrap(), "S");
+    assert_eq!(double_metaphone("zzi").unwrap().get(1).unwrap(), "TS");
+}
 
-//   t.deepEqual(
-//     double_metaphone("Mazurkiewicz"),
-//     ['MSRKTS', 'MTSRKFX'],
-//     'should transform Z to S and TS, when not initial, not Slavo-Germanic, and not preceded by T'
-//   )
+#[test]
+fn zzo() {
+    assert_eq!(double_metaphone("zzo").unwrap().get(0).unwrap(), "S");
+    assert_eq!(double_metaphone("zzo").unwrap().get(1).unwrap(), "TS");
+}
+
+#[test]
+fn mazurkiewicz() {
+    assert_eq!(
+        double_metaphone("Mazurkiewicz").unwrap().get(0).unwrap(),
+        "MSRKTS"
+    );
+    assert_eq!(
+        double_metaphone("Mazurkiewicz").unwrap().get(1).unwrap(),
+        "MTSRKFX"
+    );
+}
 
 #[test]
 fn two_zzs() {
-    assert_eq!(
-        double_metaphone("zz").unwrap().get(0),
-        Some(&"S".to_string())
-    )
+    assert_eq!(double_metaphone("zz").unwrap().get(0).unwrap(), "S")
 }
+
 #[test]
 fn one_z() {
-    assert_eq!(
-        double_metaphone("z").unwrap().get(0),
-        Some(&"S".to_string())
-    )
+    assert_eq!(double_metaphone("z").unwrap().get(0).unwrap(), "S");
 }
 
-//   t.end()
-// })
+#[test]
+fn michael_full() {
+    assert_eq!(double_metaphone("michael").unwrap().get(0).unwrap(), "MKL");
+    assert_eq!(double_metaphone("michael").unwrap().get(1).unwrap(), "MXL");
+}
 
-// test('cli', function(t) {
-//   var input = new PassThrough()
-//   var helps = ['-h', '--help']
-//   var versions = ['-v', '--version']
+#[test]
+fn detestable() {
+    assert_eq!(
+        double_metaphone("detestable").unwrap().get(0).unwrap(),
+        "TTSTPL"
+    );
+    assert_eq!(
+        double_metaphone("detestable").unwrap().get(1).unwrap(),
+        "TTSTPL"
+    );
+}
 
-//   t.plan(7)
-
-//   execa.stdout('./cli.js', ['michael']).then(function(result) {
-//     assert_eq!(result, 'MKL	MXL', 'argument")
-//   })
-
-//   execa.stdout('./cli.js', ['detestable', 'vileness']).then(function(result) {
-//     assert_eq!(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'arguments")
-//   })
-
-//   execa.stdout('./cli.js', {input: input}).then(function(result) {
-//     assert_eq!(result, 'TTSTPL\tTTSTPL FLNS\tFLNS', 'stdin")
-//   })
-
-//   input.write('detestable")
-
-//   setImmediate(function() {
-//     input.end(' vileness")
-//   })
-
-//   helps.forEach(function(flag) {
-//     execa.stdout('./cli.js', [flag]).then(function(result) {
-//       t.ok(/\s+Usage: double-metaphone/.test(result), flag)
-//     })
-//   })
-
-//   versions.forEach(function(flag) {
-//     execa.stdout('./cli.js', [flag]).then(function(result) {
-//       assert_eq!(result, version, flag)
-//     })
-//   })
-// })
+#[test]
+fn vileness() {
+    assert_eq!(
+        double_metaphone("vileness").unwrap().get(0).unwrap(),
+        "FLNS"
+    );
+    assert_eq!(
+        double_metaphone("vileness").unwrap().get(1).unwrap(),
+        "FLNS"
+    );
+}
