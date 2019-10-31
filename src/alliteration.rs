@@ -10,6 +10,20 @@ pub fn alliteration(s: &str) -> bool {
         let a_phonetic = double_metaphone(a);
         let b_phonetic = double_metaphone(b);
 
+        log::info!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            a,
+            a_phonetic.primary,
+            a_phonetic.secondary
+        );
+
+        log::info!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            b,
+            b_phonetic.primary,
+            b_phonetic.secondary
+        );
+
         let mut a_phonetic_head_primary = a_phonetic.primary;
 
         if let Some(c) = a_phonetic_head_primary.get(..1) {
