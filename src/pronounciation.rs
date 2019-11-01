@@ -1,3 +1,4 @@
+extern crate log;
 extern crate pest;
 
 use pest::Parser;
@@ -1088,9 +1089,198 @@ fn z_case(State { pos, chars, p, s }: &mut State) {
     *pos += 1;
 }
 
+pub fn alliteration(s: &str) -> bool {
+    let words = s.split_whitespace().collect::<Vec<&str>>();
+    let comparisons = words.iter().zip(words.get(1..).unwrap_or_default().iter());
+
+    for (a, b) in comparisons {
+        if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
+            continue;
+        }
+
+        if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
+            continue;
+        }
+
+        let a_phonetic = double_metaphone(a);
+        let b_phonetic = double_metaphone(b);
+
+        // log::info!(
+        println!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            a, a_phonetic.primary, a_phonetic.secondary
+        );
+
+        // log::info!(
+        println!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            b, b_phonetic.primary, b_phonetic.secondary
+        );
+
+        let mut a_phonetic_head_primary = a_phonetic.primary;
+
+        if let Some(c) = a_phonetic_head_primary.get(..1) {
+            a_phonetic_head_primary = c.to_string();
+        }
+
+        let mut a_phonetic_head_secondary = a_phonetic.secondary;
+
+        if let Some(c) = a_phonetic_head_secondary.get(..1) {
+            a_phonetic_head_secondary = c.to_string();
+        }
+
+        let mut b_phonetic_head_primary = b_phonetic.primary;
+
+        if let Some(c) = b_phonetic_head_primary.get(..1) {
+            b_phonetic_head_primary = c.to_string();
+        }
+
+        let mut b_phonetic_head_secondary = b_phonetic.secondary;
+
+        if let Some(c) = b_phonetic_head_secondary.get(..1) {
+            b_phonetic_head_secondary = c.to_string();
+        }
+
+        if a_phonetic_head_primary == b_phonetic_head_primary
+            || a_phonetic_head_primary == b_phonetic_head_secondary
+            || a_phonetic_head_secondary == b_phonetic_head_primary
+            || a_phonetic_head_secondary == b_phonetic_head_secondary
+        {
+            return true;
+        }
+    }
+
+    false
+}
+
+pub fn rhyme(a: &str, b: &str) -> bool {
+    // sanity check, needing to sanity check seems fragile?
+    if a.trim().is_empty() || b.trim().is_empty() {
+        return false;
+    }
+
+    let a_phonetic = double_metaphone(a);
+    let b_phonetic = double_metaphone(b);
+
+    log::info!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        a,
+        a_phonetic.primary,
+        a_phonetic.secondary
+    );
+    log::info!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        b,
+        b_phonetic.primary,
+        b_phonetic.secondary
+    );
+
+    let mut a_phonetic_end_primary = a_phonetic.primary;
+    if let Some(slice) = a_phonetic_end_primary.get(1..) {
+        a_phonetic_end_primary = slice.to_string();
+    }
+
+    let mut a_phonetic_end_secondary = a_phonetic.secondary;
+
+    if let Some(slice) = a_phonetic_end_secondary.get(1..) {
+        a_phonetic_end_secondary = slice.to_string();
+    }
+
+    let mut b_phonetic_end_primary = b_phonetic.primary;
+
+    if let Some(slice) = b_phonetic_end_primary.get(1..) {
+        b_phonetic_end_primary = slice.to_string();
+    }
+
+    let mut b_phonetic_end_secondary = b_phonetic.secondary;
+
+    if let Some(slice) = b_phonetic_end_secondary.get(1..) {
+        b_phonetic_end_secondary = slice.to_string();
+    }
+
+    a_phonetic_end_primary == b_phonetic_end_primary
+        || a_phonetic_end_primary == b_phonetic_end_secondary
+        || a_phonetic_end_secondary == b_phonetic_end_primary
+        || a_phonetic_end_secondary == b_phonetic_end_secondary
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bouncing_bears() {
+        assert!(alliteration("bouncing bears"));
+        assert!(alliteration("a group of bounding bears"));
+
+        assert!(alliteration("boucing bears are everywhere"));
+    }
+
+    #[test]
+    fn also_ants() {
+        assert!(!alliteration("also ants"));
+        assert!(!alliteration("there were seals at the zoo, also ants"));
+        assert!(!alliteration("Also, ants were writing poetry."));
+    }
+
+    #[test]
+    // These match as alliteration if we're not filtering out leading vowel sounds
+    fn questionalbe() {
+        assert!(!alliteration("where ants"));
+        assert!(!alliteration("jumps over"));
+    }
+
+    #[test]
+    fn quick_brown_fox() {
+        assert!(!alliteration("brown fox"));
+        assert!(!alliteration("The quick brown fox"));
+        assert!(!alliteration("The quick brown fox jumps."));
+    }
+
+    #[test]
+    fn perfect_single() {
+        assert!(rhyme("far", "tar"));
+        assert!(rhyme("here", "near"));
+        assert!(rhyme("a", "say"));
+        assert!(rhyme("dissed", "mist"));
+    }
+
+    #[test]
+    fn general_syllabic() {
+        assert!(rhyme("cleaver", "silver"));
+        assert!(rhyme("pitter", "patter"));
+        assert!(rhyme("bottle", "fiddle"));
+    }
+
+    #[test]
+    // Not handled yet.
+    fn perfect_doulbe() {
+        assert!(!rhyme("picky", "tricky"));
+    }
+
+    #[test]
+    // Not handled yet.
+    fn perfect_dactylic() {
+        assert!(!rhyme("cacophonies", "Aristophanes"));
+    }
+
+    // rhyme, sublime
+    // cleaver, silver, or pitter, patter; the final syllable of the words bottle and fiddle
+    #[test]
+    fn no_rhyme() {
+        assert!(!rhyme("tryst", "wrist"));
+        assert!(!rhyme("dissed", "trust"));
+        assert!(!rhyme("red", "Edmund"));
+        assert!(!rhyme("shopping", "cart"));
+        assert!(!rhyme("run", "uphill"));
+        assert!(!rhyme("comfy", "chair"));
+
+        assert!(!rhyme("empty", "  "));
+        assert!(!rhyme("empty", ""));
+        assert!(!rhyme("empty", "\t"));
+        assert!(!rhyme("empty", "\r"));
+        assert!(!rhyme("empty", "\n"));
+    }
 
     #[test]
     fn slavo_germanic() {
