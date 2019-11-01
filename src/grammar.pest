@@ -1,5 +1,10 @@
+
+vowel_first = { SOI ~ any_not_letter* ~ v ~ ANY* ~ EOI }
+
+any_not_letter = _{ !LETTER ~ ANY }
+
 vowels = { SOI ~ v ~ EOI }
-v = _{ "A" | "E" | "I" | "O" | "U"| "Y" }
+v = _{ ^"A" | ^"E" | ^"I" | ^"O" | ^"U"| ^"Y" }
 any_not_vowels = _{ !v ~ ANY }
 
 slavo_germanic = { SOI ~ any_not_sg* ~ sg ~ ANY* ~ EOI }
