@@ -30,15 +30,31 @@ pub fn alliteration(s: &str) -> bool {
             a_phonetic_head_primary = c.to_string();
         }
 
+        let mut a_phonetic_head_secondary = a_phonetic.secondary;
+
+        if let Some(c) = a_phonetic_head_secondary.get(..1) {
+            a_phonetic_head_secondary = c.to_string();
+        }
+
         let mut b_phonetic_head_primary = b_phonetic.primary;
 
         if let Some(c) = b_phonetic_head_primary.get(..1) {
             b_phonetic_head_primary = c.to_string();
         }
 
-        // Need to do some thinking about where and when to support secondary pronouciation.
-        // For example, with my approach, jumps' secondary AMPS alliterates with over's secondary AFR...
-        if a_phonetic_head_primary == b_phonetic_head_primary {
+        let mut b_phonetic_head_secondary = b_phonetic.secondary;
+
+        if let Some(c) = b_phonetic_head_secondary.get(..1) {
+            b_phonetic_head_secondary = c.to_string();
+        }
+
+        // Need to think more about how this _should_ be applied to alliteration.
+        // My ears don't hear alliteration in "where ant" or "jumps over"
+        if a_phonetic_head_primary == b_phonetic_head_primary
+            || a_phonetic_head_primary == b_phonetic_head_secondary
+            || a_phonetic_head_secondary == b_phonetic_head_primary
+            || a_phonetic_head_secondary == b_phonetic_head_secondary
+        {
             return true;
         }
     }
@@ -65,11 +81,15 @@ mod tests {
     }
 
     #[test]
+    fn questionalbe() {
+        assert!(alliteration("where ants"));
+        assert!(alliteration("jumps over"));
+    }
+
+    #[test]
     fn quick_brown_fox() {
         assert!(!alliteration("brown fox"));
         assert!(!alliteration("The quick brown fox"));
-        assert!(!alliteration(
-            "The quick brown fox jumps over the lazy dog."
-        ));
+        assert!(!alliteration("The quick brown fox jumps."));
     }
 }
