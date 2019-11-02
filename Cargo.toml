@@ -1,8 +1,15 @@
 [package]
 name = "ttaw"
+description = "talking to a wall, a piecemeal natural language processing library"
+
 version = "0.1.0"
 authors = ["Shea Newton <shnewto@gmail.com>"]
-edition = "2018"
+
+homepage = "https://github.com/shnewto/ashpaper"
+repository = "https://github.com/shnewto/ashpaper"
+readme = "README.md"
+
+keywords = ["nlp", "rhyme", "alliteration", "double metahone" ]
 
 [dependencies]
 pest = "2.1.2"

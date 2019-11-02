@@ -16,7 +16,7 @@ struct State {
 }
 
 impl State {
-    pub fn new() -> State {
+    fn new() -> State {
         State {
             pos: 0,
             chars: vec![],
@@ -32,6 +32,154 @@ pub struct DoubleMetaphone {
     pub secondary: String,
 }
 
+///
+/// Determine if two words rhyme (perfect single or general syllabic).
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw::pronounciation;
+/// assert_eq!(true, pronounciation::rhyme("here", "near"));
+/// assert_eq!(false, pronounciation::rhyme("shopping", "cart"));
+/// ```
+///
+pub fn rhyme(a: &str, b: &str) -> bool {
+    // sanity check, needing to sanity check seems fragile?
+    if a.trim().is_empty() || b.trim().is_empty() {
+        return false;
+    }
+
+    let a_phonetic = double_metaphone(a);
+    let b_phonetic = double_metaphone(b);
+
+    log::info!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        a,
+        a_phonetic.primary,
+        a_phonetic.secondary
+    );
+    log::info!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        b,
+        b_phonetic.primary,
+        b_phonetic.secondary
+    );
+
+    let mut a_phonetic_end_primary = a_phonetic.primary;
+    if let Some(slice) = a_phonetic_end_primary.get(1..) {
+        a_phonetic_end_primary = slice.to_string();
+    }
+
+    let mut a_phonetic_end_secondary = a_phonetic.secondary;
+
+    if let Some(slice) = a_phonetic_end_secondary.get(1..) {
+        a_phonetic_end_secondary = slice.to_string();
+    }
+
+    let mut b_phonetic_end_primary = b_phonetic.primary;
+
+    if let Some(slice) = b_phonetic_end_primary.get(1..) {
+        b_phonetic_end_primary = slice.to_string();
+    }
+
+    let mut b_phonetic_end_secondary = b_phonetic.secondary;
+
+    if let Some(slice) = b_phonetic_end_secondary.get(1..) {
+        b_phonetic_end_secondary = slice.to_string();
+    }
+
+    a_phonetic_end_primary == b_phonetic_end_primary
+        || a_phonetic_end_primary == b_phonetic_end_secondary
+        || a_phonetic_end_secondary == b_phonetic_end_primary
+        || a_phonetic_end_secondary == b_phonetic_end_secondary
+}
+
+///
+/// Determine if there exists consecutive alliteration in an &str.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw::pronounciation;
+/// assert_eq!(true, pronounciation::alliteration("a group of bounding bears"));
+/// assert_eq!(true, pronounciation::alliteration("boucing bears are everywhere"));
+/// assert_eq!(false, pronounciation::alliteration("The quick brown fox jumps over the lazy dog."));
+/// ```
+///
+pub fn alliteration(s: &str) -> bool {
+    let words = s.split_whitespace().collect::<Vec<&str>>();
+    let comparisons = words.iter().zip(words.get(1..).unwrap_or_default().iter());
+
+    for (a, b) in comparisons {
+        if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
+            continue;
+        }
+
+        if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
+            continue;
+        }
+
+        let a_phonetic = double_metaphone(a);
+        let b_phonetic = double_metaphone(b);
+
+        // log::info!(
+        println!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            a, a_phonetic.primary, a_phonetic.secondary
+        );
+
+        // log::info!(
+        println!(
+            "|{: ^10} | {: ^10} | {: ^10} |",
+            b, b_phonetic.primary, b_phonetic.secondary
+        );
+
+        let mut a_phonetic_head_primary = a_phonetic.primary;
+
+        if let Some(c) = a_phonetic_head_primary.get(..1) {
+            a_phonetic_head_primary = c.to_string();
+        }
+
+        let mut a_phonetic_head_secondary = a_phonetic.secondary;
+
+        if let Some(c) = a_phonetic_head_secondary.get(..1) {
+            a_phonetic_head_secondary = c.to_string();
+        }
+
+        let mut b_phonetic_head_primary = b_phonetic.primary;
+
+        if let Some(c) = b_phonetic_head_primary.get(..1) {
+            b_phonetic_head_primary = c.to_string();
+        }
+
+        let mut b_phonetic_head_secondary = b_phonetic.secondary;
+
+        if let Some(c) = b_phonetic_head_secondary.get(..1) {
+            b_phonetic_head_secondary = c.to_string();
+        }
+
+        if a_phonetic_head_primary == b_phonetic_head_primary
+            || a_phonetic_head_primary == b_phonetic_head_secondary
+            || a_phonetic_head_secondary == b_phonetic_head_primary
+            || a_phonetic_head_secondary == b_phonetic_head_secondary
+        {
+            return true;
+        }
+    }
+
+    false
+}
+
+/// Double Metaphone phonetic encoding.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw::pronounciation;
+///     assert_eq!(pronounciation::double_metaphone("Arnow").primary, "ARN");
+///     assert_eq!(pronounciation::double_metaphone("Arnow").secondary, "ARNF");
+///
+///     assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
+///     assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
+/// ```
+///
 pub fn double_metaphone(input: &str) -> DoubleMetaphone {
     let mut state = State::new();
     let word: String = input.to_uppercase() + "     ";
@@ -1087,121 +1235,6 @@ fn z_case(State { pos, chars, p, s }: &mut State) {
     }
 
     *pos += 1;
-}
-
-pub fn alliteration(s: &str) -> bool {
-    let words = s.split_whitespace().collect::<Vec<&str>>();
-    let comparisons = words.iter().zip(words.get(1..).unwrap_or_default().iter());
-
-    for (a, b) in comparisons {
-        if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
-            continue;
-        }
-
-        if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
-            continue;
-        }
-
-        let a_phonetic = double_metaphone(a);
-        let b_phonetic = double_metaphone(b);
-
-        // log::info!(
-        println!(
-            "|{: ^10} | {: ^10} | {: ^10} |",
-            a, a_phonetic.primary, a_phonetic.secondary
-        );
-
-        // log::info!(
-        println!(
-            "|{: ^10} | {: ^10} | {: ^10} |",
-            b, b_phonetic.primary, b_phonetic.secondary
-        );
-
-        let mut a_phonetic_head_primary = a_phonetic.primary;
-
-        if let Some(c) = a_phonetic_head_primary.get(..1) {
-            a_phonetic_head_primary = c.to_string();
-        }
-
-        let mut a_phonetic_head_secondary = a_phonetic.secondary;
-
-        if let Some(c) = a_phonetic_head_secondary.get(..1) {
-            a_phonetic_head_secondary = c.to_string();
-        }
-
-        let mut b_phonetic_head_primary = b_phonetic.primary;
-
-        if let Some(c) = b_phonetic_head_primary.get(..1) {
-            b_phonetic_head_primary = c.to_string();
-        }
-
-        let mut b_phonetic_head_secondary = b_phonetic.secondary;
-
-        if let Some(c) = b_phonetic_head_secondary.get(..1) {
-            b_phonetic_head_secondary = c.to_string();
-        }
-
-        if a_phonetic_head_primary == b_phonetic_head_primary
-            || a_phonetic_head_primary == b_phonetic_head_secondary
-            || a_phonetic_head_secondary == b_phonetic_head_primary
-            || a_phonetic_head_secondary == b_phonetic_head_secondary
-        {
-            return true;
-        }
-    }
-
-    false
-}
-
-pub fn rhyme(a: &str, b: &str) -> bool {
-    // sanity check, needing to sanity check seems fragile?
-    if a.trim().is_empty() || b.trim().is_empty() {
-        return false;
-    }
-
-    let a_phonetic = double_metaphone(a);
-    let b_phonetic = double_metaphone(b);
-
-    log::info!(
-        "|{: ^10} | {: ^10} | {: ^10} |",
-        a,
-        a_phonetic.primary,
-        a_phonetic.secondary
-    );
-    log::info!(
-        "|{: ^10} | {: ^10} | {: ^10} |",
-        b,
-        b_phonetic.primary,
-        b_phonetic.secondary
-    );
-
-    let mut a_phonetic_end_primary = a_phonetic.primary;
-    if let Some(slice) = a_phonetic_end_primary.get(1..) {
-        a_phonetic_end_primary = slice.to_string();
-    }
-
-    let mut a_phonetic_end_secondary = a_phonetic.secondary;
-
-    if let Some(slice) = a_phonetic_end_secondary.get(1..) {
-        a_phonetic_end_secondary = slice.to_string();
-    }
-
-    let mut b_phonetic_end_primary = b_phonetic.primary;
-
-    if let Some(slice) = b_phonetic_end_primary.get(1..) {
-        b_phonetic_end_primary = slice.to_string();
-    }
-
-    let mut b_phonetic_end_secondary = b_phonetic.secondary;
-
-    if let Some(slice) = b_phonetic_end_secondary.get(1..) {
-        b_phonetic_end_secondary = slice.to_string();
-    }
-
-    a_phonetic_end_primary == b_phonetic_end_primary
-        || a_phonetic_end_primary == b_phonetic_end_secondary
-        || a_phonetic_end_secondary == b_phonetic_end_primary
-        || a_phonetic_end_secondary == b_phonetic_end_secondary
 }
 
 #[cfg(test)]
