@@ -8,7 +8,7 @@
 talking to a wall, a piecemeal natural language processing library
 
 ## Functionality
-- Determine if two words rhyme (perfect single or general syllabic).
+- Determine if two words rhyme (perfect single, or general syllabic).
 - Determine if there exists consecutive alliteration in an &str.
 - Double Metaphone phonetic encoding, port of [words/double-metahone](https://github.com/words/double-metaphone) library.
 
@@ -34,9 +34,9 @@ assert_eq!(false, pronounciation::alliteration("The quick brown fox jumps over t
 ```rust
 extern crate ttaw;
 use ttaw::pronounciation;
-    assert_eq!(pronounciation::double_metaphone("Arnow").primary, "ARN");
-    assert_eq!(pronounciation::double_metaphone("Arnow").secondary, "ARNF");
+assert_eq!(pronounciation::double_metaphone("Arnow").primary, "ARN");
+assert_eq!(pronounciation::double_metaphone("Arnow").secondary, "ARNF");
 
-    assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
-    assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
+assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
+assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
 ```
