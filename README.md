@@ -5,7 +5,11 @@
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 # ttaw
-talking to a wall, a piecemeal natural language processing library
+talking to a wall, a piecemeal natural language processing library.
+
+## A couple caveats
+- Double Metphone isn't a sure thing, it's a there's a "pretty good chance" thing. So there's the potential for behavior that deviates from what you'd expect.
+- My implementation's aren't a sure thing either :smile: If you encounter anything peculiar or unexpected, please raise an issue :heart: :heart:
 
 ## Functionality
 - Determine if two words rhyme (perfect single, or general syllabic).
