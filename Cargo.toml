@@ -5,8 +5,8 @@ description = "talking to a wall, a piecemeal natural language processing librar
 version = "0.1.0"
 authors = ["Shea Newton <shnewto@gmail.com>"]
 
-homepage = "https://github.com/shnewto/ashpaper"
-repository = "https://github.com/shnewto/ashpaper"
+homepage = "https://github.com/shnewto/ttaw"
+repository = "https://github.com/shnewto/ttaw"
 readme = "README.md"
 
 keywords = ["nlp", "rhyme", "alliteration", "double metahone" ]
