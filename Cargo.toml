@@ -11,7 +11,7 @@ homepage = "https://github.com/shnewto/ttaw"
 repository = "https://github.com/shnewto/ttaw"
 readme = "README.md"
 
-keywords = ["nlp", "rhyme", "alliteration", "double metahone" ]
+keywords = ["nlp", "rhyme", "alliteration", "double-metahone" ]
 
 [dependencies]
 pest = "2.1.2"
