@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 language: rust
 addons:
     apt:
@@ -27,6 +27,7 @@ script:
   - cargo test --verbose --all
 
 after_success: |
+  sudo ldconfig &&
   if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
     if ! [ -x "$(command -v cargo-tarpaulin)" ]; then bash <(curl https://raw.githubusercontent.com/xd009642/tarpaulin/master/travis-install.sh); fi &&
     cargo tarpaulin --ignore-tests --out Xml --ciserver travis-ci --coveralls $TRAVIS_JOB_ID
