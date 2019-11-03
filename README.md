@@ -30,7 +30,7 @@ assert_eq!(false, pronounciation::rhyme("shopping", "cart"));
 extern crate ttaw;
 use ttaw::pronounciation;
 assert_eq!(true, pronounciation::alliteration("a group of bounding bears"));
-assert_eq!(true, pronounciation::alliteration("boucing bears are everywhere"));
+assert_eq!(true, pronounciation::alliteration("bounding bears are everywhere"));
 assert_eq!(false, pronounciation::alliteration("The quick brown fox jumps over the lazy dog."));
 ```
 

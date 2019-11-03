@@ -7,7 +7,7 @@ fn bouncing_bears() {
     assert!(alliteration("bouncing bears"));
     assert!(alliteration("a group of bounding bears"));
 
-    assert!(alliteration("boucing bears are everywhere"));
+    assert!(alliteration("bounding bears are everywhere"));
 }
 
 #[test]
