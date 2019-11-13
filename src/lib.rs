@@ -29,4 +29,7 @@
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
+mod cmu;
+mod error;
+pub use error::Error;
 pub mod pronounciation;
