@@ -1,3 +1,4 @@
+use regex;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -25,6 +26,12 @@ impl fmt::Display for Error {
 
 impl From<std::io::Error> for Error {
     fn from(err: std::io::Error) -> Self {
+        Error::InputError(format!("{}", err))
+    }
+}
+
+impl std::convert::From<regex::Error> for Error {
+    fn from(err: regex::Error) -> Self {
         Error::InputError(format!("{}", err))
     }
 }

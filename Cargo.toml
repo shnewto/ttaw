@@ -17,3 +17,4 @@ keywords = ["nlp", "rhyme", "alliteration", "double-metahone" ]
 pest = "2.1.2"
 pest_derive = "2.1.0"
 log = "0.4"
+regex = "1"
