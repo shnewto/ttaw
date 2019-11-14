@@ -8,18 +8,10 @@ use std::path::Path;
 
 type Pronunciations = Vec<Vec<String>>;
 
-fn serialize_dict() -> Result<(), Error> {
-    let default_path = Path::new("res").join("cmudict.dict");
-
-    let dict_string: String;
-
-    if default_path.exists() {
-        dict_string = fs::read_to_string(default_path)?
-    } else {
-        dict_string =
-            reqwest::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
-                .text()?
-    };
+fn download_and_serialze(path: &Path) -> Result<(), Error> {
+    let dict_string =
+        reqwest::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
+            .text()?;
 
     let cursor = io::Cursor::new(dict_string);
     let lines = cursor.lines().collect::<Result<Vec<_>, _>>()?;
@@ -47,21 +39,19 @@ fn serialize_dict() -> Result<(), Error> {
     }
 
     let serialized = serde_json::to_string(&dict).unwrap();
-    fs::write("res/cmudict.json", serialized)?;
+    fs::write(path, serialized)?;
     Ok(())
 }
 
-fn from_json_file() -> Result<HashMap<String, Pronunciations>, Error> {
-    let default_path = Path::new("res").join("cmudict.json");
-
+fn from_json_file(path: &Path) -> Result<HashMap<String, Pronunciations>, Error> {
     let dict_json: String;
 
-    if !default_path.exists() {
+    if !path.exists() {
         // regenerate if the file isn't there
-        serialize_dict()?;
+        download_and_serialze(&path)?;
     }
 
-    dict_json = fs::read_to_string(default_path)?;
+    dict_json = fs::read_to_string(path)?;
     let dict: HashMap<String, Pronunciations> = serde_json::from_str(&dict_json)?;
     Ok(dict)
 }
@@ -69,16 +59,21 @@ fn from_json_file() -> Result<HashMap<String, Pronunciations>, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tempfile;
 
     #[test]
     fn _serialize_dict() {
-        let dict = serialize_dict();
+        let dir = tempfile::tempdir().unwrap();
+        let fpath = dir.path().join("serialized");
+        let dict = download_and_serialze(&fpath);
         assert!(dict.is_ok());
     }
 
     #[test]
     fn from_json() {
-        let dict = from_json_file();
+        let dir = tempfile::tempdir().unwrap();
+        let fpath = dir.path().join("serialized");
+        let dict = from_json_file(&fpath);
         assert!(dict.is_ok());
     }
 }

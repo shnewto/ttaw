@@ -1,3 +1,4 @@
+extern crate pest;
 ///
 /// ## Rhyme
 /// ```rust
@@ -26,7 +27,8 @@
 ///     assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
 ///     assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
 /// ```
-extern crate pest;
+#[cfg(test)]
+extern crate tempfile;
 #[macro_use]
 extern crate pest_derive;
 extern crate reqwest;
