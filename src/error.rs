@@ -1,4 +1,5 @@
-use regex;
+use reqwest;
+use serde_json;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -30,8 +31,14 @@ impl From<std::io::Error> for Error {
     }
 }
 
-impl std::convert::From<regex::Error> for Error {
-    fn from(err: regex::Error) -> Self {
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Error::InputError(format!("{}", err))
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(err: reqwest::Error) -> Self {
         Error::InputError(format!("{}", err))
     }
 }
