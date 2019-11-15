@@ -33,3 +33,37 @@ fn general_syllabic() {
     assert!(rhyme("pitter", "patter").unwrap());
     assert!(rhyme("bottle", "fiddle").unwrap());
 }
+
+#[test]
+fn alliterates_with_spaces() {
+    assert!(alliteration("bouncing", "  bears").unwrap());
+    assert!(alliteration("bouncing", "bears  ").unwrap());
+    assert!(alliteration(" bouncing", "bears").unwrap());
+    assert!(alliteration("bouncing  ", "bears").unwrap());
+}
+
+#[test]
+fn alliterates_with_caps() {
+    assert!(alliteration("Bouncing", "  bears").unwrap());
+    assert!(alliteration("bouncing", "Bears  ").unwrap());
+    assert!(alliteration(" bouncinG", "bEars").unwrap());
+    assert!(alliteration("bouncing  ", "beaRs").unwrap());
+}
+
+#[test]
+fn alliterates() {
+    assert!(alliteration("bouncing", "bears").unwrap());
+    assert!(alliteration("bounding", "bears").unwrap());
+    assert!(alliteration("snappy", "snails").unwrap());
+}
+
+#[test]
+fn quick_brown_fox() {
+    assert!(!alliteration("where", "ants").unwrap());
+
+    assert!(!alliteration("The", "quick").unwrap());
+    assert!(!alliteration("brown", "fox").unwrap());
+    assert!(!alliteration("jumps", "over").unwrap());
+    assert!(!alliteration("a", "lazy").unwrap());
+    assert!(!alliteration("lazy", "dog").unwrap());
+}

@@ -1,7 +1,7 @@
 extern crate pest;
 
-use double_metaphone::{Rule, Word};
 use error::Error;
+use metaphone::{Rule, Word};
 use pest::Parser;
 use reqwest;
 use serde_json;
@@ -13,6 +13,29 @@ use std::path::Path;
 lazy_static! {
     static ref CMU_DICT: Result<HashMap<String, Vec<Vec<String>>>, Error> =
         from_json_file(&Path::new("res").join("cmudict.json"));
+}
+
+/// CMUdict phonetic encoding.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw;
+/// assert_eq!(ttaw::cmu::cmu("Arnow").primary, "ARN");
+/// assert_eq!(ttaw::cmu::cmu("Arnow").secondary, "ARNF");
+///
+/// assert_eq!(ttaw::cmu::cmu("detestable").primary, "TTSTPL");
+/// assert_eq!(ttaw::cmu::cmu("detestable").secondary, "TTSTPL");
+/// ```
+///
+pub fn cmu(w: &str) -> Result<Option<Vec<Vec<String>>>, Error> {
+    let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
+
+    match &*CMU_DICT {
+        Ok(d) => cmu_dict = d,
+        Err(e) => return Err(e.clone()),
+    }
+
+    Ok(cmu_dict.get(w).map(|v| v.to_vec()))
 }
 
 fn rhyming_part(phones: &[String]) -> Option<Vec<String>> {
@@ -39,6 +62,19 @@ fn eval_rhyme(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool {
     false
 }
 
+/// Use CMUdict phonetic encoding to determine if two words rhyme.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw;
+/// // Does rhyme
+/// assert_eq!(Ok(true), ttaw::cmu::rhyme("hissed", "mist"));
+/// assert_eq!(Ok(true), ttaw::cmu::rhyme("tryst", "wrist"));
+///
+/// // Does not rhyme
+/// assert_eq!(Ok(false), ttaw::cmu::rhyme("red", "edmund"));
+/// assert_eq!(Ok(false), ttaw::cmu::rhyme("comfy", "chair"));
+/// ```
 pub fn rhyme(a: &str, b: &str) -> Result<bool, Error> {
     let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
 
@@ -69,6 +105,19 @@ fn eval_alliteration(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool
     false
 }
 
+/// Use CMUdict phonetic encoding to determine if two words alliterate.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw;
+// // Does alliterate
+/// assert_eq!(Ok(true), ttaw::cmu::alliteration("bouncing", "bears"));
+/// assert_eq!(Ok(true), ttaw::cmu::alliteration("snappy", "snails"));
+///
+/// // Does not alliterate
+/// assert_eq!(Ok(false), ttaw::cmu::alliteration("brown", "fox"));
+/// assert_eq!(Ok(false), ttaw::cmu::alliteration("lazy", "dog"));
+/// ```
 pub fn alliteration(a: &str, b: &str) -> Result<bool, Error> {
     if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
         return Ok(false);

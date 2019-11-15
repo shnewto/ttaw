@@ -6,6 +6,42 @@ extern crate tempfile;
 use ttaw::cmu::{alliteration, rhyme};
 
 #[test]
+fn cmu_encoding_found() {
+    assert_eq!(
+        ttaw::cmu::cmu("permeability"),
+        Ok(Some(vec![vec![
+            "P".to_string(),
+            "ER0".to_string(),
+            "M".to_string(),
+            "IY2".to_string(),
+            "AH0".to_string(),
+            "B".to_string(),
+            "IH1".to_string(),
+            "L".to_string(),
+            "IH0".to_string(),
+            "T".to_string(),
+            "IY0".to_string()
+        ]]))
+    );
+    assert_eq!(
+        ttaw::cmu::cmu("unearthed"),
+        Ok(Some(vec![vec![
+            "AH0".to_string(),
+            "N".to_string(),
+            "ER1".to_string(),
+            "TH".to_string(),
+            "T".to_string()
+        ]]))
+    );
+}
+
+#[test]
+fn cmu_encoding_not_found() {
+    assert_eq!(ttaw::cmu::cmu("2123123"), Ok(None));
+    assert_eq!(ttaw::cmu::cmu("%^%##%"), Ok(None));
+}
+
+#[test]
 fn rhymes_with_spaces() {
     assert!(rhyme("far  ", "tar").unwrap());
     assert!(rhyme(" far", "tar").unwrap());

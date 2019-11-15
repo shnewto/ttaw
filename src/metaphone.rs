@@ -32,6 +32,19 @@ pub struct DoubleMetaphone {
     pub secondary: String,
 }
 
+/// Use Double Metaphone phonetic encoding to determine if two words rhyme.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw;
+/// // Does rhyme
+/// assert!(ttaw::metaphone::rhyme("far", "tar"));
+/// assert!(ttaw::metaphone::rhyme("here", "near"));
+///
+/// // Does not rhyme
+/// assert!(!ttaw::metaphone::rhyme("shopping", "cart"));
+/// assert!(!ttaw::metaphone::rhyme("run", "uphill"));
+/// ```
 pub fn rhyme(a: &str, b: &str) -> bool {
     // sanity check, needing to sanity check seems fragile?
     if a.trim().is_empty() || b.trim().is_empty() {
@@ -83,6 +96,19 @@ pub fn rhyme(a: &str, b: &str) -> bool {
         || a_phonetic_end_secondary == b_phonetic_end_secondary
 }
 
+/// Use Double Metaphone phonetic encoding to determine if two words alliterate.
+///
+/// ```rust
+/// extern crate ttaw;
+/// use ttaw;
+// // Does alliterate
+/// assert!(ttaw::metaphone::alliteration("bouncing", "bears"));
+/// assert!(ttaw::metaphone::alliteration("snappy", "snails"));
+///
+/// // Does not alliterate
+/// assert!(!ttaw::metaphone::alliteration("brown", "fox"));
+/// assert!(!ttaw::metaphone::alliteration("lazy", "dog"));
+/// ```
 pub fn alliteration(a: &str, b: &str) -> bool {
     if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
         return false;
@@ -147,11 +173,11 @@ pub fn alliteration(a: &str, b: &str) -> bool {
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-/// assert_eq!(double_metaphone::double_metaphone("Arnow").primary, "ARN");
-/// assert_eq!(double_metaphone::double_metaphone("Arnow").secondary, "ARNF");
+/// assert_eq!(ttaw::metaphone::double_metaphone("Arnow").primary, "ARN");
+/// assert_eq!(ttaw::metaphone::double_metaphone("Arnow").secondary, "ARNF");
 ///
-/// assert_eq!(double_metaphone::double_metaphone("detestable").primary, "TTSTPL");
-/// assert_eq!(double_metaphone::double_metaphone("detestable").secondary, "TTSTPL");
+/// assert_eq!(ttaw::metaphone::double_metaphone("detestable").primary, "TTSTPL");
+/// assert_eq!(ttaw::metaphone::double_metaphone("detestable").secondary, "TTSTPL");
 /// ```
 ///
 pub fn double_metaphone(input: &str) -> DoubleMetaphone {

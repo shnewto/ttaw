@@ -1,6 +1,6 @@
 extern crate ttaw;
 
-use ttaw::double_metaphone::{alliteration, double_metaphone, rhyme, DoubleMetaphone};
+use ttaw::metaphone::{alliteration, double_metaphone, rhyme, DoubleMetaphone};
 
 #[test]
 fn alliterates_with_spaces() {
@@ -22,6 +22,7 @@ fn alliterates_with_caps() {
 fn alliterates() {
     assert!(alliteration("bouncing", "bears"));
     assert!(alliteration("bounding", "bears"));
+    assert!(alliteration("snappy", "snails"));
 }
 
 #[test]

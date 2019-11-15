@@ -12,9 +12,17 @@ talking to a wall, a piecemeal natural language processing library.
 - My implementation's aren't a sure thing either :smile: If you encounter anything peculiar or unexpected, please raise an issue :heart: :heart:
 
 ## Functionality
-- Determine if two words rhyme (perfect single, or general syllabic).
-- Determine if there exists consecutive alliteration in an &str.
-- Double Metaphone phonetic encoding, port of [words/double-metahone](https://github.com/words/double-metaphone) library.
+- Determine if two words rhyme using the Double Metaphone phonetic encoding
+- Determine if two words rhyme using CMUdict phonetic encoding
+
+- Determine if two words alliterate using the Double Metaphone phonetic encoding
+- Determine if two words alliterate using CMUdict phonetic encoding
+
+- Determine if two words alliterate using a combination of the CMUdict and the Double Metaphone phonetic encoding
+- Determine if two words alliterate using a combination of the CMUdict and the Double Metaphone phonetic encoding
+
+- Get the CMUdict phonetic encoding of a word
+- Get the Double Metaphone phonetic encoding of a word (port of [words/double-metahone](https://github.com/words/double-metaphone) library)
 
 
 ## Rhyme
