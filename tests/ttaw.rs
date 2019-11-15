@@ -3,6 +3,45 @@ extern crate ttaw;
 use ttaw::{alliteration, rhyme};
 
 #[test]
+fn readme() {
+    assert_eq!(Ok(true), ttaw::rhyme("far", "tar"));
+    assert_eq!(Ok(false), ttaw::rhyme("shopping", "cart"));
+
+    // Deviations in cmu and metaphone
+    assert_eq!(true, ttaw::metaphone::rhyme("hear", "near"));
+    assert_eq!(Ok(false), ttaw::cmu::rhyme("hear", "near"));
+
+    assert_eq!(Ok(true), ttaw::alliteration("bounding", "bears"));
+    assert_eq!(Ok(false), ttaw::alliteration("lazy", "dog"));
+
+    assert_eq!(true, ttaw::metaphone::alliteration("bounding", "bears"));
+    assert_eq!(Ok(true), ttaw::cmu::alliteration("bounding", "bears"));
+
+    assert_eq!(
+        ttaw::cmu::cmu("unearthed"),
+        Ok(Some(vec![vec![
+            "AH0".to_string(),
+            "N".to_string(),
+            "ER1".to_string(),
+            "TH".to_string(),
+            "T".to_string()
+        ]]))
+    );
+
+    assert_eq!(ttaw::metaphone::double_metaphone("Arnow").primary, "ARN");
+    assert_eq!(ttaw::metaphone::double_metaphone("Arnow").secondary, "ARNF");
+
+    assert_eq!(
+        ttaw::metaphone::double_metaphone("detestable").primary,
+        "TTSTPL"
+    );
+    assert_eq!(
+        ttaw::metaphone::double_metaphone("detestable").secondary,
+        "TTSTPL"
+    );
+}
+
+#[test]
 fn perfect_single() {
     assert!(rhyme("far", "tar").unwrap());
     assert!(rhyme("a", "say").unwrap());
