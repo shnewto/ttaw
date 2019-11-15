@@ -23,6 +23,7 @@ fn cmu_encoding_found() {
             "IY0".to_string()
         ]]))
     );
+
     assert_eq!(
         ttaw::cmu::cmu("unearthed"),
         Ok(Some(vec![vec![

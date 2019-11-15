@@ -20,13 +20,34 @@ lazy_static! {
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-/// assert_eq!(ttaw::cmu::cmu("Arnow").primary, "ARN");
-/// assert_eq!(ttaw::cmu::cmu("Arnow").secondary, "ARNF");
+/// assert_eq!(
+///     ttaw::cmu::cmu("permeability"),
+///     Ok(Some(vec![vec![
+///         "P".to_string(),
+///         "ER0".to_string(),
+///         "M".to_string(),
+///         "IY2".to_string(),
+///         "AH0".to_string(),
+///         "B".to_string(),
+///         "IH1".to_string(),
+///         "L".to_string(),
+///         "IH0".to_string(),
+///         "T".to_string(),
+///         "IY0".to_string()
+///     ]]))
+/// );
 ///
-/// assert_eq!(ttaw::cmu::cmu("detestable").primary, "TTSTPL");
-/// assert_eq!(ttaw::cmu::cmu("detestable").secondary, "TTSTPL");
+/// assert_eq!(
+///     ttaw::cmu::cmu("unearthed"),
+///     Ok(Some(vec![vec![
+///         "AH0".to_string(),
+///         "N".to_string(),
+///         "ER1".to_string(),
+///         "TH".to_string(),
+///         "T".to_string()
+///     ]]))
+/// );
 /// ```
-///
 pub fn cmu(w: &str) -> Result<Option<Vec<Vec<String>>>, Error> {
     let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
 
