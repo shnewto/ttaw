@@ -1,8 +1,9 @@
 extern crate ttaw;
 
-use ttaw::cmu::{alliteration, rhyme};
+#[cfg(test)]
+extern crate tempfile;
 
-use tempfile;
+use ttaw::cmu::{alliteration, rhyme};
 
 #[test]
 fn rhymes_with_spaces() {

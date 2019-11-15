@@ -20,27 +20,27 @@ talking to a wall, a piecemeal natural language processing library.
 ## Rhyme
 ```rust
 extern crate ttaw;
-use ttaw::pronounciation;
-assert_eq!(true, pronounciation::rhyme("here", "near"));
-assert_eq!(false, pronounciation::rhyme("shopping", "cart"));
+use ttaw;
+assert_eq!(true, ttaw::rhyme("here", "near"));
+assert_eq!(false, ttaw::rhyme("shopping", "cart"));
 ```
 
 ## Alliteration
 ```rust
 extern crate ttaw;
-use ttaw::pronounciation;
-assert_eq!(true, pronounciation::alliteration("a group of bounding bears"));
-assert_eq!(true, pronounciation::alliteration("boucing bears are everywhere"));
-assert_eq!(false, pronounciation::alliteration("The quick brown fox jumps over the lazy dog."));
+use ttaw;
+assert_eq!(true, ttaw::alliteration("a group of bounding bears"));
+assert_eq!(true, ttaw::alliteration("boucing bears are everywhere"));
+assert_eq!(false, ttaw::alliteration("The quick brown fox jumps over the lazy dog."));
 ```
 
 ## Double Metaphone
 ```rust
 extern crate ttaw;
-use ttaw::pronounciation;
-assert_eq!(pronounciation::double_metaphone("Arnow").primary, "ARN");
-assert_eq!(pronounciation::double_metaphone("Arnow").secondary, "ARNF");
+use ttaw;
+assert_eq!(ttaw::double_metaphone("Arnow").primary, "ARN");
+assert_eq!(ttaw::double_metaphone("Arnow").secondary, "ARNF");
 
-assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
-assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
+assert_eq!(ttaw::double_metaphone("detestable").primary, "TTSTPL");
+assert_eq!(ttaw::double_metaphone("detestable").secondary, "TTSTPL");
 ```

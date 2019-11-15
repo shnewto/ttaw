@@ -146,12 +146,12 @@ pub fn alliteration(a: &str, b: &str) -> bool {
 ///
 /// ```rust
 /// extern crate ttaw;
-/// use ttaw::pronounciation;
-/// assert_eq!(pronounciation::double_metaphone("Arnow").primary, "ARN");
-/// assert_eq!(pronounciation::double_metaphone("Arnow").secondary, "ARNF");
+/// use ttaw;
+/// assert_eq!(double_metaphone::double_metaphone("Arnow").primary, "ARN");
+/// assert_eq!(double_metaphone::double_metaphone("Arnow").secondary, "ARNF");
 ///
-/// assert_eq!(pronounciation::double_metaphone("detestable").primary, "TTSTPL");
-/// assert_eq!(pronounciation::double_metaphone("detestable").secondary, "TTSTPL");
+/// assert_eq!(double_metaphone::double_metaphone("detestable").primary, "TTSTPL");
+/// assert_eq!(double_metaphone::double_metaphone("detestable").secondary, "TTSTPL");
 /// ```
 ///
 pub fn double_metaphone(input: &str) -> DoubleMetaphone {
