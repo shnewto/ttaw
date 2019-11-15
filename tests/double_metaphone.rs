@@ -3,32 +3,36 @@ extern crate ttaw;
 use ttaw::double_metaphone::{alliteration, double_metaphone, rhyme, DoubleMetaphone};
 
 #[test]
-fn bouncing_bears() {
-    assert!(alliteration("bouncing bears"));
-    assert!(alliteration("a group of bounding bears"));
-
-    assert!(alliteration("boucing bears are everywhere"));
+fn alliterates_with_spaces() {
+    assert!(alliteration("bouncing", "  bears"));
+    assert!(alliteration("bouncing", "bears  "));
+    assert!(alliteration(" bouncing", "bears"));
+    assert!(alliteration("bouncing  ", "bears"));
 }
 
 #[test]
-fn also_ants() {
-    assert!(!alliteration("also ants"));
-    assert!(!alliteration("there were seals at the zoo, also ants"));
-    assert!(!alliteration("Also, ants were writing poetry."));
+fn alliterates_with_caps() {
+    assert!(alliteration("Bouncing", "  bears"));
+    assert!(alliteration("bouncing", "Bears  "));
+    assert!(alliteration(" bouncinG", "bEars"));
+    assert!(alliteration("bouncing  ", "beaRs"));
 }
 
 #[test]
-// These match as alliteration if we're not filtering out leading vowel sounds
-fn questionalbe() {
-    assert!(!alliteration("where ants"));
-    assert!(!alliteration("jumps over"));
+fn alliterates() {
+    assert!(alliteration("bouncing", "bears"));
+    assert!(alliteration("bounding", "bears"));
 }
 
 #[test]
 fn quick_brown_fox() {
-    assert!(!alliteration("brown fox"));
-    assert!(!alliteration("The quick brown fox"));
-    assert!(!alliteration("The quick brown fox jumps."));
+    assert!(!alliteration("where", "ants"));
+
+    assert!(!alliteration("The", "quick"));
+    assert!(!alliteration("brown", "fox"));
+    assert!(!alliteration("jumps", "over"));
+    assert!(!alliteration("a", "lazy"));
+    assert!(!alliteration("lazy", "dog"));
 }
 
 #[test]

@@ -1,4 +1,8 @@
+extern crate pest;
+
+use double_metaphone::{Rule, Word};
 use error::Error;
+use pest::Parser;
 use reqwest;
 use serde_json;
 use std::collections::HashMap;
@@ -35,8 +39,6 @@ fn eval_rhyme(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool {
     false
 }
 
-/// If the CMU pronounciation doesn't line up with a rhyme or
-/// a word isn't found there, see if double_metaphone says it rhymes.
 pub fn rhyme(a: &str, b: &str) -> Result<bool, Error> {
     let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
 
@@ -45,10 +47,49 @@ pub fn rhyme(a: &str, b: &str) -> Result<bool, Error> {
         Err(e) => return Err(e.clone()),
     }
 
-    if let (Some(phones_a), Some(phones_b)) =
-        (cmu_dict.get(&a.to_string()), cmu_dict.get(&b.to_string()))
-    {
+    if let (Some(phones_a), Some(phones_b)) = (
+        cmu_dict.get(a.to_string().to_lowercase().trim()),
+        cmu_dict.get(b.to_string().to_lowercase().trim()),
+    ) {
         return Ok(eval_rhyme(phones_a, phones_b));
+    }
+
+    Ok(false)
+}
+
+fn eval_alliteration(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool {
+    for a in phones_a {
+        for b in phones_b {
+            if let (Some(a), Some(b)) = (a.first(), b.first()) {
+                return a == b;
+            }
+        }
+    }
+
+    false
+}
+
+pub fn alliteration(a: &str, b: &str) -> Result<bool, Error> {
+    if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
+        return Ok(false);
+    }
+
+    if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
+        return Ok(false);
+    }
+
+    let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
+
+    match &*CMU_DICT {
+        Ok(d) => cmu_dict = d,
+        Err(e) => return Err(e.clone()),
+    }
+
+    if let (Some(phones_a), Some(phones_b)) = (
+        cmu_dict.get(a.to_string().to_lowercase().trim()),
+        cmu_dict.get(b.to_string().to_lowercase().trim()),
+    ) {
+        return Ok(eval_alliteration(phones_a, phones_b));
     }
 
     Ok(false)
@@ -105,7 +146,6 @@ fn download_and_serialze(path: &Path) -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile;
 
     #[test]
     fn test_download_and_serialze() {
@@ -121,37 +161,5 @@ mod tests {
         let fpath = dir.path().join("serialized");
         let dict = from_json_file(&fpath);
         assert!(dict.is_ok());
-    }
-
-    #[test]
-    fn perfect_single() {
-        assert!(rhyme("far", "tar").unwrap());
-        assert!(rhyme("a", "say").unwrap());
-        assert!(rhyme("hissed", "mist").unwrap());
-        assert!(rhyme("dissed", "mist").unwrap());
-        assert!(rhyme("tryst", "wrist").unwrap());
-        assert!(rhyme("here", "near").unwrap());
-    }
-
-    #[test]
-    fn no_rhyme() {
-        assert!(!rhyme("dissed", "trust").unwrap());
-        assert!(!rhyme("red", "Edmund").unwrap());
-        assert!(!rhyme("shopping", "cart").unwrap());
-        assert!(!rhyme("run", "uphill").unwrap());
-        assert!(!rhyme("comfy", "chair").unwrap());
-
-        assert!(!rhyme("empty", "  ").unwrap());
-        assert!(!rhyme("empty", "").unwrap());
-        assert!(!rhyme("empty", "\t").unwrap());
-        assert!(!rhyme("empty", "\r").unwrap());
-        assert!(!rhyme("empty", "\n").unwrap());
-    }
-
-    #[test]
-    fn general_syllabic() {
-        assert!(rhyme("cleaver", "silver").unwrap());
-        assert!(rhyme("pitter", "patter").unwrap());
-        assert!(rhyme("bottle", "fiddle").unwrap());
     }
 }

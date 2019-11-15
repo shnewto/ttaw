@@ -40,3 +40,19 @@ pub use error::Error;
 pub mod cmu;
 pub mod double_metaphone;
 pub mod pronounciation;
+
+pub fn rhyme(a: &str, b: &str) -> Result<bool, Error> {
+    if cmu::rhyme(a, b)? {
+        return Ok(true);
+    }
+
+    Ok(double_metaphone::rhyme(a, b))
+}
+
+pub fn alliteration(a: &str, b: &str) -> Result<bool, Error> {
+    if cmu::alliteration(a, b)? {
+        return Ok(true);
+    }
+
+    Ok(double_metaphone::alliteration(a, b))
+}

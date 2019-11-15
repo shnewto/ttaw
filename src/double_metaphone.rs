@@ -32,16 +32,6 @@ pub struct DoubleMetaphone {
     pub secondary: String,
 }
 
-///
-/// Determine if two words rhyme (perfect single, or general syllabic).
-///
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw::pronounciation;
-/// assert_eq!(true, pronounciation::rhyme("here", "near"));
-/// assert_eq!(false, pronounciation::rhyme("shopping", "cart"));
-/// ```
-///
 pub fn rhyme(a: &str, b: &str) -> bool {
     // sanity check, needing to sanity check seems fragile?
     if a.trim().is_empty() || b.trim().is_empty() {
@@ -93,76 +83,60 @@ pub fn rhyme(a: &str, b: &str) -> bool {
         || a_phonetic_end_secondary == b_phonetic_end_secondary
 }
 
-///
-/// Determine if there exists consecutive alliteration in an &str.
-///
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw::pronounciation;
-/// assert_eq!(true, pronounciation::alliteration("a group of bounding bears"));
-/// assert_eq!(true, pronounciation::alliteration("boucing bears are everywhere"));
-/// assert_eq!(false, pronounciation::alliteration("The quick brown fox jumps over the lazy dog."));
-/// ```
-///
-pub fn alliteration(s: &str) -> bool {
-    let words = s.split_whitespace().collect::<Vec<&str>>();
-    let comparisons = words.iter().zip(words.get(1..).unwrap_or_default().iter());
+pub fn alliteration(a: &str, b: &str) -> bool {
+    if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
+        return false;
+    }
 
-    for (a, b) in comparisons {
-        if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
-            continue;
-        }
+    if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
+        return false;
+    }
 
-        if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
-            continue;
-        }
+    let a_phonetic = double_metaphone(a);
+    let b_phonetic = double_metaphone(b);
 
-        let a_phonetic = double_metaphone(a);
-        let b_phonetic = double_metaphone(b);
+    // log::info!(
+    println!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        a, a_phonetic.primary, a_phonetic.secondary
+    );
 
-        // log::info!(
-        println!(
-            "|{: ^10} | {: ^10} | {: ^10} |",
-            a, a_phonetic.primary, a_phonetic.secondary
-        );
+    // log::info!(
+    println!(
+        "|{: ^10} | {: ^10} | {: ^10} |",
+        b, b_phonetic.primary, b_phonetic.secondary
+    );
 
-        // log::info!(
-        println!(
-            "|{: ^10} | {: ^10} | {: ^10} |",
-            b, b_phonetic.primary, b_phonetic.secondary
-        );
+    let mut a_phonetic_head_primary = a_phonetic.primary;
 
-        let mut a_phonetic_head_primary = a_phonetic.primary;
+    if let Some(c) = a_phonetic_head_primary.get(..1) {
+        a_phonetic_head_primary = c.to_string();
+    }
 
-        if let Some(c) = a_phonetic_head_primary.get(..1) {
-            a_phonetic_head_primary = c.to_string();
-        }
+    let mut a_phonetic_head_secondary = a_phonetic.secondary;
 
-        let mut a_phonetic_head_secondary = a_phonetic.secondary;
+    if let Some(c) = a_phonetic_head_secondary.get(..1) {
+        a_phonetic_head_secondary = c.to_string();
+    }
 
-        if let Some(c) = a_phonetic_head_secondary.get(..1) {
-            a_phonetic_head_secondary = c.to_string();
-        }
+    let mut b_phonetic_head_primary = b_phonetic.primary;
 
-        let mut b_phonetic_head_primary = b_phonetic.primary;
+    if let Some(c) = b_phonetic_head_primary.get(..1) {
+        b_phonetic_head_primary = c.to_string();
+    }
 
-        if let Some(c) = b_phonetic_head_primary.get(..1) {
-            b_phonetic_head_primary = c.to_string();
-        }
+    let mut b_phonetic_head_secondary = b_phonetic.secondary;
 
-        let mut b_phonetic_head_secondary = b_phonetic.secondary;
+    if let Some(c) = b_phonetic_head_secondary.get(..1) {
+        b_phonetic_head_secondary = c.to_string();
+    }
 
-        if let Some(c) = b_phonetic_head_secondary.get(..1) {
-            b_phonetic_head_secondary = c.to_string();
-        }
-
-        if a_phonetic_head_primary == b_phonetic_head_primary
-            || a_phonetic_head_primary == b_phonetic_head_secondary
-            || a_phonetic_head_secondary == b_phonetic_head_primary
-            || a_phonetic_head_secondary == b_phonetic_head_secondary
-        {
-            return true;
-        }
+    if a_phonetic_head_primary == b_phonetic_head_primary
+        || a_phonetic_head_primary == b_phonetic_head_secondary
+        || a_phonetic_head_secondary == b_phonetic_head_primary
+        || a_phonetic_head_secondary == b_phonetic_head_secondary
+    {
+        return true;
     }
 
     false
