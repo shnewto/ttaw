@@ -31,9 +31,12 @@ extern crate pest;
 extern crate tempfile;
 #[macro_use]
 extern crate pest_derive;
+#[macro_use]
+extern crate lazy_static;
 extern crate reqwest;
 extern crate serde_json;
-mod cmu;
 mod error;
 pub use error::Error;
+pub mod cmu;
+pub mod double_metaphone;
 pub mod pronounciation;

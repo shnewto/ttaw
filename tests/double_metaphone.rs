@@ -1,6 +1,6 @@
 extern crate ttaw;
 
-use ttaw::pronounciation::{alliteration, double_metaphone, rhyme, DoubleMetaphone};
+use ttaw::double_metaphone::{alliteration, double_metaphone, rhyme, DoubleMetaphone};
 
 #[test]
 fn bouncing_bears() {
@@ -48,7 +48,7 @@ fn general_syllabic() {
 
 #[test]
 // Not handled yet.
-fn perfect_doulbe() {
+fn perfect_double() {
     assert!(!rhyme("picky", "tricky"));
 }
 
@@ -58,8 +58,6 @@ fn perfect_dactylic() {
     assert!(!rhyme("cacophonies", "Aristophanes"));
 }
 
-// rhyme, sublime
-// cleaver, silver, or pitter, patter; the final syllable of the words bottle and fiddle
 #[test]
 fn no_rhyme() {
     assert!(!rhyme("tryst", "wrist"));
