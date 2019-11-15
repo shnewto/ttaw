@@ -2,7 +2,7 @@
 name = "ttaw"
 description = "talking to a wall, a piecemeal natural language processing library"
 
-version = "0.1.0"
+version = "0.2.0"
 license = "MIT"
 
 authors = ["Shea Newton <shnewto@gmail.com>"]
@@ -11,7 +11,7 @@ homepage = "https://github.com/shnewto/ttaw"
 repository = "https://github.com/shnewto/ttaw"
 readme = "README.md"
 
-keywords = ["nlp", "rhyme", "alliteration", "double-metahone" ]
+keywords = ["nlp", "rhyme", "alliteration", "double-metahone", "CMUdict" ]
 
 [dependencies]
 pest = "2.1.2"
