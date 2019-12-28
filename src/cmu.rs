@@ -7,12 +7,18 @@ use reqwest;
 use serde_json;
 use std::collections::HashMap;
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+// lazy_static! {
+//     static ref CMU_DICT: Result<HashMap<String, Vec<Vec<String>>>, Error> =
+//         from_json_file(&Path::new("res").join("cmudict.json"));
+// }
+
 lazy_static! {
-    static ref CMU_DICT: Result<HashMap<String, Vec<Vec<String>>>, Error> =
-        from_json_file(&Path::new("res").join("cmudict.json"));
+    static ref CMU_DICT: Result<HashMap<String, Vec<Vec<String>>>, Error> = from_json();
 }
 
 /// CMUdict phonetic encoding.
@@ -165,20 +171,13 @@ pub fn alliteration(a: &str, b: &str) -> Result<bool, Error> {
     Ok(false)
 }
 
-fn from_json_file(path: &Path) -> Result<HashMap<String, Vec<Vec<String>>>, Error> {
-    let dict_json: String;
-
-    if !path.exists() {
-        // regenerate if the file isn't there
-        download_and_serialze(&path)?;
-    }
-
-    dict_json = fs::read_to_string(path)?;
+fn from_json() -> Result<HashMap<String, Vec<Vec<String>>>, Error> {
+    let dict_json = include!("cmudict.json");
     let dict: HashMap<String, Vec<Vec<String>>> = serde_json::from_str(&dict_json)?;
     Ok(dict)
 }
 
-fn download_and_serialze(path: &Path) -> Result<(), Error> {
+pub fn download_and_serialze(path: &Path) -> Result<(), Error> {
     let dict_string =
         reqwest::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
             .text()?;
@@ -209,27 +208,13 @@ fn download_and_serialze(path: &Path) -> Result<(), Error> {
     }
 
     let serialized = serde_json::to_string(&dict).unwrap();
-    fs::write(path, serialized)?;
+
+    fs::write(path, "r###\"")?;
+
+    let mut file = OpenOptions::new().write(true).append(true).open(path)?;
+
+    writeln!(file, "{}", serialized)?;
+    writeln!(file, "\"###")?;
+
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_download_and_serialze() {
-        let dir = tempfile::tempdir().unwrap();
-        let fpath = dir.path().join("serialized");
-        let dict = download_and_serialze(&fpath);
-        assert!(dict.is_ok());
-    }
-
-    #[test]
-    fn test_from_json_file() {
-        let dir = tempfile::tempdir().unwrap();
-        let fpath = dir.path().join("serialized");
-        let dict = from_json_file(&fpath);
-        assert!(dict.is_ok());
-    }
 }

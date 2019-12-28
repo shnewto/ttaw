@@ -1,0 +1,23 @@
+[package]
+name = "ttaw-bin"
+description = "CLI for ttaw, a piecemeal natural language processing library"
+
+authors = ["Shea Newton <shnewto@gmail.com>"]
+
+version = "0.1.0"
+license = "MIT"
+
+
+homepage = "https://github.com/shnewto/ttaw"
+repository = "https://github.com/shnewto/ttaw"
+readme = "README.md"
+
+keywords = ["nlp", "rhyme", "alliteration", "double-metahone", "CMUdict" ]
+
+[[bin]]
+name = "ttaw"
+path = "src/main.rs"
+
+[dependencies]
+ttaw = { path = "..", version = "0.2.0" }
+clap = "2.33.0"

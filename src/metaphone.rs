@@ -60,6 +60,7 @@ pub fn rhyme(a: &str, b: &str) -> bool {
         a_phonetic.primary,
         a_phonetic.secondary
     );
+    
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
         b,
@@ -121,14 +122,12 @@ pub fn alliteration(a: &str, b: &str) -> bool {
     let a_phonetic = double_metaphone(a);
     let b_phonetic = double_metaphone(b);
 
-    // log::info!(
-    println!(
+    log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
         a, a_phonetic.primary, a_phonetic.secondary
     );
 
-    // log::info!(
-    println!(
+    log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
         b, b_phonetic.primary, b_phonetic.secondary
     );
