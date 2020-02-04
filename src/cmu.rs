@@ -15,6 +15,9 @@ pub struct CmuDict {
 }
 
 impl CmuDict {
+    /// Initialize the CmuDict with a path to the existing serialized CMU dictionary
+    /// or a directoy containing it. If the dictionary doesn't exisit, it will be
+    /// downloaded and serialized at the location specified by the path parameter.
     pub fn new(path: &str) -> Result<CmuDict, Error> {
         match from_json_file(&Path::new(path)) {
             Ok(d) => Ok(CmuDict { dict: d }),
@@ -27,7 +30,7 @@ impl CmuDict {
     /// ```rust
     /// extern crate ttaw;
     /// use ttaw::cmu::CmuDict;
-    /// let cmudict = CmuDict::new("cmu.dict").unwrap();
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
     /// assert_eq!(
     ///     cmudict.encoding("permeability"),
     ///     Ok(Some(vec![vec![
@@ -65,7 +68,7 @@ impl CmuDict {
     /// ```rust
     /// extern crate ttaw;
     /// use ttaw::cmu::CmuDict;
-    /// let cmudict = CmuDict::new("cmu.dict").unwrap();
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
     /// // Does rhyme
     /// assert!(cmudict.rhyme("hissed", "mist").unwrap());
     /// assert!(cmudict.rhyme("tryst", "wrist").unwrap());
@@ -90,7 +93,7 @@ impl CmuDict {
     /// ```rust
     /// extern crate ttaw;
     /// use ttaw::cmu::CmuDict;
-    /// let cmudict = CmuDict::new("cmu.dict").unwrap();
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
     // // Does alliterate
     /// assert!(cmudict.alliteration("bouncing", "bears").unwrap());
     /// assert!(cmudict.alliteration("snappy", "snails").unwrap());

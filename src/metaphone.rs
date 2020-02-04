@@ -51,8 +51,8 @@ pub fn rhyme(a: &str, b: &str) -> bool {
         return false;
     }
 
-    let a_phonetic = double_metaphone(a);
-    let b_phonetic = double_metaphone(b);
+    let a_phonetic = encoding(a);
+    let b_phonetic = encoding(b);
 
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
@@ -60,7 +60,7 @@ pub fn rhyme(a: &str, b: &str) -> bool {
         a_phonetic.primary,
         a_phonetic.secondary
     );
-    
+
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
         b,
@@ -119,17 +119,21 @@ pub fn alliteration(a: &str, b: &str) -> bool {
         return false;
     }
 
-    let a_phonetic = double_metaphone(a);
-    let b_phonetic = double_metaphone(b);
+    let a_phonetic = encoding(a);
+    let b_phonetic = encoding(b);
 
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
-        a, a_phonetic.primary, a_phonetic.secondary
+        a,
+        a_phonetic.primary,
+        a_phonetic.secondary
     );
 
     log::info!(
         "|{: ^10} | {: ^10} | {: ^10} |",
-        b, b_phonetic.primary, b_phonetic.secondary
+        b,
+        b_phonetic.primary,
+        b_phonetic.secondary
     );
 
     let mut a_phonetic_head_primary = a_phonetic.primary;
@@ -172,14 +176,14 @@ pub fn alliteration(a: &str, b: &str) -> bool {
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-/// assert_eq!(ttaw::metaphone::double_metaphone("Arnow").primary, "ARN");
-/// assert_eq!(ttaw::metaphone::double_metaphone("Arnow").secondary, "ARNF");
+/// assert_eq!(ttaw::metaphone::encoding("Arnow").primary, "ARN");
+/// assert_eq!(ttaw::metaphone::encoding("Arnow").secondary, "ARNF");
 ///
-/// assert_eq!(ttaw::metaphone::double_metaphone("detestable").primary, "TTSTPL");
-/// assert_eq!(ttaw::metaphone::double_metaphone("detestable").secondary, "TTSTPL");
+/// assert_eq!(ttaw::metaphone::encoding("detestable").primary, "TTSTPL");
+/// assert_eq!(ttaw::metaphone::encoding("detestable").secondary, "TTSTPL");
 /// ```
 ///
-pub fn double_metaphone(input: &str) -> DoubleMetaphone {
+pub fn encoding(input: &str) -> DoubleMetaphone {
     let mut state = State::new();
     let word: String = input.to_uppercase() + "     ";
 

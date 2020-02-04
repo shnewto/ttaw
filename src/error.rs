@@ -44,7 +44,6 @@ mod tests {
     fn display() {
         let input = "input error".to_string();
         let progam = "program error".to_string();
-        let path = "path error".to_string();
 
         assert_eq!(input, format!("{}", Error::InputError(input.clone())));
         assert_eq!(progam, format!("{}", Error::ProgramError(progam.clone())));

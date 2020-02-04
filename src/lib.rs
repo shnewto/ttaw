@@ -4,7 +4,7 @@ extern crate pest;
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-/// let cmudict = ttaw::cmu::CmuDict::new("cmudict.test").unwrap();
+/// let cmudict = ttaw::cmu::CmuDict::new("cmudict.json").unwrap();
 /// assert_eq!(
 ///     cmudict.encoding("permeability"),
 ///     Ok(Some(vec![vec![
@@ -38,11 +38,11 @@ extern crate pest;
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-///     assert_eq!(ttaw::metaphone::double_metaphone("Arnow").primary, "ARN");
-///     assert_eq!(ttaw::metaphone::double_metaphone("Arnow").secondary, "ARNF");
+///     assert_eq!(ttaw::metaphone::encoding("Arnow").primary, "ARN");
+///     assert_eq!(ttaw::metaphone::encoding("Arnow").secondary, "ARNF");
 ///
-///     assert_eq!(ttaw::metaphone::double_metaphone("detestable").primary, "TTSTPL");
-///     assert_eq!(ttaw::metaphone::double_metaphone("detestable").secondary, "TTSTPL");
+///     assert_eq!(ttaw::metaphone::encoding("detestable").primary, "TTSTPL");
+///     assert_eq!(ttaw::metaphone::encoding("detestable").secondary, "TTSTPL");
 /// ```
 #[macro_use]
 extern crate pest_derive;
