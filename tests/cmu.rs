@@ -3,12 +3,13 @@ extern crate ttaw;
 #[cfg(test)]
 extern crate tempfile;
 
-use ttaw::cmu::{alliteration, rhyme};
+use ttaw::cmu::CmuDict;
 
 #[test]
 fn cmu_encoding_found() {
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
     assert_eq!(
-        ttaw::cmu::cmu("permeability"),
+        cmudict.encoding("permeability"),
         Ok(Some(vec![vec![
             "P".to_string(),
             "ER0".to_string(),
@@ -25,7 +26,7 @@ fn cmu_encoding_found() {
     );
 
     assert_eq!(
-        ttaw::cmu::cmu("unearthed"),
+        cmudict.encoding("unearthed"),
         Ok(Some(vec![vec![
             "AH0".to_string(),
             "N".to_string(),
@@ -38,85 +39,95 @@ fn cmu_encoding_found() {
 
 #[test]
 fn cmu_encoding_not_found() {
-    assert_eq!(ttaw::cmu::cmu("2123123"), Ok(None));
-    assert_eq!(ttaw::cmu::cmu("%^%##%"), Ok(None));
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert_eq!(cmudict.encoding("2123123"), Ok(None));
+    assert_eq!(cmudict.encoding("%^%##%"), Ok(None));
 }
 
 #[test]
 fn rhymes_with_spaces() {
-    assert!(rhyme("far  ", "tar").unwrap());
-    assert!(rhyme(" far", "tar").unwrap());
-    assert!(rhyme("far", " tar").unwrap());
-    assert!(rhyme("far", "tar  ").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.rhyme("far  ", "tar").unwrap());
+    assert!(cmudict.rhyme(" far", "tar").unwrap());
+    assert!(cmudict.rhyme("far", " tar").unwrap());
+    assert!(cmudict.rhyme("far", "tar  ").unwrap());
 }
 
 #[test]
 fn rhymes_with_caps() {
-    assert!(rhyme("Far", "tar").unwrap());
-    assert!(rhyme("far", "Tar").unwrap());
-    assert!(rhyme("fAr", "taR").unwrap());
-    assert!(rhyme("far", "tAr").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.rhyme("Far", "tar").unwrap());
+    assert!(cmudict.rhyme("far", "Tar").unwrap());
+    assert!(cmudict.rhyme("fAr", "taR").unwrap());
+    assert!(cmudict.rhyme("far", "tAr").unwrap());
 }
 
 #[test]
 fn perfect_single() {
-    assert!(rhyme("far", "tar").unwrap());
-    assert!(rhyme("a", "say").unwrap());
-    assert!(rhyme("hissed", "mist").unwrap());
-    assert!(rhyme("tryst", "wrist").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.rhyme("far", "tar").unwrap());
+    assert!(cmudict.rhyme("a", "say").unwrap());
+    assert!(cmudict.rhyme("hissed", "mist").unwrap());
+    assert!(cmudict.rhyme("tryst", "wrist").unwrap());
 }
 
 #[test]
 fn no_rhyme() {
-    assert!(!rhyme("dissed", "trust").unwrap());
-    assert!(!rhyme("red", "Edmund").unwrap());
-    assert!(!rhyme("shopping", "cart").unwrap());
-    assert!(!rhyme("run", "uphill").unwrap());
-    assert!(!rhyme("comfy", "chair").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(!cmudict.rhyme("dissed", "trust").unwrap());
+    assert!(!cmudict.rhyme("red", "Edmund").unwrap());
+    assert!(!cmudict.rhyme("shopping", "cart").unwrap());
+    assert!(!cmudict.rhyme("run", "uphill").unwrap());
+    assert!(!cmudict.rhyme("comfy", "chair").unwrap());
 
-    assert!(!rhyme("empty", "  ").unwrap());
-    assert!(!rhyme("empty", "").unwrap());
-    assert!(!rhyme("empty", "\t").unwrap());
-    assert!(!rhyme("empty", "\r").unwrap());
-    assert!(!rhyme("empty", "\n").unwrap());
+    assert!(!cmudict.rhyme("empty", "  ").unwrap());
+    assert!(!cmudict.rhyme("empty", "").unwrap());
+    assert!(!cmudict.rhyme("empty", "\t").unwrap());
+    assert!(!cmudict.rhyme("empty", "\r").unwrap());
+    assert!(!cmudict.rhyme("empty", "\n").unwrap());
 }
 
 #[test]
 fn general_syllabic() {
-    assert!(!rhyme("cleaver", "silver").unwrap());
-    assert!(!rhyme("pitter", "patter").unwrap());
-    assert!(!rhyme("bottle", "fiddle").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(!cmudict.rhyme("cleaver", "silver").unwrap());
+    assert!(!cmudict.rhyme("pitter", "patter").unwrap());
+    assert!(!cmudict.rhyme("bottle", "fiddle").unwrap());
 }
 
 #[test]
 fn alliterates_with_spaces() {
-    assert!(alliteration("bouncing", "  bears").unwrap());
-    assert!(alliteration("bouncing", "bears  ").unwrap());
-    assert!(alliteration(" bouncing", "bears").unwrap());
-    assert!(alliteration("bouncing  ", "bears").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.alliteration("bouncing", "  bears").unwrap());
+    assert!(cmudict.alliteration("bouncing", "bears  ").unwrap());
+    assert!(cmudict.alliteration(" bouncing", "bears").unwrap());
+    assert!(cmudict.alliteration("bouncing  ", "bears").unwrap());
 }
 
 #[test]
 fn alliterates_with_caps() {
-    assert!(alliteration("Bouncing", "  bears").unwrap());
-    assert!(alliteration("bouncing", "Bears  ").unwrap());
-    assert!(alliteration(" bouncinG", "bEars").unwrap());
-    assert!(alliteration("bouncing  ", "beaRs").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.alliteration("Bouncing", "  bears").unwrap());
+    assert!(cmudict.alliteration("bouncing", "Bears  ").unwrap());
+    assert!(cmudict.alliteration(" bouncinG", "bEars").unwrap());
+    assert!(cmudict.alliteration("bouncing  ", "beaRs").unwrap());
 }
 
 #[test]
 fn alliterates() {
-    assert!(alliteration("bouncing", "bears").unwrap());
-    assert!(alliteration("bounding", "bears").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(cmudict.alliteration("bouncing", "bears").unwrap());
+    assert!(cmudict.alliteration("bounding", "bears").unwrap());
 }
 
 #[test]
 fn quick_brown_fox() {
-    assert!(!alliteration("where", "ants").unwrap());
+    let cmudict = CmuDict::new("cmudict.test").unwrap();
+    assert!(!cmudict.alliteration("where", "ants").unwrap());
 
-    assert!(!alliteration("The", "quick").unwrap());
-    assert!(!alliteration("brown", "fox").unwrap());
-    assert!(!alliteration("jumps", "over").unwrap());
-    assert!(!alliteration("a", "lazy").unwrap());
-    assert!(!alliteration("lazy", "dog").unwrap());
+    assert!(!cmudict.alliteration("The", "quick").unwrap());
+    assert!(!cmudict.alliteration("brown", "fox").unwrap());
+    assert!(!cmudict.alliteration("jumps", "over").unwrap());
+    assert!(!cmudict.alliteration("a", "lazy").unwrap());
+    assert!(!cmudict.alliteration("lazy", "dog").unwrap());
 }

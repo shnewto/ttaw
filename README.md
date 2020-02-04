@@ -29,23 +29,37 @@ talking to a wall, a piecemeal natural language processing library.
 extern crate ttaw;
 use ttaw;
 
-assert_eq!(Ok(true), ttaw::rhyme("far", "tar"));
-assert_eq!(Ok(false), ttaw::rhyme("shopping", "cart"));
+// Initialize the CmuDict with a path to the existing serialized CMU dictionary
+// or a directoy containing it. If the dictionary doesn't exisit, it will be
+// downloaded and serialized at the location specified by the path parameter.
+let cmudict = ttaw::cmu::CmuDict::new("cmudict.json").unwrap();
+
+assert_eq!(Ok(true), cmudict.rhyme("far", "tar"));
+assert_eq!(Ok(true), ttaw::metaphone::rhyme("far", "tar"));
+
+assert_eq!(Ok(false), cmudict.rhyme("shopping", "cart"));
+assert_eq!(Ok(false), ttaw::metaphone::rhyme("shopping", "cart"));
 
 // Deviations in cmu and metaphone
 assert_eq!(true, ttaw::metaphone::rhyme("hear", "near"));
-assert_eq!(Ok(false), ttaw::cmu::rhyme("hear", "near"));
+assert_eq!(Ok(false), cmudict.rhyme("hear", "near"));
 ```
 
 ## Alliteration
 ```rust
 extern crate ttaw;
 use ttaw;
-assert_eq!(Ok(true), ttaw::alliteration("bounding","bears"));
-assert_eq!(Ok(false), ttaw::alliteration("lazy", "dog"));
 
+// Initialize the CmuDict with a path to the existing serialized CMU dictionary
+// or a directoy containing it. If the dictionary doesn't exisit, it will be
+// downloaded and serialized at the location specified by the path parameter.
+let cmudict = ttaw::cmu::CmuDict::new("cmudict.json").unwrap();
+
+assert_eq!(Ok(true), cmudict.alliteration("bounding","bears"));
 assert_eq!(true, ttaw::metaphone::alliteration("bounding","bears"));
-assert_eq!(Ok(true), ttaw::cmu::alliteration("bounding","bears"));
+
+assert_eq!(Ok(false), cmudict.alliteration("lazy", "dog"));
+assert_eq!(false, ttaw::metaphone::alliteration("lazy", "dog"));
 ```
 
 
@@ -53,8 +67,14 @@ assert_eq!(Ok(true), ttaw::cmu::alliteration("bounding","bears"));
 ```rust
 extern crate ttaw;
 use ttaw;
+
+// Initialize the CmuDict with a path to the existing serialized CMU dictionary
+// or a directoy containing it. If the dictionary doesn't exisit, it will be
+// downloaded and serialized at the location specified by the path parameter.
+let cmudict = ttaw::cmu::CmuDict::new("cmudict.json").unwrap();
+
 assert_eq!(
-    ttaw::cmu::cmu("unearthed"),
+    cmudict.encoding(("unearthed"),
     Ok(Some(vec![vec![
         "AH0".to_string(),
         "N".to_string(),
@@ -69,15 +89,15 @@ assert_eq!(
 ```rust
 extern crate ttaw;
 use ttaw;
-assert_eq!(ttaw::metaphone::double_metaphone("Arnow").primary, "ARN");
-assert_eq!(ttaw::metaphone::double_metaphone("Arnow").secondary, "ARNF");
+assert_eq!(ttaw::metaphone::encoding("Arnow").primary, "ARN");
+assert_eq!(ttaw::metaphone::encoding("Arnow").secondary, "ARNF");
 
 assert_eq!(
-    ttaw::metaphone::double_metaphone("detestable").primary,
+    ttaw::metaphone::encoding("detestable").primary,
     "TTSTPL"
 );
 assert_eq!(
-    ttaw::metaphone::double_metaphone("detestable").secondary,
+    ttaw::metaphone::encoding("detestable").secondary,
     "TTSTPL"
 );
 ```

@@ -10,53 +10,116 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-lazy_static! {
-    static ref CMU_DICT: Result<HashMap<String, Vec<Vec<String>>>, Error> =
-        from_json_file(&Path::new("res").join("cmudict.json"));
+pub struct CmuDict {
+    dict: HashMap<String, Vec<Vec<String>>>,
 }
 
-/// CMUdict phonetic encoding.
-///
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw;
-/// assert_eq!(
-///     ttaw::cmu::cmu("permeability"),
-///     Ok(Some(vec![vec![
-///         "P".to_string(),
-///         "ER0".to_string(),
-///         "M".to_string(),
-///         "IY2".to_string(),
-///         "AH0".to_string(),
-///         "B".to_string(),
-///         "IH1".to_string(),
-///         "L".to_string(),
-///         "IH0".to_string(),
-///         "T".to_string(),
-///         "IY0".to_string()
-///     ]]))
-/// );
-///
-/// assert_eq!(
-///     ttaw::cmu::cmu("unearthed"),
-///     Ok(Some(vec![vec![
-///         "AH0".to_string(),
-///         "N".to_string(),
-///         "ER1".to_string(),
-///         "TH".to_string(),
-///         "T".to_string()
-///     ]]))
-/// );
-/// ```
-pub fn cmu(w: &str) -> Result<Option<Vec<Vec<String>>>, Error> {
-    let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
-
-    match &*CMU_DICT {
-        Ok(d) => cmu_dict = d,
-        Err(e) => return Err(e.clone()),
+impl CmuDict {
+    /// Initialize the CmuDict with a path to the existing serialized CMU dictionary
+    /// or a directoy containing it. If the dictionary doesn't exisit, it will be
+    /// downloaded and serialized at the location specified by the path parameter.
+    pub fn new(path: &str) -> Result<CmuDict, Error> {
+        match from_json_file(&Path::new(path)) {
+            Ok(d) => Ok(CmuDict { dict: d }),
+            Err(e) => Err(e),
+        }
     }
 
-    Ok(cmu_dict.get(w).map(|v| v.to_vec()))
+    /// CMUdict phonetic encoding.
+    ///
+    /// ```rust
+    /// extern crate ttaw;
+    /// use ttaw::cmu::CmuDict;
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
+    /// assert_eq!(
+    ///     cmudict.encoding("permeability"),
+    ///     Ok(Some(vec![vec![
+    ///         "P".to_string(),
+    ///         "ER0".to_string(),
+    ///         "M".to_string(),
+    ///         "IY2".to_string(),
+    ///         "AH0".to_string(),
+    ///         "B".to_string(),
+    ///         "IH1".to_string(),
+    ///         "L".to_string(),
+    ///         "IH0".to_string(),
+    ///         "T".to_string(),
+    ///         "IY0".to_string()
+    ///     ]]))
+    /// );
+    ///
+    /// assert_eq!(
+    ///     cmudict.encoding("unearthed"),
+    ///     Ok(Some(vec![vec![
+    ///         "AH0".to_string(),
+    ///         "N".to_string(),
+    ///         "ER1".to_string(),
+    ///         "TH".to_string(),
+    ///         "T".to_string()
+    ///     ]]))
+    /// );
+    /// ```
+    pub fn encoding(&self, w: &str) -> Result<Option<Vec<Vec<String>>>, Error> {
+        Ok(self.dict.get(w).map(|v| v.to_vec()))
+    }
+
+    /// Use CMUdict phonetic encoding to determine if two words rhyme.
+    ///
+    /// ```rust
+    /// extern crate ttaw;
+    /// use ttaw::cmu::CmuDict;
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
+    /// // Does rhyme
+    /// assert!(cmudict.rhyme("hissed", "mist").unwrap());
+    /// assert!(cmudict.rhyme("tryst", "wrist").unwrap());
+    ///
+    /// // Does not rhyme
+    /// assert!(!cmudict.rhyme("red", "Edmund").unwrap());
+    /// assert!(!cmudict.rhyme("comfy", "chair").unwrap());
+    /// ```
+    pub fn rhyme(&self, a: &str, b: &str) -> Result<bool, Error> {
+        if let (Some(phones_a), Some(phones_b)) = (
+            self.dict.get(a.to_string().to_lowercase().trim()),
+            self.dict.get(b.to_string().to_lowercase().trim()),
+        ) {
+            return Ok(eval_rhyme(phones_a, phones_b));
+        }
+
+        Ok(false)
+    }
+
+    /// Use CMUdict phonetic encoding to determine if two words alliterate.
+    ///
+    /// ```rust
+    /// extern crate ttaw;
+    /// use ttaw::cmu::CmuDict;
+    /// let cmudict = CmuDict::new("cmudict.json").unwrap();
+    // // Does alliterate
+    /// assert!(cmudict.alliteration("bouncing", "bears").unwrap());
+    /// assert!(cmudict.alliteration("snappy", "snails").unwrap());
+    ///
+    /// // Does not alliterate
+    /// assert!(!cmudict.alliteration("brown", "fox").unwrap());
+    /// assert!(!cmudict.alliteration("lazy", "dog").unwrap());
+    /// ```
+    pub fn alliteration(&self, a: &str, b: &str) -> Result<bool, Error> {
+        if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
+            return Ok(false);
+        }
+
+        if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
+            return Ok(false);
+        }
+
+        if let (Some(phones_a), Some(phones_b)) = (
+            self.dict.get(a.to_string().to_lowercase().trim()),
+            self.dict.get(b.to_string().to_lowercase().trim()),
+        ) {
+            return Ok(eval_alliteration(phones_a, phones_b));
+        }
+
+        Ok(false)
+    }
 }
 
 fn rhyming_part(phones: &[String]) -> Option<Vec<String>> {
@@ -83,37 +146,6 @@ fn eval_rhyme(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool {
     false
 }
 
-/// Use CMUdict phonetic encoding to determine if two words rhyme.
-///
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw;
-/// // Does rhyme
-/// assert_eq!(Ok(true), ttaw::cmu::rhyme("hissed", "mist"));
-/// assert_eq!(Ok(true), ttaw::cmu::rhyme("tryst", "wrist"));
-///
-/// // Does not rhyme
-/// assert_eq!(Ok(false), ttaw::cmu::rhyme("red", "edmund"));
-/// assert_eq!(Ok(false), ttaw::cmu::rhyme("comfy", "chair"));
-/// ```
-pub fn rhyme(a: &str, b: &str) -> Result<bool, Error> {
-    let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
-
-    match &*CMU_DICT {
-        Ok(d) => cmu_dict = d,
-        Err(e) => return Err(e.clone()),
-    }
-
-    if let (Some(phones_a), Some(phones_b)) = (
-        cmu_dict.get(a.to_string().to_lowercase().trim()),
-        cmu_dict.get(b.to_string().to_lowercase().trim()),
-    ) {
-        return Ok(eval_rhyme(phones_a, phones_b));
-    }
-
-    Ok(false)
-}
-
 fn eval_alliteration(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool {
     for a in phones_a {
         for b in phones_b {
@@ -126,51 +158,16 @@ fn eval_alliteration(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool
     false
 }
 
-/// Use CMUdict phonetic encoding to determine if two words alliterate.
-///
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw;
-// // Does alliterate
-/// assert_eq!(Ok(true), ttaw::cmu::alliteration("bouncing", "bears"));
-/// assert_eq!(Ok(true), ttaw::cmu::alliteration("snappy", "snails"));
-///
-/// // Does not alliterate
-/// assert_eq!(Ok(false), ttaw::cmu::alliteration("brown", "fox"));
-/// assert_eq!(Ok(false), ttaw::cmu::alliteration("lazy", "dog"));
-/// ```
-pub fn alliteration(a: &str, b: &str) -> Result<bool, Error> {
-    if Word::parse(Rule::vowel_first, a.get(..1).unwrap_or_default()).is_ok() {
-        return Ok(false);
-    }
-
-    if Word::parse(Rule::vowel_first, b.get(..1).unwrap_or_default()).is_ok() {
-        return Ok(false);
-    }
-
-    let cmu_dict: &HashMap<String, Vec<Vec<String>>>;
-
-    match &*CMU_DICT {
-        Ok(d) => cmu_dict = d,
-        Err(e) => return Err(e.clone()),
-    }
-
-    if let (Some(phones_a), Some(phones_b)) = (
-        cmu_dict.get(a.to_string().to_lowercase().trim()),
-        cmu_dict.get(b.to_string().to_lowercase().trim()),
-    ) {
-        return Ok(eval_alliteration(phones_a, phones_b));
-    }
-
-    Ok(false)
-}
-
 fn from_json_file(path: &Path) -> Result<HashMap<String, Vec<Vec<String>>>, Error> {
     let dict_json: String;
 
     if !path.exists() {
         // regenerate if the file isn't there
-        download_and_serialze(&path)?;
+        if path.is_dir() {
+            download_and_serialize(&path.join("cmudict.json"))?;
+        } else {
+            download_and_serialize(&path)?;
+        }
     }
 
     dict_json = fs::read_to_string(path)?;
@@ -178,7 +175,7 @@ fn from_json_file(path: &Path) -> Result<HashMap<String, Vec<Vec<String>>>, Erro
     Ok(dict)
 }
 
-fn download_and_serialze(path: &Path) -> Result<(), Error> {
+pub fn download_and_serialize(path: &Path) -> Result<(), Error> {
     let dict_string =
         reqwest::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
             .text()?;
@@ -208,7 +205,7 @@ fn download_and_serialze(path: &Path) -> Result<(), Error> {
         }
     }
 
-    let serialized = serde_json::to_string(&dict).unwrap();
+    let serialized = serde_json::to_string(&dict)?;
     fs::write(path, serialized)?;
     Ok(())
 }
@@ -221,7 +218,7 @@ mod tests {
     fn test_download_and_serialze() {
         let dir = tempfile::tempdir().unwrap();
         let fpath = dir.path().join("serialized");
-        let dict = download_and_serialze(&fpath);
+        let dict = download_and_serialize(&fpath);
         assert!(dict.is_ok());
     }
 
