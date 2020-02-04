@@ -6,7 +6,6 @@ use std::fmt;
 pub enum Error {
     InputError(String),
     ProgramError(String),
-    PathError(String),
 }
 
 impl fmt::Display for Error {
@@ -15,7 +14,6 @@ impl fmt::Display for Error {
             // Error::ParseError(ref s) => write!(f, "{}", s),
             Error::InputError(ref s) => write!(f, "{}", s),
             Error::ProgramError(ref s) => write!(f, "{}", s),
-            Error::PathError(ref s) => write!(f, "{}", s),
         }
     }
 }
@@ -50,7 +48,6 @@ mod tests {
 
         assert_eq!(input, format!("{}", Error::InputError(input.clone())));
         assert_eq!(progam, format!("{}", Error::ProgramError(progam.clone())));
-        assert_eq!(path, format!("{}", Error::PathError(path.clone())));
     }
 
     #[test]
