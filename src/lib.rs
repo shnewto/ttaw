@@ -1,20 +1,37 @@
 extern crate pest;
 ///
-/// ## Rhyme
+/// ## CMU
 /// ```rust
 /// extern crate ttaw;
 /// use ttaw;
-/// assert_eq!(Ok(true), ttaw::rhyme("here", "near"));
-/// assert_eq!(Ok(false), ttaw::rhyme("shopping", "cart"));
-/// ```
+/// let cmudict = ttaw::cmu::CmuDict::new("cmudict.test").unwrap();
+/// assert_eq!(
+///     cmudict.encoding("permeability"),
+///     Ok(Some(vec![vec![
+///         "P".to_string(),
+///         "ER0".to_string(),
+///         "M".to_string(),
+///         "IY2".to_string(),
+///         "AH0".to_string(),
+///         "B".to_string(),
+///         "IH1".to_string(),
+///         "L".to_string(),
+///         "IH0".to_string(),
+///         "T".to_string(),
+///         "IY0".to_string()
+///     ]]))
+/// );
+/// assert_eq!(
+///     cmudict.encoding("unearthed"),
+///     Ok(Some(vec![vec![
+///         "AH0".to_string(),
+///         "N".to_string(),
+///         "ER1".to_string(),
+///         "TH".to_string(),
+///         "T".to_string()
+///     ]]))
+/// );
 ///
-/// ## Alliteration
-/// ```rust
-/// extern crate ttaw;
-/// use ttaw;
-/// assert_eq!(Ok(true), ttaw::alliteration("bounding", "bears"));
-/// assert_eq!(Ok(true), ttaw::alliteration("snappy", "snails"));
-/// assert_eq!(Ok(false), ttaw::alliteration("lazy", "dog"));
 /// ```
 ///
 /// ## Double Metaphone
