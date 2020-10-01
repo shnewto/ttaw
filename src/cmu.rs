@@ -177,7 +177,7 @@ fn from_json_file(path: &Path) -> Result<HashMap<String, Vec<Vec<String>>>, Erro
 
 pub fn download_and_serialize(path: &Path) -> Result<(), Error> {
     let dict_string =
-        reqwest::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
+        reqwest::blocking::get("https://raw.githubusercontent.com/cmusphinx/cmudict/master/cmudict.dict")?
             .text()?;
 
     let cursor = io::Cursor::new(dict_string);
