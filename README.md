@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/shnewto/ttaw.svg?branch=master)](https://travis-ci.org/shnewto/ttaw)
-[![Coverage Status](https://coveralls.io/repos/github/shnewto/ttaw/badge.svg?branch=master)](https://coveralls.io/github/shnewto/ttaw?branch=master)
+[![Build Status](https://travis-ci.org/shnewto/ttaw.svg?branch=main)](https://travis-ci.org/shnewto/ttaw)
+[![Coverage Status](https://coveralls.io/repos/github/shnewto/ttaw/badge.svg?branch=main)](https://coveralls.io/github/shnewto/ttaw?branch=main)
 [![Crates.io Version](https://img.shields.io/crates/v/ttaw.svg)](https://crates.io/crates/ttaw)
 [![Crates.io](https://img.shields.io/crates/d/ttaw.svg)](https://crates.io/crates/ttaw)
 [![LICENSE](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
