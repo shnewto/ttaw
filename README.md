@@ -7,9 +7,6 @@
 # ttaw
 talking to a wall, a piecemeal natural language processing library.
 
-## A couple caveats
-- My implementation's aren't a sure thing :smile: If you encounter anything peculiar or unexpected, please raise an issue :heart: :heart:
-
 ## Functionality
 - Determine if two words rhyme using the Double Metaphone phonetic encoding
 - Determine if two words rhyme using CMUdict phonetic encoding
