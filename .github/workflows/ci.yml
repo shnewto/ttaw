@@ -90,26 +90,21 @@ jobs:
         with:
           command: test
 
-  test-ubuntu-latest-stable-with-coverage:
+  test-ubuntu-latest-with-coverage:
     name: ubuntu-latest test suite stable with coverage
     needs: [format]
     runs-on: ubuntu-latest
+    container:
+      image:  xd009642/tarpaulin:develop-nightly
+      options: --security-opt seccomp=unconfined    
     steps:
-      - uses: actions/checkout@v1
-      - name: toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-      - name: run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          version: '0.25.1'
-          args: ' --coveralls ${{secrets.COVERALLS_TOKEN}} -- --test-threads 1'
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Generate code coverage
+        run: |
+          cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v1          
 
   test-ubuntu-latest-nightly:
     name: ubuntu-latest test suite nightly
