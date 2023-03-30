@@ -90,8 +90,8 @@ jobs:
         with:
           command: test
 
-  test-ubuntu-latest-with-coverage:
-    name: ubuntu-latest test suite stable with coverage
+  test-with-coverage:
+    name: ubuntu-latest test suite with coverage
     needs: [format]
     runs-on: ubuntu-latest
     container:
