@@ -2,6 +2,7 @@ extern crate log;
 extern crate pest;
 
 use pest::Parser;
+use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
@@ -365,8 +366,8 @@ fn c_case(State { pos, chars, p, s }: &mut State) {
         )
         .is_err()
         && (chars.get(*pos + 2) != Some(&'E')
-            || get_substring(&chars, pos.wrapping_sub(2), *pos + 4) == "BACHER"
-            || get_substring(&chars, pos.wrapping_sub(2), *pos + 4) == "MACHER")
+            || get_substring(chars, pos.wrapping_sub(2), *pos + 4) == "BACHER"
+            || get_substring(chars, pos.wrapping_sub(2), *pos + 4) == "MACHER")
     {
         *p += "K";
         *s += "K";
@@ -375,7 +376,7 @@ fn c_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if *pos == 0 && get_substring(&chars, 1, 6) == "AESAR" {
+    if *pos == 0 && get_substring(chars, 1, 6) == "AESAR" {
         *p += "S";
         *s += "S";
         *pos += 2;
@@ -383,7 +384,7 @@ fn c_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if get_substring(&chars, *pos + 1, *pos + 4) == "HIA" {
+    if get_substring(chars, *pos + 1, *pos + 4) == "HIA" {
         *p += "K";
         *s += "K";
         *pos += 2;
@@ -414,7 +415,7 @@ fn c_case(State { pos, chars, p, s }: &mut State) {
             return;
         }
 
-        if germanic(&chars)
+        if germanic(chars)
             || Word::parse(
                 Rule::greek_ch,
                 get_substring(chars, pos.wrapping_sub(2), *pos + 4).as_str(),
@@ -464,15 +465,15 @@ fn c_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if chars.get(*pos + 1) == Some(&'C') && !(*pos == 1 && chars.get(0) == Some(&'M')) {
+    if chars.get(*pos + 1) == Some(&'C') && !(*pos == 1 && chars.first() == Some(&'M')) {
         if (chars.get(*pos + 2) == Some(&'I')
             || chars.get(*pos + 2) == Some(&'E')
             || chars.get(*pos + 2) == Some(&'H'))
             && get_substring(chars, *pos + 2, *pos + 4) != "HU"
         {
             if (*pos == 1 && chars.get(pos.wrapping_sub(1)) == Some(&'A'))
-                || get_substring(&chars, pos.wrapping_sub(1), *pos + 4) == "UCCEE"
-                || get_substring(&chars, pos.wrapping_sub(1), *pos + 4) == "UCCES"
+                || get_substring(chars, pos.wrapping_sub(1), *pos + 4) == "UCCEE"
+                || get_substring(chars, pos.wrapping_sub(1), *pos + 4) == "UCCES"
             {
                 *p += "KS";
                 *s += "KS";
@@ -584,7 +585,7 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
         if *pos > 0
             && Word::parse(
                 Rule::vowels,
-                get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+                get_char_as_string(chars, pos.wrapping_sub(1)).as_str(),
             )
             .is_err()
         {
@@ -627,7 +628,7 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
             && chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && Word::parse(
                 Rule::g_for_f,
-                get_char_as_string(&chars, pos.wrapping_sub(3)).as_str(),
+                get_char_as_string(chars, pos.wrapping_sub(3)).as_str(),
             )
             .is_ok()
         {
@@ -645,14 +646,14 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
 
     if chars.get(*pos + 1) == Some(&'N') {
         if *pos == 1
-            && Word::parse(Rule::vowels, get_char_as_string(&chars, 0).as_str()).is_ok()
-            && !slavo_germanic(&chars)
+            && Word::parse(Rule::vowels, get_char_as_string(chars, 0).as_str()).is_ok()
+            && !slavo_germanic(chars)
         {
             *p += "KN";
             *s += "N";
-        } else if get_substring(&chars, *pos + 2, *pos + 4) != "EY"
+        } else if get_substring(chars, *pos + 2, *pos + 4) != "EY"
             && chars.get(*pos + 1) != Some(&'Y')
-            && !slavo_germanic(&chars)
+            && !slavo_germanic(chars)
         {
             *p += "N";
             *s += "KN"
@@ -666,7 +667,7 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if get_substring(&chars, *pos + 1, *pos + 3) == "LI" && !slavo_germanic(&chars) {
+    if get_substring(chars, *pos + 1, *pos + 3) == "LI" && !slavo_germanic(chars) {
         *p += "KL";
         *s += "L";
         *pos += 2;
@@ -677,7 +678,7 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
     if *pos == 0
         && Word::parse(
             Rule::initial_g_or_for_k_or_j,
-            get_substring(&chars, 1, 3).as_str(),
+            get_substring(chars, 1, 3).as_str(),
         )
         .is_ok()
     {
@@ -688,18 +689,18 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if get_substring(&chars, *pos + 1, *pos + 3) == "ER"
+    if get_substring(chars, *pos + 1, *pos + 3) == "ER"
         && chars.get(pos.wrapping_sub(1)) != Some(&'I')
         && chars.get(pos.wrapping_sub(1)) != Some(&'E')
         && Word::parse(
             Rule::initial_anger_exception,
-            get_substring(&chars, 0, 6).as_str(),
+            get_substring(chars, 0, 6).as_str(),
         )
         .is_err()
         || (chars.get(*pos + 1) == Some(&'Y')
             && Word::parse(
                 Rule::g_for_k_or_j,
-                get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+                get_char_as_string(chars, pos.wrapping_sub(1)).as_str(),
             )
             .is_err())
     {
@@ -718,13 +719,13 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
             && chars.get(*pos + 1) == Some(&'G')
             && chars.get(*pos + 2) == Some(&'I'))
     {
-        if get_substring(&chars, *pos + 1, *pos + 3) == "ET" || germanic(&chars) {
+        if get_substring(chars, *pos + 1, *pos + 3) == "ET" || germanic(chars) {
             *p += "K";
             *s += "K";
         } else {
             *p += "J";
 
-            if get_substring(&chars, *pos + 1, *pos + 5) == "IER " {
+            if get_substring(chars, *pos + 1, *pos + 5) == "IER " {
                 *s += "J";
             } else {
                 *s += "K";
@@ -747,11 +748,11 @@ fn g_case(State { pos, chars, p, s }: &mut State) {
 }
 
 fn h_case(State { pos, chars, p, s }: &mut State) {
-    if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok()
+    if Word::parse(Rule::vowels, get_char_as_string(chars, *pos + 1).as_str()).is_ok()
         && (*pos == 0
             || Word::parse(
                 Rule::vowels,
-                get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+                get_char_as_string(chars, pos.wrapping_sub(1)).as_str(),
             )
             .is_ok())
     {
@@ -765,8 +766,8 @@ fn h_case(State { pos, chars, p, s }: &mut State) {
 }
 
 fn j_case(State { pos, chars, p, s }: &mut State) {
-    if get_substring(&chars, *pos, *pos + 4) == "JOSE" || get_substring(&chars, 0, 4) == "SAN " {
-        if get_substring(&chars, 0, 4) == "SAN " || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
+    if get_substring(chars, *pos, *pos + 4) == "JOSE" || get_substring(chars, 0, 4) == "SAN " {
+        if get_substring(chars, 0, 4) == "SAN " || (*pos == 0 && chars.get(*pos + 4) == Some(&' '))
         {
             *p += "H";
             *s += "H";
@@ -783,11 +784,11 @@ fn j_case(State { pos, chars, p, s }: &mut State) {
     if *pos == 0 {
         *p += "J";
         *s += "A";
-    } else if !slavo_germanic(&chars)
+    } else if !slavo_germanic(chars)
         && (chars.get(*pos + 1) == Some(&'A') || chars.get(*pos + 1) == Some(&'O'))
         && Word::parse(
             Rule::vowels,
-            get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+            get_char_as_string(chars, pos.wrapping_sub(1)).as_str(),
         )
         .is_ok()
     {
@@ -800,7 +801,7 @@ fn j_case(State { pos, chars, p, s }: &mut State) {
         && chars.get(pos.wrapping_sub(1)) != Some(&'L')
         && Word::parse(
             Rule::j_for_j_exception,
-            get_char_as_string(&chars, *pos + 1).as_str(),
+            get_char_as_string(chars, *pos + 1).as_str(),
         )
         .is_err()
     {
@@ -836,7 +837,7 @@ fn l_case(State { pos, chars, p, s }: &mut State) {
                     || Word::parse(
                         Rule::alle,
                         get_substring(
-                            &chars,
+                            chars,
                             chars.len().wrapping_sub(7),
                             chars.len().wrapping_sub(5),
                         )
@@ -863,7 +864,7 @@ fn m_case(State { pos, chars, p, s }: &mut State) {
         || (chars.get(pos.wrapping_sub(1)) == Some(&'U')
             && chars.get(*pos + 1) == Some(&'B')
             && (*pos + 1 == chars.len().wrapping_sub(6)
-                || get_substring(&chars, *pos + 2, *pos + 4) == "ER"))
+                || get_substring(chars, *pos + 2, *pos + 4) == "ER"))
     {
         *pos += 1;
     }
@@ -920,7 +921,7 @@ fn q_case(State { pos, chars, p, s }: &mut State) {
 
 fn r_case(State { pos, chars, p, s }: &mut State) {
     if *pos == chars.len().wrapping_sub(6)
-        && !slavo_germanic(&chars)
+        && !slavo_germanic(chars)
         && chars.get(pos.wrapping_sub(1)) == Some(&'E')
         && chars.get(pos.wrapping_sub(2)) == Some(&'I')
         && chars.get(pos.wrapping_sub(4)) != Some(&'M')
@@ -950,7 +951,7 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
         return;
     }
 
-    if *pos == 0 && get_substring(&chars, 1, 5) == "UGAR" {
+    if *pos == 0 && get_substring(chars, 1, 5) == "UGAR" {
         *p += "X";
         *s += "S";
         *pos += 1;
@@ -961,7 +962,7 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'H') {
         if Word::parse(
             Rule::h_for_s,
-            get_substring(&chars, *pos + 1, *pos + 5).as_str(),
+            get_substring(chars, *pos + 1, *pos + 5).as_str(),
         )
         .is_ok()
         {
@@ -979,7 +980,7 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'I')
         && (chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))
     {
-        if slavo_germanic(&chars) {
+        if slavo_germanic(chars) {
             *p += "S";
             *s += "S";
         } else {
@@ -1015,12 +1016,12 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
         if chars.get(*pos + 2) == Some(&'H') {
             if Word::parse(
                 Rule::dutch_sch,
-                get_substring(&chars, *pos + 3, *pos + 5).as_str(),
+                get_substring(chars, *pos + 3, *pos + 5).as_str(),
             )
             .is_ok()
             {
-                if get_substring(&chars, *pos + 3, *pos + 5) == "ER"
-                    || get_substring(&chars, *pos + 3, *pos + 5) == "EN"
+                if get_substring(chars, *pos + 3, *pos + 5) == "ER"
+                    || get_substring(chars, *pos + 3, *pos + 5) == "EN"
                 {
                     *p += "X";
                     *s += "SK"
@@ -1035,7 +1036,7 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
             }
 
             if *pos == 0
-                && Word::parse(Rule::vowels, get_char_as_string(&chars, 3).as_str()).is_err()
+                && Word::parse(Rule::vowels, get_char_as_string(chars, 3).as_str()).is_err()
                 && chars.get(3) != Some(&'W')
             {
                 *p += "X";
@@ -1068,8 +1069,8 @@ fn s_case(State { pos, chars, p, s }: &mut State) {
     }
 
     if *pos == chars.len().wrapping_sub(6)
-        && (get_substring(&chars, pos.wrapping_sub(2), *pos) == "AI"
-            || get_substring(&chars, pos.wrapping_sub(2), *pos) == "OI")
+        && (get_substring(chars, pos.wrapping_sub(2), *pos) == "AI"
+            || get_substring(chars, pos.wrapping_sub(2), *pos) == "OI")
     {
         *s += "S";
     } else {
@@ -1109,7 +1110,7 @@ fn t_case(State { pos, chars, p, s }: &mut State) {
     if chars.get(*pos + 1) == Some(&'H')
         || (chars.get(*pos + 1) == Some(&'T') && chars.get(*pos + 2) == Some(&'H'))
     {
-        if germanic(&chars)
+        if germanic(chars)
             || ((chars.get(*pos + 2) == Some(&'O') || chars.get(*pos + 2) == Some(&'A'))
                 && chars.get(*pos + 3) == Some(&'M'))
         {
@@ -1154,7 +1155,7 @@ fn w_case(State { pos, chars, p, s }: &mut State) {
     }
 
     if *pos == 0 {
-        if Word::parse(Rule::vowels, get_char_as_string(&chars, *pos + 1).as_str()).is_ok() {
+        if Word::parse(Rule::vowels, get_char_as_string(chars, *pos + 1).as_str()).is_ok() {
             *p += "A";
             *s += "F";
         } else if chars.get(*pos + 1) == Some(&'H') {
@@ -1168,11 +1169,11 @@ fn w_case(State { pos, chars, p, s }: &mut State) {
         && chars.get(*pos + 1) == Some(&'S')
         && chars.get(*pos + 2) == Some(&'K')
         && (chars.get(*pos + 3) == Some(&'I') || chars.get(*pos + 3) == Some(&'Y')))
-        || get_substring(&chars, 0, 3) == "SCH"
+        || get_substring(chars, 0, 3) == "SCH"
         || (*pos == chars.len().wrapping_sub(6)
             && Word::parse(
                 Rule::vowels,
-                get_char_as_string(&chars, pos.wrapping_sub(1)).as_str(),
+                get_char_as_string(chars, pos.wrapping_sub(1)).as_str(),
             )
             .is_ok())
     {
@@ -1224,7 +1225,7 @@ fn z_case(State { pos, chars, p, s }: &mut State) {
         && (chars.get(*pos + 2) == Some(&'A')
             || chars.get(*pos + 2) == Some(&'I')
             || chars.get(*pos + 2) == Some(&'O')))
-        || (slavo_germanic(&chars) && *pos > 0 && chars.get(pos.wrapping_sub(1)) != Some(&'T'))
+        || (slavo_germanic(chars) && *pos > 0 && chars.get(pos.wrapping_sub(1)) != Some(&'T'))
     {
         *p += "S";
         *s += "TS"

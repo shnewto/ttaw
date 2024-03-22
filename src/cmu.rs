@@ -3,8 +3,6 @@ extern crate pest;
 use error::Error;
 use metaphone::{Rule, Word};
 use pest::Parser;
-use reqwest;
-use serde_json;
 use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufRead};
@@ -19,7 +17,7 @@ impl CmuDict {
     /// or a directoy containing it. If the dictionary doesn't exisit, it will be
     /// downloaded and serialized at the location specified by the path parameter.
     pub fn new(path: &str) -> Result<CmuDict, Error> {
-        match from_json_file(&Path::new(path)) {
+        match from_json_file(Path::new(path)) {
             Ok(d) => Ok(CmuDict { dict: d }),
             Err(e) => Err(e),
         }
@@ -159,18 +157,16 @@ fn eval_alliteration(phones_a: &[Vec<String>], phones_b: &[Vec<String>]) -> bool
 }
 
 fn from_json_file(path: &Path) -> Result<HashMap<String, Vec<Vec<String>>>, Error> {
-    let dict_json: String;
-
     if !path.exists() {
         // regenerate if the file isn't there
         if path.is_dir() {
             download_and_serialize(&path.join("cmudict.json"))?;
         } else {
-            download_and_serialize(&path)?;
+            download_and_serialize(path)?;
         }
     }
 
-    dict_json = fs::read_to_string(path)?;
+    let dict_json = fs::read_to_string(path)?;
     let dict: HashMap<String, Vec<Vec<String>>> = serde_json::from_str(&dict_json)?;
     Ok(dict)
 }
