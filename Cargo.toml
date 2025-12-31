@@ -2,7 +2,7 @@
 name = "ttaw"
 description = "talking to a wall, a piecemeal natural language processing library"
 # don't manually edit this version unless you're sure you want to circumvent the process documented in RELEASE.md
-version = "0.3.0"
+version = "0.3.1"
 license = "MIT"
 
 authors = ["Shea Newton <shnewto@gmail.com>"]
