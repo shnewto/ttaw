@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub struct CmuDict {
     dict: HashMap<String, Vec<Vec<String>>>,
@@ -203,7 +204,20 @@ pub fn download_and_serialize(path: &Path) -> Result<(), Error> {
     }
 
     let serialized = serde_json::to_string(&dict)?;
-    fs::write(path, serialized)?;
+
+    // Write to a unique temp file, then rename it into place, so concurrent
+    // callers never read a partially written dictionary.
+    static TMP_COUNTER: AtomicUsize = AtomicUsize::new(0);
+    let tmp = path.with_extension(format!(
+        "tmp.{}.{}",
+        std::process::id(),
+        TMP_COUNTER.fetch_add(1, Ordering::Relaxed)
+    ));
+    fs::write(&tmp, serialized)?;
+    if let Err(e) = fs::rename(&tmp, path) {
+        let _ = fs::remove_file(&tmp);
+        return Err(e.into());
+    }
     Ok(())
 }
 
