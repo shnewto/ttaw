@@ -1,4 +1,0 @@
-[env]
-# Tests share a cached CMU dictionary file that the first test downloads;
-# running them in parallel lets one read it while another is still writing.
-RUST_TEST_THREADS = "1"

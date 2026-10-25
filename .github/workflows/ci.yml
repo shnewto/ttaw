@@ -30,6 +30,11 @@ jobs:
       - uses: actions/checkout@v7
       - name: toolchain
         uses: dtolnay/rust-toolchain@stable
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cargo test --test cmu cmu_encoding_found
       - name: cargo test
         run: cargo test
 
@@ -41,6 +46,11 @@ jobs:
       - uses: actions/checkout@v7
       - name: toolchain
         uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cargo test --test cmu cmu_encoding_found
       - name: cargo test
         run: cargo test
 
@@ -52,6 +62,11 @@ jobs:
       - uses: actions/checkout@v7
       - name: toolchain
         uses: dtolnay/rust-toolchain@stable
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cargo test --test cmu cmu_encoding_found
       - name: cargo test
         run: cargo test
 
@@ -63,6 +78,11 @@ jobs:
       - uses: actions/checkout@v7
       - name: toolchain
         uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cargo test --test cmu cmu_encoding_found
       - name: cargo test
         run: cargo test
 
@@ -76,6 +96,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo +nightly test --doc cmu::CmuDict::encoding
+          cargo +nightly test --test cmu cmu_encoding_found
       - name: Generate code coverage
         run: |
           ls
@@ -95,5 +120,10 @@ jobs:
       - uses: actions/checkout@v7
       - name: toolchain
         uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        # Tests share cached dictionary files; create them before tests run in parallel.
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cargo test --test cmu cmu_encoding_found
       - name: cargo test
         run: cargo test
