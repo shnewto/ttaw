@@ -1,4 +1,4 @@
-[![.github/workflows/ci.yml](https://github.com/shnewto/ttaw/workflows/.github/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shnewto/ttaw/actions)
+[![CI](https://github.com/shnewto/ttaw/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/shnewto/ttaw/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/shnewto/ttaw/branch/main/graph/badge.svg?token=7I6VUOOLC2)](https://codecov.io/gh/shnewto/ttaw)
 [![Crates.io Version](https://img.shields.io/crates/v/ttaw.svg)](https://crates.io/crates/ttaw)
 [![Crates.io](https://img.shields.io/crates/d/ttaw.svg)](https://crates.io/crates/ttaw)
