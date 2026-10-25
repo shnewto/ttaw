@@ -50,7 +50,7 @@ mod tests {
     #[test]
     fn io_err() {
         let err_str = "IO Errored!";
-        let error = std::io::Error::new(std::io::ErrorKind::Other, err_str);
+        let error = std::io::Error::other(err_str);
 
         assert_eq!(err_str.to_string(), format!("{}", Error::from(error)));
     }

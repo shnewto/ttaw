@@ -12,94 +12,111 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v7
 
       - name: install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
-
-      - name: install rustfmt
-        run: rustup component add rustfmt
+          components: rustfmt
 
       - name: rustfmt check
         run: cargo fmt --all -- --check
 
+  cmudict:
+    name: download CMU dictionary
+    needs: [format]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: toolchain
+        uses: dtolnay/rust-toolchain@stable
+      # Tests share cached dictionary files; create them once so parallel
+      # tests never read one mid-write.
+      - name: generate dictionary files
+        run: |
+          cargo test --doc cmu::CmuDict::encoding
+          cp cmudict.json cmudict.test
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cmudict
+          path: |
+            cmudict.json
+            cmudict.test
+
   test-macos-latest-stable:
     name: macos-latest test suite stable
-    needs: [format]
+    needs: [cmudict]
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - name: toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
         with:
-          toolchain: stable
-          override: true
+          name: cmudict
       - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
 
   test-macos-latest-nightly:
     name: macos-latest test suite nightly
-    needs: [format]
+    needs: [cmudict]
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - name: toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
         with:
-          toolchain: nightly
-          override: true
+          name: cmudict
       - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
 
   test-windows-latest-stable:
     name: windows-latest test suite stable
-    needs: [format]
+    needs: [cmudict]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - name: toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
         with:
-          toolchain: stable
-          override: true
+          name: cmudict
       - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
 
   test-windows-latest-nightly:
     name: windows-latest test suite nightly
-    needs: [format]
+    needs: [cmudict]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - name: toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
         with:
-          toolchain: nightly
-          override: true
+          name: cmudict
       - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
 
   test-with-coverage:
     name: ubuntu-latest test suite with coverage
-    needs: [format]
+    needs: [cmudict]
     runs-on: ubuntu-latest
     container:
       image:  xd009642/tarpaulin:develop-nightly
       options: --security-opt seccomp=unconfined    
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
+        with:
+          name: cmudict
       - name: Generate code coverage
         run: |
           ls
@@ -113,16 +130,15 @@ jobs:
 
   test-ubuntu-latest-nightly:
     name: ubuntu-latest test suite nightly
-    needs: [format]
+    needs: [cmudict]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v7
       - name: toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
+      - name: download CMU dictionary
+        uses: actions/download-artifact@v8
         with:
-          toolchain: nightly
-          override: true
+          name: cmudict
       - name: cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test
